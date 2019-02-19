@@ -1,5 +1,5 @@
 function prepareConfirmation(click) {
-  var parameters = extractParameters(click.target, 2)
+  const parameters = extractParameters(click.target, 2)
   if (parameters == null) {
     return
   }
@@ -17,48 +17,49 @@ function extractParameters(target, i) {
     return null
   }
 
-  var type = target.getAttribute('skullType')
+  const type = target.getAttribute('skullType')
   if (type == null) {
     return extractParameters(target.parentNode, i - 1)
   }
 
-  var amount = target.getAttribute('skullAmount')
+  const amount = target.getAttribute('skullAmount')
 
   return [type, amount]
 }
 
 function showConfirmation() {
   document.getElementById('custom').style.display = 'flex'
-  var confirm = document.getElementById('confirm')
-  confirm.style.display = 'flex'
+  document.getElementById('confirm').style.display = 'flex'
 }
 
 function hideConfirmation() {
   document.getElementById('custom').style.display = 'none'
-  var confirm = document.getElementById('confirm')
-  confirm.style.display = 'none'
-  getParameters = null
+  document.getElementById('confirm').style.display = 'none'
 }
 
 function accept() {
-  var type = document.getElementById('type').value
-  var amount = document.getElementById('amount').value
+  const type = document.getElementById('type').value
+  const amount = document.getElementById('amount').value
   console.log(endpoint + '?type=' + type + '&amount=' + amount)
-  // fetch('https://www.google.com', {
-  //   method: 'GET',
-  //   mode: 'no-cors',
-  //   redirect: "follow",
-  // })
-  // .then(r => r.json())
-  // .then(console.log)
+  fetch(endpoint + '?type=' + type + '&amount=' + amount, {
+    method: 'POST',
+    redirect: "follow",
+  })
+  .then(r => r.json())
+  .then(console.log)
   hideConfirmation()
 }
 
+function addQuickValue(grid, combo, value) {
+  addGridButton(grid, value)
+  addComboItem(combo, value)
+}
+
 function addGridButton(grid, value) {
-  var icon = document.createElement('i')
+  const icon = document.createElement('i')
   icon.setAttribute('class', value.icon)
 
-  var button = document.createElement('span')
+  const button = document.createElement('span')
   button.setAttribute('class', 'GridButton')
   button.setAttribute('skullType', value.type)
   button.setAttribute('skullAmount', value.amount ? value.amount : '1')
@@ -68,14 +69,22 @@ function addGridButton(grid, value) {
   grid.appendChild(button)
 }
 
+function addComboItem(combo, value) {
+  const comboItem = document.createElement('option')
+  comboItem.value = value.type
+  comboItem.appendChild(document.createTextNode(value.type))
+  combo.appendChild(comboItem)
+}
+
 function setup() {
-  var grid = document.getElementById('grid')
+  const grid = document.getElementById('grid')
+  const combo = document.getElementById('type')
 
   if (quickValues.length == 0) {
     return
   }
 
-  quickValues.forEach(value => addGridButton(grid, value))
+  quickValues.forEach(value => addQuickValue(grid, combo, value))
   addGridButton(grid, { type: 'custom', icon: 'fas fa-question-circle' })
 
   document.getElementById('cancel').addEventListener('click', hideConfirmation, false)
