@@ -40,10 +40,10 @@ function hideConfirmation() {
 function accept() {
   const type = document.getElementById('type').value
   const amount = document.getElementById('amount').value
-  console.log(endpoint + '?type=' + type + '&amount=' + amount)
   fetch(endpoint + skullPath + '?type=' + type + '&amount=' + amount, {
     method: 'POST',
     redirect: "follow",
+    credentials: 'include',
   })
   .then(r => r.json())
   .then(console.log)
@@ -80,9 +80,10 @@ function setup() {
   const grid = document.getElementById('grid')
   const combo = document.getElementById('type')
 
-  fetch(endpoint + quickValuesPath + '?type=' + type + '&amount=' + amount, {
+  fetch(endpoint + quickValuesPath, {
     method: 'GET',
     redirect: "follow",
+    credentials: 'include',
   })
   .then(r => r.json())
   .then(quickValues => {
