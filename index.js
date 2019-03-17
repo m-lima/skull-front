@@ -41,7 +41,7 @@ function accept() {
   const type = document.getElementById('type').value
   const amount = document.getElementById('amount').value
   console.log(endpoint + '?type=' + type + '&amount=' + amount)
-  fetch(endpoint + '?type=' + type + '&amount=' + amount, {
+  fetch(endpoint + skullPath + '?type=' + type + '&amount=' + amount, {
     method: 'POST',
     redirect: "follow",
   })
@@ -80,15 +80,22 @@ function setup() {
   const grid = document.getElementById('grid')
   const combo = document.getElementById('type')
 
-  if (quickValues.length == 0) {
-    return
-  }
+  fetch(endpoint + quickValuesPath + '?type=' + type + '&amount=' + amount, {
+    method: 'GET',
+    redirect: "follow",
+  })
+  .then(r => r.json())
+  .then(quickValues => {
+    if (quickValues.length == 0) {
+      return
+    }
 
-  quickValues.forEach(value => addQuickValue(grid, combo, value))
-  addGridButton(grid, { type: 'custom', icon: 'fas fa-question-circle' })
+    quickValues.forEach(value => addQuickValue(grid, combo, value))
+    addGridButton(grid, { type: 'custom', icon: 'fas fa-question-circle' })
 
-  document.getElementById('cancel').addEventListener('click', hideConfirmation, false)
-  document.getElementById('accept').addEventListener('click', accept, false)
+    document.getElementById('cancel').addEventListener('click', hideConfirmation, false)
+    document.getElementById('accept').addEventListener('click', accept, false)
+  })
 }
 
 setup()
