@@ -45,8 +45,15 @@ function accept() {
     redirect: "follow",
     credentials: 'include',
   })
-  .then(r => r.json())
+  .then(r => {
+    if (r.ok) {
+      return r
+    } else {
+      throw 'HTTP status: ' + r.status
+    }
+  })
   .then(console.log)
+  .catch(console.error)
   hideConfirmation()
 }
 
@@ -85,6 +92,13 @@ function setup() {
     redirect: "follow",
     credentials: 'include',
   })
+  .then(r => {
+    if (r.ok) {
+      return r
+    } else {
+      throw r.status
+    }
+  })
   .then(r => r.json())
   .then(quickValues => {
     if (quickValues.length == 0) {
@@ -96,6 +110,13 @@ function setup() {
 
     document.getElementById('cancel').addEventListener('click', hideConfirmation, false)
     document.getElementById('accept').addEventListener('click', accept, false)
+  })
+  .catch(status => {
+    if (status == 401) {
+      window.location = login + '?redirect=' + window.location
+    } else {
+      console.error('HTTP error status: ' + status)
+    }
   })
 }
 
