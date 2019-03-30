@@ -2,30 +2,33 @@ import React, { Component } from 'react'
 import './css/Confirmation.css'
 
 import { Icon } from './Icon'
-import IQuickValue from '../model/ISkullValue'
+import ISkullValue from '../model/ISkullValue'
 
 interface IProps {
-  type: string
-  amount: number
-  visible: boolean
+  skullValues: ISkullValue[]
+  selected: ISkullValue
+  onCancel: () => void
 }
 
-export default class Confirmation extends Component {
+export default class Confirmation extends Component<IProps> {
   render() {
     return (
       <div className='Confirmation'>
-        <div className='Confirmation-values'>
-          <p>Bepo</p>
-          <p>10.5</p>
-          <input id='amount' type='number' min={0} step={0.1} value={1.0}></input>
-        </div>
-        <div className='Confirmation-buttons'>
-          <a id='Accept' href='' title='Accept'>
-            <Icon icon='fas fa-check'/>
-          </a>
-          <a id='Cancel' href='/chart' title='Cancel'>
-            <Icon icon='fas fa-times'/>
-          </a>
+        <div className='Confirmation-container'>
+          <div className='Confirmation-values'>
+            <select defaultValue={this.props.selected.type}>
+              {this.props.skullValues.map((v, i) => <option key={i}>{v.type}</option>)}
+            </select>
+            <input id='amount' type='number' min={0} step={0.1} defaultValue={String(this.props.selected.amount)} />
+          </div>
+          <div className='Confirmation-buttons' onClick={this.props.onCancel}>
+            <div id='Accept' title='Accept'>
+              <Icon icon='fas fa-check' />
+            </div>
+            <div id='Cancel' title='Cancel' onClick={this.props.onCancel}>
+              <Icon icon='fas fa-times' />
+            </div>
+          </div>
         </div>
       </div>
     )

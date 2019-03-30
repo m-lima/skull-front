@@ -9,28 +9,19 @@ import Fetch from '../control/Fetch'
 import FetchStatus from '../model/FetchStatus'
 import Footer from './Footer'
 import ISkullValue from '../model/ISkullValue'
-import SkullButton from './SkullButton'
-
-const Grid = (props: { skullValues: ISkullValue[]}) => {
-  return (
-    <div className='Skull-grid' >
-      {props.skullValues && props.skullValues.map((q, i) => <SkullButton {...q} key={i} />)}
-      <SkullButton icon='fas fa-question-circle' type='custom' amount={0} />
-    </div>
-  )
-}
+import Grid from './Grid'
 
 interface IState {
   skullValues: ISkullValue[]
   status: FetchStatus
+  selected?: ISkullValue
 }
 
-interface IProps { }
-
-class Skull extends Component<IProps, IState> {
+class Skull extends Component<{}, IState> {
   state = {
     skullValues: [],
     status: FetchStatus.LOADING,
+    selected: undefined,
   }
 
   componentDidMount() {
@@ -51,6 +42,14 @@ class Skull extends Component<IProps, IState> {
       })
   }
 
+  confirmValue(value: ISkullValue) {
+    this.setState({ selected: value })
+  }
+
+  cancel() {
+    this.setState({ selected: undefined })
+  }
+
   render() {
     switch (this.state.status) {
       case FetchStatus.LOADING:
@@ -59,9 +58,15 @@ class Skull extends Component<IProps, IState> {
       case FetchStatus.EMPTY:
         return (
           <div className='Skull'>
-            <Grid skullValues={this.state.skullValues} />
+            <Grid skullValues={this.state.skullValues} confirmAction={this.confirmValue.bind(this)} />
             <Footer />
-            <Confirmation />
+            {
+              this.state.selected && <Confirmation
+                skullValues={this.state.skullValues}
+                selected={this.state.selected as unknown as ISkullValue}
+                onCancel={this.cancel.bind(this)}
+              />
+            }
           </div>
         )
       case FetchStatus.UNAUTHORIZED:
