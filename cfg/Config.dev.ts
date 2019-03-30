@@ -34,7 +34,7 @@ export class Mock {
 }
 
 export class Endpoint {
-  static readonly login = ''
-  static readonly skull = ''
-  static readonly quickValues = ''
+  static readonly login = ""
+  static readonly skull = ""
+  static readonly quickValues = ""
 }
