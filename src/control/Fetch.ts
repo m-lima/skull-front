@@ -12,10 +12,6 @@ const mapToQuickValue = (rawValue: any): IQuickValue => {
 
 export default class Fetch {
   static quickValues(): Promise<IQuickValue[]> {
-    // if (Config.Mock.values) {
-    //   return Promise.resolve(JSON.parse(Config.Mock.data))
-    // }
-
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.data))
       : fetch(Config.Endpoint.quickValues, {

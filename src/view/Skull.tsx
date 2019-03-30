@@ -32,6 +32,13 @@ export default class Skull extends Component<{}, IState> {
     showConfirmation: false,
   }
 
+  constructor(props: {}) {
+    super(props)
+    this.update = this.update.bind(this)
+    this.accept = this.accept.bind(this)
+    this.cancel = this.cancel.bind(this)
+  }
+
   componentDidMount() {
     Fetch.quickValues()
       .then(q => this.setState({ skullValues: q, status: (q.length > 0 ? Status.OK : Status.EMPTY) }))
@@ -101,9 +108,9 @@ export default class Skull extends Component<{}, IState> {
               this.state.showConfirmation && <Confirmation
                 skullValues={this.state.skullValues}
                 selected={this.state.selected}
-                onUpdate={this.update.bind(this)}
-                onAccept={this.accept.bind(this)}
-                onCancel={this.cancel.bind(this)}
+                onUpdate={this.update}
+                onAccept={this.accept}
+                onCancel={this.cancel}
               />
             }
           </div>

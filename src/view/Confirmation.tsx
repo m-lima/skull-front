@@ -36,8 +36,8 @@ export default class Confirmation extends Component<IProps> {
               />
             </div>
           </div>
-          <div className='Confirmation-buttons' onClick={this.props.onAccept}>
-            <div id='Accept' title='Accept'>
+          <div className='Confirmation-buttons'>
+            <div id='Accept' title='Accept' onClick={this.props.onAccept}>
               <Icon icon='fas fa-check' />
             </div>
             <div id='Cancel' title='Cancel' onClick={this.props.onCancel}>
