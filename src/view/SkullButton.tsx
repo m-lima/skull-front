@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './css/SkullButton.css'
+
 import IQuickValue from '../model/IQuickValue'
 import { Icon } from './Icon'
 

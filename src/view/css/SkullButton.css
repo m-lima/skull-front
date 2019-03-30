@@ -3,15 +3,15 @@
   display: flex;
   cursor: pointer;
   
-  background-color: #383e4a;
+  background-color: var(--shade-2);
 }
 
 .Skull-button:hover{
   color: var(--font-color-accent);
-  background-color: #4f5768;
+  background-color: var(--shade-3);
 }
 
 .Skull-button:active{
   color: var(--font-color-accent);
-  background-color: #5b667d;
+  background-color: var(--shade-4);
 }

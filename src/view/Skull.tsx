@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import './css/Skull.css'
-import SkullButton from './SkullButton'
-import IQuickValue from '../model/IQuickValue'
-import Fetch from '../control/Fetch'
+
 import * as Exception from '../model/Exception'
-import HTTPStatusCode from '../model/HTTPStatusCode'
-import Access from '../control/Access'
-import Footer from './Footer'
-import FetchStatus from '../model/FetchStatus'
 import * as Message from './Message'
+import Access from '../control/Access'
+import Confirmation from './Confirmation'
+import Fetch from '../control/Fetch'
+import FetchStatus from '../model/FetchStatus'
+import Footer from './Footer'
+import IQuickValue from '../model/IQuickValue'
+import SkullButton from './SkullButton'
 
 const Grid = (props: { quickValues: IQuickValue[]}) => {
   return (
@@ -60,6 +61,7 @@ class Skull extends Component<IProps, IState> {
           <div className='Skull'>
             <Grid quickValues={this.state.quickValues} />
             <Footer />
+            <Confirmation />
           </div>
         )
       case FetchStatus.UNAUTHORIZED:

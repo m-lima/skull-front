@@ -1,9 +1,14 @@
 :root {
-  --background-color: #282c34;
   --font-color: #cccccc;
   --font-color-accent: #ffffff;
-  --footer-size: 80px;
+  --bar-size: 80px;
   --button-size: 150px;
+  --shade-0: #16181d;
+  --shade-1: #282c34;
+  --background-color: #282c34;
+  --shade-2: #383e4a;
+  --shade-3: #4f5768;
+  --shade-4: #5b667d;
 }
 
 body {

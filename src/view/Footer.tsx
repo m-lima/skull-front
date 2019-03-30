@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import './css/Footer.css'
-import { Icon } from './Icon'
+
 import * as Config from '../model/Config'
+import { Icon } from './Icon'
 
 export default class Footer extends Component {
   render() {
@@ -9,10 +10,10 @@ export default class Footer extends Component {
       <div className='Footer'>
         <div className='Footer-container'>
           <a href={Config.Endpoint.skull} title='Download JSON'>
-            <Icon icon='fas fa-file-download' onClick={() => console.log('YOO!!')}/>
+            <Icon icon='fas fa-file-download'/>
           </a>
           <a href='/chart' title='Go to chart'>
-            <Icon icon='fas fa-chart-line' />
+            <Icon icon='fas fa-chart-line'/>
           </a>
         </div>
       </div>

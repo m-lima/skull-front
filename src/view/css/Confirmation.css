@@ -1,21 +1,27 @@
-.Footer {
+.Confirmation {
   position: absolute;
-  bottom: 0;
+  top: 50%;
   width: 100%;
-  height: var(--footer-size);
+  transform: translate(0, -50%);
 
-  background-color: var(--shade-0);
+  background-color: #16181d;
   font-size: calc(var(--bar-size) - 40px);
   line-height: var(--bar-size);
 }
 
-.Footer-container {
+.Confirmation-values {
+
+}
+
+.Confirmation-buttons {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 
   align-items: center;
   justify-content: center;
+
+  color: #00997340;
 
   border-width: 0;
 
@@ -24,15 +30,15 @@
   outline: none;
 }
 
-.Footer-container > * {
+.Confirmation-buttons > * {
   width: 100%;
   cursor: pointer;
 }
 
-.Footer-container > *:hover {
-  background-color: var(--shade-2);
+.Confirmation-buttons #Accept {
+  background-color: darkgreen;
 }
 
-.Footer-container > *:active {
-  background-color: var(--shade-3);
+.Confirmation-buttons #Cancel {
+  background-color: darkred;
 }
