@@ -115,7 +115,7 @@ export default class Skull extends Component<{}, IState> {
             }
           </div>
         )
-      case Status.UNAUTHORIZED:
+      case Status.FORBIDDEN:
         return <Message.Unauthorized />
       default:
         return <Message.Error />
