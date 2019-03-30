@@ -2,24 +2,36 @@ import * as Config from "../model/Config"
 import ISkullValue, { IQuickValue } from "../model/ISkullValue"
 import { ApiException } from "../model/Exception"
 
+const mapToQuickValue = (rawValue: any): IQuickValue => {
+  return {
+    type: rawValue.type,
+    amount: rawValue.amount ? rawValue.amount : 1,
+    icon: rawValue.icon,
+  }
+}
+
 export default class Fetch {
   static quickValues(): Promise<IQuickValue[]> {
-    if (Config.Mock.values) {
-      return Promise.resolve(Config.Mock.data)
-    }
+    // if (Config.Mock.values) {
+    //   return Promise.resolve(JSON.parse(Config.Mock.data))
+    // }
 
-    return fetch(Config.Endpoint.quickValues, {
-      method: 'GET',
-      redirect: "follow",
-      credentials: 'include',
-    })
-      .then(r => {
-        if (r.ok) {
-          return r
-        } else {
-          throw new ApiException(r.status)
-        }
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.data))
+      : fetch(Config.Endpoint.quickValues, {
+        method: 'GET',
+        redirect: "follow",
+        credentials: 'include',
       })
-      .then(r => r.json())
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToQuickValue))
   }
 }

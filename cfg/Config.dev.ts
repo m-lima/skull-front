@@ -4,7 +4,7 @@ export class Mock {
   static readonly user = true
   static readonly values = true
 
-  static readonly data: IQuickValue[] = [
+static readonly data: string = JSON.stringify([
     {
       type: 'bla',
       icon: 'fas fa-vial',
@@ -18,7 +18,6 @@ export class Mock {
     {
       type: 'bli',
       icon: 'fas fa-coffee',
-      amount: 0.5,
     },
     {
       type: 'blo',
@@ -30,11 +29,11 @@ export class Mock {
       icon: 'fas fa-baby',
       amount: 2,
     },
-  ]
+  ])
 }
 
 export class Endpoint {
-  static readonly login = ""
-  static readonly skull = ""
-  static readonly quickValues = ""
+  static readonly login = ''
+  static readonly skull = ''
+  static readonly quickValues = ''
 }
