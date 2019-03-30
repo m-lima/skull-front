@@ -1,4 +1,4 @@
-export class NotOkException {
+export class NotOk {
   status: number
 
   constructor(status: number) {

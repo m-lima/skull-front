@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import QuickValue from '../model/QuickValue'
+import IQuickValue from '../model/IQuickValue'
 
 interface IProps {
-  quickValue: QuickValue
+  quickValue: IQuickValue
 }
 
 export default class QuickValueButton extends Component<IProps> {

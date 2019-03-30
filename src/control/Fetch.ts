@@ -1,42 +1,14 @@
-import Config from "../Config"
-import QuickValue from "../model/QuickValue"
-import { NotOkException } from "../model/Exception"
+import * as Config from "../model/Config.dev"
+import * as Exception from "../model/Exception"
+import IQuickValue from "../model/IQuickValue"
 
 export default class Fetch {
-  static readonly mockQuickValues: QuickValue[] = [
-    {
-      type: 'bla',
-      icon: 'fas fa-beer',
-      amount: 1,
-    },
-    {
-      type: 'ble',
-      icon: 'fas fa-beer',
-      amount: 1.5,
-    },
-    {
-      type: 'bli',
-      icon: 'fas fa-beer',
-      amount: 0.5,
-    },
-    {
-      type: 'blo',
-      icon: 'fas fa-beer',
-      amount: 0,
-    },
-    {
-      type: 'blu',
-      icon: 'fas fa-beer',
-      amount: 2,
-    },
-  ]
-
-  static quickValues(): Promise<QuickValue[]> {
-    if (Config.mockQuickValues) {
-      return Promise.resolve(Fetch.mockQuickValues)
+  static quickValues(): Promise<IQuickValue[]> {
+    if (Config.Mock.values) {
+      return Promise.resolve(Config.Mock.data)
     }
 
-    return fetch('https://api.mflima.com/skull/quick', {
+    return fetch(Config.Endpoint.quickValues, {
       method: 'GET',
       redirect: "follow",
       credentials: 'include',
@@ -45,7 +17,7 @@ export default class Fetch {
         if (r.ok) {
           return r
         } else {
-          throw new NotOkException(r.status)
+          throw new Exception.NotOk(r.status)
         }
       })
       .then(r => r.json())

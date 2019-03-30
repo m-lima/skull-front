@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import './App.css'
-import logo from '../res/img/logo.svg'
 import QuickValueButton from './QuickValueButton'
-import QuickValue from '../model/QuickValue'
+import IQuickValue from '../model/IQuickValue'
 import Fetch from '../control/Fetch'
-import { NotOkException } from '../model/Exception'
+import * as Exception from '../model/Exception'
+import HTTPStatusCode from '../model/HTTPStatusCode';
+import Access from '../control/Access';
 
 interface IState {
-  quickValues: QuickValue[]
+  quickValues: IQuickValue[]
 }
 
 interface IProps { }
@@ -21,10 +22,10 @@ class App extends Component<IProps, IState> {
     Fetch.quickValues()
       .then(q => this.setState({ quickValues: q }))
       .catch(ex => {
-        if (ex instanceof NotOkException) {
+        if (ex instanceof Exception.NotOk) {
           let status = ex.status
-          if (status == 401) {
-            window.location.href = 'https://api.mflima.com/login' + '?redirect=' + window.location
+          if (status == HTTPStatusCode.UNAUTHORIZED) {
+            Access.login()
           } else {
             console.error('HTTP error status: ' + status)
           }
@@ -36,8 +37,8 @@ class App extends Component<IProps, IState> {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
+      <div className="Skull">
+        <header className="Skull-header">
           {this.state.quickValues && this.state.quickValues.map((q, i) => <QuickValueButton quickValue={q} key={i} />)}
         </header>
       </div>
