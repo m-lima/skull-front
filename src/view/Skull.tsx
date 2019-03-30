@@ -100,7 +100,7 @@ export default class Skull extends Component<{}, IState> {
             {
               this.state.showConfirmation && <Confirmation
                 skullValues={this.state.skullValues}
-                selected={this.state.selected as unknown as ISkullValue}
+                selected={this.state.selected}
                 onUpdate={this.update.bind(this)}
                 onAccept={this.accept.bind(this)}
                 onCancel={this.cancel.bind(this)}
