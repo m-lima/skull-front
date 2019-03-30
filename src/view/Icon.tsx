@@ -8,3 +8,5 @@ interface IProps {
 export const Icon = (props: IProps) => {
   return <i className={props.icon} {...props} />
 }
+
+export default Icon

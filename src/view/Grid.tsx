@@ -1,18 +1,18 @@
 import React, { Component } from 'react'
 import './css/Grid.css'
 
-import ISkullValue from '../model/ISkullValue'
-import { Icon } from './Icon'
+import ISkullValue, { IQuickValue } from '../model/ISkullValue'
+import Icon from './Icon'
 
 interface IProps {
-  skullValues: ISkullValue[]
+  skullValues: IQuickValue[]
   confirmAction: (value: ISkullValue) => void
 }
 
 export default class Grid extends Component<IProps> {
   types: string[] = []
 
-  buildSkullButton(skullValue: ISkullValue, index?: number) {
+  buildSkullButton(skullValue: IQuickValue, index?: number) {
     return (
       <div
         key={index}
@@ -29,7 +29,6 @@ export default class Grid extends Component<IProps> {
     return (
       <div className='Skull-grid' >
         {this.props.skullValues && this.props.skullValues.map((q, i) => this.buildSkullButton(q, i))}
-        {this.buildSkullButton({ type: 'custom', amount: 1, icon: 'fas fa-question-circle'})}
       </div>
     )
   }

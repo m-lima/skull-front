@@ -1,10 +1,10 @@
-import ISkullValue from "./ISkullValue"
+import ISkullValue, { IQuickValue } from "./ISkullValue"
 
 export class Mock {
   static readonly user = true
   static readonly values = true
 
-  static readonly data: ISkullValue[] = [
+  static readonly data: IQuickValue[] = [
     {
       type: 'bla',
       icon: 'fas fa-vial',

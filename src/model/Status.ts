@@ -1,4 +1,4 @@
-export enum FetchStatus {
+export enum Status {
   LOADING,
   OK,
   EMPTY,
@@ -7,4 +7,4 @@ export enum FetchStatus {
   ERROR,
 }
 
-export default FetchStatus
+export default Status

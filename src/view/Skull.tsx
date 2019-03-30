@@ -1,35 +1,43 @@
 import React, { Component } from 'react'
 import './css/Skull.css'
 
-import * as Exception from '../model/Exception'
 import * as Message from './Message'
 import Access from '../control/Access'
 import Confirmation from './Confirmation'
 import Fetch from '../control/Fetch'
-import FetchStatus from '../model/FetchStatus'
 import Footer from './Footer'
-import ISkullValue from '../model/ISkullValue'
 import Grid from './Grid'
+import ISkullValue, { IQuickValue } from '../model/ISkullValue'
+import Push from '../control/Push'
+import Status from '../model/Status'
+import { ApiException } from "../model/Exception"
 
-interface IState {
-  skullValues: ISkullValue[]
-  status: FetchStatus
-  selected?: ISkullValue
+const dummySkullValue: ISkullValue = {
+  type: '',
+  amount: 0,
 }
 
-class Skull extends Component<{}, IState> {
+interface IState {
+  skullValues: IQuickValue[]
+  status: Status
+  selected: ISkullValue
+  showConfirmation: boolean
+}
+
+export default class Skull extends Component<{}, IState> {
   state = {
     skullValues: [],
-    status: FetchStatus.LOADING,
-    selected: undefined,
+    status: Status.LOADING,
+    selected: dummySkullValue,
+    showConfirmation: false,
   }
 
   componentDidMount() {
     Fetch.quickValues()
-      .then(q => this.setState({ skullValues: q, status: (q.length > 0 ? FetchStatus.OK : FetchStatus.EMPTY) }))
+      .then(q => this.setState({ skullValues: q, status: (q.length > 0 ? Status.OK : Status.EMPTY) }))
       .catch(ex => {
-        if (ex instanceof Exception.FetchException) {
-          if (ex.status == FetchStatus.UNAUTHORIZED) {
+        if (ex instanceof ApiException) {
+          if (ex.status == Status.UNAUTHORIZED) {
             Access.login()
             return
           }
@@ -37,44 +45,73 @@ class Skull extends Component<{}, IState> {
           this.setState({ skullValues: [], status: ex.status })
         } else {
           console.error(ex)
-          this.setState({ skullValues: [], status: FetchStatus.ERROR })
+          this.setState({ skullValues: [], status: Status.ERROR })
         }
       })
   }
 
   confirmValue(value: ISkullValue) {
-    this.setState({ selected: value })
+    this.setState({ showConfirmation: true, selected: { type: value.type, amount: value.amount } })
+  }
+
+  update(value: string | number) {
+    if (typeof value === "string") {
+      this.state.selected.type = value
+      this.setState({ selected: this.state.selected })
+    } else {
+      this.state.selected.amount = value
+      this.setState({ selected: this.state.selected })
+    }
+  }
+
+  accept() {
+    this.setState({ status: Status.LOADING, showConfirmation: false })
+    Push.skullValue(this.state.selected)
+      .then(() => this.setState({  status: Status.OK }))
+      .catch(ex => {
+        if (ex instanceof ApiException) {
+          if (ex.status == Status.UNAUTHORIZED) {
+            Access.login()
+            return
+          }
+          console.error('HTTP error status: ' + ex.httpStatus)
+          this.setState({ skullValues: [], status: ex.status })
+        } else {
+          console.error(ex)
+          this.setState({ skullValues: [], status: Status.ERROR })
+        }
+      })
   }
 
   cancel() {
-    this.setState({ selected: undefined })
+    this.setState({ showConfirmation: false })
   }
 
   render() {
     switch (this.state.status) {
-      case FetchStatus.LOADING:
+      case Status.LOADING:
         return <Message.Loading />
-      case FetchStatus.OK:
-      case FetchStatus.EMPTY:
+      case Status.OK:
+      case Status.EMPTY:
         return (
           <div className='Skull'>
             <Grid skullValues={this.state.skullValues} confirmAction={this.confirmValue.bind(this)} />
             <Footer />
             {
-              this.state.selected && <Confirmation
+              this.state.showConfirmation && <Confirmation
                 skullValues={this.state.skullValues}
                 selected={this.state.selected as unknown as ISkullValue}
+                onUpdate={this.update.bind(this)}
+                onAccept={this.accept.bind(this)}
                 onCancel={this.cancel.bind(this)}
               />
             }
           </div>
         )
-      case FetchStatus.UNAUTHORIZED:
+      case Status.UNAUTHORIZED:
         return <Message.Unauthorized />
       default:
         return <Message.Error />
     }
   }
 }
-
-export default Skull
