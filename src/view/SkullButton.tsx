@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import './css/SkullButton.css'
 
-import IQuickValue from '../model/IQuickValue'
+import ISkullValue from '../model/ISkullValue'
 import { Icon } from './Icon'
 
-export default class SkullButton extends Component<IQuickValue> {
+export default class SkullButton extends Component<ISkullValue> {
   render() {
     return (
       <div className='Skull-button' title={this.props.type + ': ' + this.props.amount}>

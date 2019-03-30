@@ -2,10 +2,12 @@ import React, { Component } from 'react'
 import './css/Confirmation.css'
 
 import { Icon } from './Icon'
-import IQuickValue from '../model/IQuickValue'
+import IQuickValue from '../model/ISkullValue'
 
 interface IProps {
-  quickValue: IQuickValue
+  type: string
+  amount: number
+  visible: boolean
 }
 
 export default class Confirmation extends Component {

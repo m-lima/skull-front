@@ -1,9 +1,9 @@
 import * as Config from "../model/Config"
 import * as Exception from "../model/Exception"
-import IQuickValue from "../model/IQuickValue"
+import ISkullValue from "../model/ISkullValue"
 
 export default class Fetch {
-  static quickValues(): Promise<IQuickValue[]> {
+  static quickValues(): Promise<ISkullValue[]> {
     if (Config.Mock.values) {
       return Promise.resolve(Config.Mock.data)
     }
