@@ -12,22 +12,22 @@ export class Mock {
     },
     {
       type: 'ble',
-      icon: 'fas fa-vial',
+      icon: 'fas fa-beer',
       amount: 1.5,
     },
     {
       type: 'bli',
-      icon: 'fas fa-vial',
+      icon: 'fas fa-coffee',
       amount: 0.5,
     },
     {
       type: 'blo',
-      icon: 'fas fa-vial',
+      icon: 'fas fa-receipt',
       amount: 0,
     },
     {
       type: 'blu',
-      icon: 'fas fa-vial',
+      icon: 'fas fa-baby',
       amount: 2,
     },
   ]

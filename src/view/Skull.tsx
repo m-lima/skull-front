@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import './App.css'
-import QuickValueButton from './QuickValueButton'
+import './Skull.css'
+import SkullButton from './SkullButton'
 import IQuickValue from '../model/IQuickValue'
 import Fetch from '../control/Fetch'
 import * as Exception from '../model/Exception'
@@ -37,10 +37,10 @@ class App extends Component<IProps, IState> {
 
   render() {
     return (
-      <div className="Skull">
-        <header className="Skull-header">
-          {this.state.quickValues && this.state.quickValues.map((q, i) => <QuickValueButton quickValue={q} key={i} />)}
-        </header>
+      <div className='Skull'>
+        <div className='Skull-grid' >
+          {this.state.quickValues && this.state.quickValues.map((q, i) => <SkullButton {...q} key={i} />)}
+        </div>
       </div>
     )
   }
