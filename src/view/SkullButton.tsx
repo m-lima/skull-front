@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './SkullButton.css'
+import './css/SkullButton.css'
 import IQuickValue from '../model/IQuickValue'
 
 export default class SkullButton extends Component<IQuickValue> {

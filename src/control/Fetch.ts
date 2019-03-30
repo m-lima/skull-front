@@ -1,4 +1,4 @@
-import * as Config from "../model/Config.dev"
+import * as Config from "../model/Config"
 import * as Exception from "../model/Exception"
 import IQuickValue from "../model/IQuickValue"
 
@@ -17,7 +17,7 @@ export default class Fetch {
         if (r.ok) {
           return r
         } else {
-          throw new Exception.NotOk(r.status)
+          throw new Exception.FetchException(r.status)
         }
       })
       .then(r => r.json())

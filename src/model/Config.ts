@@ -1,4 +1,4 @@
-import IQuickValue from "./IQuickValue";
+import IQuickValue from "./IQuickValue"
 
 export class Mock {
   static readonly user = true

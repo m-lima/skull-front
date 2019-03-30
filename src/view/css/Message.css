@@ -1,0 +1,34 @@
+.Message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-size: calc(20px + 3vmin);
+}
+
+.Message > .fas {
+  font-size: 30vmin;
+  padding-bottom: 10px;
+}
+
+.Message #Message-loading-spinner {
+  animation-name: Message-loading-spin;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes Message-loading-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

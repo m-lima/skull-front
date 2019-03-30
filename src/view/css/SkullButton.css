@@ -1,17 +1,17 @@
 .Skull-button {
-  color: #cccccc;
   font-size: 10em;
-  background-color: #383e4a;
   display: flex;
   cursor: pointer;
+  
+  background-color: #383e4a;
 }
 
 .Skull-button:hover{
+  color: var(--font-color-accent);
   background-color: #4f5768;
-  color: #ffffff;
 }
 
 .Skull-button:active{
+  color: var(--font-color-accent);
   background-color: #5b667d;
-  color: #ffffff;
 }
