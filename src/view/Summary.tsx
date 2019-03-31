@@ -22,6 +22,7 @@ export default class Summary extends Component<{}, IState> {
 
   constructor(props: {}) {
     super(props)
+    this.handleException = this.handleException.bind(this)
     this.renderRow = this.renderRow.bind(this)
     this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
