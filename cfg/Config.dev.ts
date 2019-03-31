@@ -1,3 +1,4 @@
+import Environment from "./Environment"
 import ISkullValue, { IQuickValue } from "./ISkullValue"
 
 export class Mock {
@@ -37,3 +38,5 @@ export class Endpoint {
   static readonly skull = ''
   static readonly quickValues = ''
 }
+
+export const environment = Environment.DEVELOPMENT

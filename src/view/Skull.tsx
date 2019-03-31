@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import './css/Skull.css'
 
+import * as Config from '../model/Config'
 import * as Message from './Message'
 import Access from '../control/Access'
 import Confirmation from './Confirmation'
+import Environment from '../model/Environment'
 import Fetch from '../control/Fetch'
 import Footer from './Footer'
 import Grid from './Grid'
@@ -15,6 +17,14 @@ import { ApiException } from "../model/Exception"
 const dummySkullValue: ISkullValue = {
   type: '',
   amount: 0,
+}
+
+const Banner = (props: { text: string }) => {
+  return (
+    <div className='Banner-text'>
+      {props.text}
+    </div>
+  )
 }
 
 interface IState {
@@ -94,7 +104,7 @@ export default class Skull extends Component<{}, IState> {
     this.setState({ showConfirmation: false })
   }
 
-  render() {
+  renderMain() {
     switch (this.state.status) {
       case Status.LOADING:
         return <Message.Loading />
@@ -120,5 +130,18 @@ export default class Skull extends Component<{}, IState> {
       default:
         return <Message.Error />
     }
+  }
+
+  render() {
+    if (Config.environment == Environment.DEVELOPMENT) {
+      return (
+        <div className='Banner-overlay'>
+          <Banner text='Development' />
+          {this.renderMain()}
+        </div>
+      )
+    }
+
+    return this.renderMain()
   }
 }
