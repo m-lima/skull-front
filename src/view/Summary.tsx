@@ -4,15 +4,15 @@ import './css/Summary.css'
 import * as Message from './Message'
 import Access from '../control/Access'
 import Fetch from '../control/Fetch'
+import IQueryState from '../model/IQueryState'
 import Icon from './Icon'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
 
-interface IState {
+interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
   icons: Map<string, string>
-  status: Status
 }
 
 export default class Summary extends Component<{}, IState> {

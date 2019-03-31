@@ -5,6 +5,7 @@ import ISkullValue from '../model/ISkullValue'
 import Icon from './Icon'
 
 interface IProps {
+  display: boolean
   skullValues: ISkullValue[]
   selected: ISkullValue
   onUpdate: (amount: string | number) => void
@@ -12,17 +13,27 @@ interface IProps {
   onCancel: () => void
 }
 
+interface IState {
+  selected: ISkullValue
+}
+
 export default class Confirmation extends Component<IProps> {
+  buildComboBox() {
+    return (
+      <select value={this.props.selected.type} onChange={e => this.props.onUpdate(e.target.value)}>
+        {this.props.skullValues.map((v, i) => <option key={i} value={v.type}>{v.type}</option>)}
+      </select>
+    )
+  }
+
   render() {
     return (
-      <div className='Confirmation'>
+      <div className='Confirmation' style={{ display: (this.props.display ? 'block' : 'none') }}>
         <div className='Confirmation-container'>
           <div className='Confirmation-inputs'>
             <div className='Confirmation-input'>
               <b>Type</b>
-              <select value={this.props.selected.type} onChange={e => this.props.onUpdate(e.target.value)}>
-                {this.props.skullValues.map((v, i) => <option key={i} value={v.type}>{v.type}</option>)}
-              </select>
+              {this.buildComboBox()}
             </div>
             <div className='Confirmation-input'>
               <b>Amount</b>
