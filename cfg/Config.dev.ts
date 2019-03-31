@@ -39,4 +39,9 @@ export class Endpoint {
   static readonly quickValues = ''
 }
 
+export class Path {
+  static readonly summary = '/summary'
+  static readonly chart = '/chart'
+}
+
 export const environment = Environment.DEVELOPMENT

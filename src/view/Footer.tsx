@@ -12,7 +12,10 @@ export default class Footer extends Component {
           <a href={Config.Endpoint.skull} title='Download JSON'>
             <Icon icon='fas fa-file-download'/>
           </a>
-          <a href='/chart' title='Go to chart'>
+          <a href={Config.Path.summary} title='Summary'>
+            <Icon icon='fas fa-th-list'/>
+          </a>
+          <a href={Config.Path.chart} title='Chart'>
             <Icon icon='fas fa-chart-line'/>
           </a>
         </div>
