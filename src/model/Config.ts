@@ -35,6 +35,7 @@ static readonly data: string = JSON.stringify([
 
 export class Endpoint {
   static readonly login = ''
+  static readonly logout = ''
   static readonly skull = ''
   static readonly quickValues = ''
 }

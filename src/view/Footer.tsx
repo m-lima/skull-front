@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './css/Footer.css'
 
 import * as Config from '../model/Config'
-import { Icon } from './Icon'
+import Icon from './Icon'
 
 export default class Footer extends Component {
   render() {
