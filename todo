@@ -1,4 +1,3 @@
-[ ]  Allow reload on failure
 [ ]  Add navigation (top?)
 [ ]  Add summary
 [ ]  - List all entry
@@ -9,3 +8,4 @@
 [ ]? Download file (move to summary?)
 [ ]? Google docs
 [x]! Add development banner when running development
+[x]  Allow reload on failure
