@@ -1,0 +1,37 @@
+.Summary {
+  width: 100%;
+  border-collapse: collapse;
+
+  border-color: var(--background-color);
+  border-style: solid;
+  border-width: 20px;
+
+  margin: auto;
+  padding-bottom: var(--footer-size);
+}
+
+.Summary th {
+  padding: 12px;
+
+  text-align: left;
+  font-weight: bolder;
+
+  background-color: var(--shade-0);
+}
+
+.Summary td {
+  padding: 8px;
+}
+
+.Summary tr {
+  background-color: var(--shade-1);
+}
+
+.Summary tr:nth-child(even) {
+  background-color: var(--shade-2);
+}
+
+.Summary tr:hover {
+  background-color: var(--shade-3);
+}
+

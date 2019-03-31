@@ -44,7 +44,8 @@ export default class Summary extends Component<{}, IState> {
         return <Message.Loading />
       case Status.OK:
         return (
-          <table>
+          <table className='Summary'>
+            <tbody>
             <tr>
               <th>Type</th>
               <th>Amount</th>
@@ -54,9 +55,10 @@ export default class Summary extends Component<{}, IState> {
                                         <tr key={i}>
                                           <td>{v.type}</td>
                                           <td>{v.amount}</td>
-                                          <td>{new Date(v.millis).toUTCString()}</td>
+                                          <td>{new Date(v.millis).toLocaleString()}</td>
                                         </tr>
                                        )}
+                                     </tbody>
                                      </table>
       )
       case Status.EMPTY:
