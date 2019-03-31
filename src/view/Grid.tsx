@@ -4,12 +4,12 @@ import './css/Confirmation.css'
 
 import * as Message from './Message'
 import Access from '../control/Access'
-import Confirmation from './Confirmation'
 import Fetch from '../control/Fetch'
 import IQueryState from '../model/IQueryState'
 import ISkullValue, { IQuickValue } from '../model/ISkullValue'
 import Icon from './Icon'
 import Push from '../control/Push'
+import RichConfirmation from './RichConfirmation'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 
@@ -101,9 +101,9 @@ export default class Grid extends Component<{}, IState> {
             <div className='Grid' >
               {this.state.skullValues && this.state.skullValues.map((q, i) => this.buildSkullButton(q, i))}
             </div>
-            {this.state.selected && <Confirmation
+            {this.state.selected && <RichConfirmation
               types={this.state.skullValues.map(v => v.type)}
-              selected={this.state.selected as ISkullValue}
+              value={this.state.selected as ISkullValue}
               onAccept={this.accept}
               onCancel={this.cancel}
             />}

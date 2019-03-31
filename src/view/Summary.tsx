@@ -1,18 +1,21 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import './css/Summary.css'
 
 import * as Message from './Message'
 import Access from '../control/Access'
+import Confirmation from './Confirmation'
 import Fetch from '../control/Fetch'
 import IQueryState from '../model/IQueryState'
 import Icon from './Icon'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
+import Push from '../control/Push'
 
 interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
   icons: Map<string, string>
+  selected?: IRegisteredValue
 }
 
 export default class Summary extends Component<{}, IState> {
@@ -23,7 +26,7 @@ export default class Summary extends Component<{}, IState> {
   }
 
   componentDidMount() {
-    this.setState({ skullValues: [], status: Status.LOADING })
+    this.setState({ skullValues: [], status: Status.LOADING, selected: undefined })
     Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
       .then(r => this.setState({
         skullValues: r[0],
@@ -31,7 +34,8 @@ export default class Summary extends Component<{}, IState> {
         icons: r[1].reduce((m, v) => {
           m.set(v.type, v.icon)
           return m
-        }, new Map<string, string>())
+        }, new Map<string, string>()),
+        selected: undefined,
       }))
       .catch(ex => {
         if (ex instanceof ApiException) {
@@ -40,10 +44,10 @@ export default class Summary extends Component<{}, IState> {
             return
           }
           console.error('HTTP error status: ' + ex.httpStatus)
-          this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>() })
+          this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>(), selected: undefined })
         } else {
           console.error(ex)
-          this.setState({ skullValues: [], status: Status.ERROR , icons: new Map<string, string>() })
+          this.setState({ skullValues: [], status: Status.ERROR , icons: new Map<string, string>(), selected: undefined })
         }
       })
   }
@@ -51,12 +55,15 @@ export default class Summary extends Component<{}, IState> {
   renderRow(value: IRegisteredValue, index: number) {
     return (
       <tr key={index}>
-        <td id='icon'>
+        <td>
           {this.state.icons.has(value.type) && <Icon icon={this.state.icons.get(value.type) as string} />}
         </td>
         <td>{value.type}</td>
         <td>{value.amount}</td>
         <td>{new Date(value.millis).toLocaleString()}</td>
+        <td id='delete' onClick={() => this.setState({ selected: value })}>
+          <Icon icon='fas fa-trash-alt' />
+        </td>
       </tr>
     )
   }
@@ -71,17 +78,26 @@ export default class Summary extends Component<{}, IState> {
         return <Message.Loading />
       case Status.OK:
         return (
-          <table className='Summary'>
-            <tbody>
-              <tr>
-                <th id='icon'></th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Time</th>
-              </tr>
-              {this.state.skullValues.map(this.renderRow)}
-            </tbody>
-          </table>
+          <Fragment>
+            <table className='Summary'>
+              <tbody>
+                <tr>
+                  <th id='icon'></th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Time</th>
+                  <th id='icon'></th>
+                </tr>
+                {this.state.skullValues.map(this.renderRow)}
+              </tbody>
+            </table>
+            {this.state.selected && <Confirmation
+              types={this.state.skullValues.map(v => v.type)}
+              value={this.state.selected as IRegisteredValue}
+              onAccept={() => Push.deletion(this.state.selected as IRegisteredValue)}
+              onCancel={() => this.setState({ selected: undefined })}
+            />}
+          </Fragment>
       )
       case Status.EMPTY:
         return <Message.Empty />

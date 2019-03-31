@@ -25,6 +25,11 @@
   text-align: center;
 }
 
+.Summary #delete {
+  color: #d55959;
+  cursor: pointer;
+}
+
 .Summary tr {
   background-color: var(--shade-1);
 }

@@ -1,65 +1,31 @@
 import React, { Component, Fragment } from 'react'
 import './css/Confirmation.css'
 
-import ISkullValue from '../model/ISkullValue'
 import Icon from './Icon'
 
-interface IProps {
-  types: string[]
-  selected: ISkullValue
-  onAccept: (skullValue: ISkullValue) => void
+export interface IProps<T = {}> {
+  value: T
+  onAccept: (value: T) => void
   onCancel: () => void
 }
 
-interface IState {
-  selected: ISkullValue
+export interface IState<T = {}> {
+  value: T
 }
 
-export default class Confirmation extends Component<IProps, IState> {
-  state = {
-    selected: this.props.selected,
-  }
-
-  buildComboBox() {
-    return (
-      <select
-        value={this.state.selected.type}
-        onChange={e => {
-          this.state.selected.type = e.target.value
-          this.setState({ selected: this.state.selected })
-        }}
-      >
-        {this.props.types.map((v, i) => <option key={i} value={v}>{v}</option>)}
-      </select>
-    )
+export default class Confirmation<T, P extends IProps<T> = IProps<T>, S extends IState<T> = IState<T>> extends Component<P, S> {
+  
+  renderInputs() {
+    return <Fragment></Fragment>
   }
 
   render() {
     return (
       <div className='Confirmation'>
         <div className='Confirmation-container'>
-          <div className='Confirmation-inputs'>
-            <div className='Confirmation-input'>
-              <b>Type</b>
-              {this.buildComboBox()}
-            </div>
-            <div className='Confirmation-input'>
-              <b>Amount</b>
-              <input
-                id='amount'
-                type='number'
-                min={0}
-                step={0.1}
-                value={String(this.state.selected.amount)}
-                onChange={e => {
-                  this.state.selected.amount = Number(e.target.value)
-                  this.setState({ selected: this.state.selected })
-                }}
-              />
-            </div>
-          </div>
+          {this.renderInputs()}
           <div className='Confirmation-buttons'>
-            <div id='Accept' title='Accept' onClick={() => this.props.onAccept(this.state.selected)}>
+            <div id='Accept' title='Accept' onClick={() => this.props.onAccept(this.state.value)}>
               <Icon icon='fas fa-check' />
             </div>
             <div id='Cancel' title='Cancel' onClick={this.props.onCancel}>
