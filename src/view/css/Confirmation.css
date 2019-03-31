@@ -48,3 +48,19 @@
 .Confirmation-buttons #Cancel {
   background-color: darkred;
 }
+
+.Confirmation-buttons #Accept:hover {
+  background-color: green;
+}
+
+.Confirmation-buttons #Cancel:hover {
+  background-color: red;
+}
+
+.Confirmation-buttons #Accept:active {
+  background-color: lightgreen;
+}
+
+.Confirmation-buttons #Cancel:active {
+  background-color: tomato;
+}

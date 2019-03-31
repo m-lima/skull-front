@@ -23,7 +23,6 @@ export default class Push {
   }
 
   static deletion(value: IRegisteredValue): Promise<boolean> {
-    console.log('DELETE', value)
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }

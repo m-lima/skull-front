@@ -23,6 +23,22 @@ export default class Summary extends Component<{}, IState> {
   constructor(props: {}) {
     super(props)
     this.renderRow = this.renderRow.bind(this)
+    this.accept = this.accept.bind(this)
+    this.cancel = this.cancel.bind(this)
+  }
+
+  handleException(ex: any) {
+    if (ex instanceof ApiException) {
+      if (ex.status == Status.UNAUTHORIZED) {
+        Access.login()
+        return
+      }
+      console.error('HTTP error status: ' + ex.httpStatus)
+      this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>(), selected: undefined })
+    } else {
+      console.error(ex)
+      this.setState({ skullValues: [], status: Status.ERROR, icons: new Map<string, string>(), selected: undefined })
+    }
   }
 
   componentDidMount() {
@@ -37,19 +53,18 @@ export default class Summary extends Component<{}, IState> {
         }, new Map<string, string>()),
         selected: undefined,
       }))
-      .catch(ex => {
-        if (ex instanceof ApiException) {
-          if (ex.status == Status.UNAUTHORIZED) {
-            Access.login()
-            return
-          }
-          console.error('HTTP error status: ' + ex.httpStatus)
-          this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>(), selected: undefined })
-        } else {
-          console.error(ex)
-          this.setState({ skullValues: [], status: Status.ERROR , icons: new Map<string, string>(), selected: undefined })
-        }
-      })
+      .catch(this.handleException)
+  }
+
+  accept() {
+    this.setState({ status: Status.LOADING })
+    Push.deletion(this.state.selected as IRegisteredValue)
+      .then(() => this.setState({ status: Status.OK, selected: undefined }))
+      .catch(this.handleException)
+  }
+
+  cancel() {
+    this.setState({ selected: undefined })
   }
 
   renderRow(value: IRegisteredValue, index: number) {
@@ -91,12 +106,12 @@ export default class Summary extends Component<{}, IState> {
                 {this.state.skullValues.map(this.renderRow)}
               </tbody>
             </table>
-            {this.state.selected && <Confirmation
+            <Confirmation
               types={this.state.skullValues.map(v => v.type)}
-              value={this.state.selected as IRegisteredValue}
-              onAccept={() => Push.deletion(this.state.selected as IRegisteredValue)}
-              onCancel={() => this.setState({ selected: undefined })}
-            />}
+              value={this.state.selected}
+              onAccept={this.accept}
+              onCancel={this.cancel}
+            />
           </Fragment>
       )
       case Status.EMPTY:

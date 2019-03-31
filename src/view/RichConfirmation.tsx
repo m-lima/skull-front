@@ -1,27 +1,23 @@
 import React, { Component, Fragment } from 'react'
-import Confirmation, { IProps, IState } from './Confirmation'
+import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
 import ISkullValue, { IQuickValue } from '../model/ISkullValue'
 
 interface IRichProps extends IProps<ISkullValue> {
   types: string[]
-  onAccept: (skullValue: ISkullValue) => void
-  onCancel: () => void
+  onChange: (value: ISkullValue) => void
 }
 
 export default class RichConfirmation extends Confirmation<ISkullValue, IRichProps> {
-  state = {
-    value: this.props.value,
-  }
 
   buildComboBox() {
     return (
       <select
-        value={this.state.value.type}
+        value={this.getValue().type}
         onChange={e => {
-          this.state.value.type = e.target.value
-          this.setState({ value: this.state.value })
+          this.getValue().type = e.target.value
+          this.props.onChange(this.getValue())
         }}
       >
         {this.props.types.map((v, i) => <option key={i} value={v}>{v}</option>)}
@@ -43,10 +39,10 @@ export default class RichConfirmation extends Confirmation<ISkullValue, IRichPro
             type='number'
             min={0}
             step={0.1}
-            value={String(this.state.value.amount)}
+            value={String(this.getValue().amount)}
             onChange={e => {
-              this.state.value.amount = Number(e.target.value)
-              this.setState({ value: this.state.value })
+              this.getValue().amount = Number(e.target.value)
+              this.props.onChange(this.getValue())
             }}
           />
         </div>

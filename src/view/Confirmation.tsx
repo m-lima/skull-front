@@ -3,37 +3,39 @@ import './css/Confirmation.css'
 
 import Icon from './Icon'
 
-export interface IProps<T = {}> {
-  value: T
-  onAccept: (value: T) => void
+export interface IProps<T> {
+  value?: T
+  onAccept: () => void
   onCancel: () => void
 }
 
-export interface IState<T = {}> {
-  value: T
-}
+export default class Confirmation<T, P extends IProps<T> = IProps<T>> extends Component<P> {
 
-export default class Confirmation<T, P extends IProps<T> = IProps<T>, S extends IState<T> = IState<T>> extends Component<P, S> {
-  
+  protected getValue(): T {
+    return this.props.value as T
+  }
+
   renderInputs() {
     return <Fragment></Fragment>
   }
 
   render() {
     return (
-      <div className='Confirmation'>
-        <div className='Confirmation-container'>
-          {this.renderInputs()}
-          <div className='Confirmation-buttons'>
-            <div id='Accept' title='Accept' onClick={() => this.props.onAccept(this.state.value)}>
-              <Icon icon='fas fa-check' />
-            </div>
-            <div id='Cancel' title='Cancel' onClick={this.props.onCancel}>
-              <Icon icon='fas fa-times' />
+      <Fragment>
+        {this.props.value && <div className='Confirmation'>
+          <div className='Confirmation-container'>
+            {this.renderInputs()}
+            <div className='Confirmation-buttons'>
+              <div id='Accept' title='Accept' onClick={this.props.onAccept}>
+                <Icon icon='fas fa-check' />
+              </div>
+              <div id='Cancel' title='Cancel' onClick={this.props.onCancel}>
+                <Icon icon='fas fa-times' />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div>}
+      </Fragment>
       )
     }
   }
