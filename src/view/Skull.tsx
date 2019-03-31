@@ -24,7 +24,10 @@ export default class Skull extends Component {
   render() {
     return (
       <div className='Skull'>
-        {(Config.environment == Environment.DEVELOPMENT) && <Banner text='Development' />}
+        {
+          // @ts-ignore
+          (Config.environment == Environment.DEVELOPMENT) && <Banner text='Development' />
+        }
         <Router>
           <div className='Skull-container'>
             <Switch>
