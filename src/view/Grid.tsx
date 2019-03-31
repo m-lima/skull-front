@@ -15,21 +15,21 @@ import { ApiException } from '../model/Exception'
 
 interface IState extends IQueryState {
   skullValues: IQuickValue[]
-  selected: ISkullValue
   showConfirmation: boolean
 }
 
 export default class Grid extends Component<{}, IState> {
+  confirmationBox: React.RefObject<Confirmation>
 
   constructor(props: {}) {
     super(props)
-    this.update = this.update.bind(this)
     this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
+    this.confirmationBox = React.createRef()
   }
 
   componentDidMount() {
-    this.setState({ skullValues: [], status: Status.LOADING, showConfirmation: false, selected: { type: 'custom', amount: 0 } })
+    this.setState({ skullValues: [], status: Status.LOADING, showConfirmation: false  })
     Fetch.quickValues()
       .then(q => this.setState({ skullValues: q, status: (q.length > 0 ? Status.OK : Status.EMPTY) }))
       .catch(ex => {
@@ -48,22 +48,14 @@ export default class Grid extends Component<{}, IState> {
   }
 
   showConfirmation(skullValue: ISkullValue) {
-    this.setState({ showConfirmation: true, selected: { type: skullValue.type, amount: skullValue.amount } })
+    (this.confirmationBox.current as Confirmation).setState({ selected: { type: skullValue.type, amount: skullValue.amount } })
+    this.setState({ showConfirmation: true })
   }
 
-  update(value: string | number) {
-    if (typeof value === 'string') {
-      this.state.selected.type = value
-      this.setState({ selected: this.state.selected })
-    } else {
-      this.state.selected.amount = value
-      this.setState({ selected: this.state.selected })
-    }
-  }
-
-  accept() {
+  accept(skullValue: ISkullValue) {
+    console.log(skullValue.type, skullValue.amount)
     this.setState({ status: Status.LOADING, showConfirmation: false })
-    Push.skullValue(this.state.selected)
+    Push.skullValue(skullValue)
       .then(() => this.setState({  status: Status.OK }))
       .catch(ex => {
         if (ex instanceof ApiException) {
@@ -72,10 +64,10 @@ export default class Grid extends Component<{}, IState> {
             return
           }
           console.error('HTTP error status: ' + ex.httpStatus)
-          this.setState({ skullValues: [], status: ex.status })
+          this.setState({ skullValues: [], status: ex.status, showConfirmation: false })
         } else {
           console.error(ex)
-          this.setState({ skullValues: [], status: Status.ERROR })
+          this.setState({ skullValues: [], status: Status.ERROR, showConfirmation: false })
         }
       })
   }
@@ -97,42 +89,6 @@ export default class Grid extends Component<{}, IState> {
     )
   }
 
-  // renderConfirmation() {
-  //   return(
-  //     <div className='Confirmation'>
-  //       <div className='Confirmation-container'>
-  //         <div className='Confirmation-inputs'>
-  //           <div className='Confirmation-input'>
-  //             <b>Type</b>
-  //             <select value={this.state.selected.type} onChange={e => this.update(e.target.value)}>
-  //               {this.state.skullValues.map((v, i) => <option key={i} value={v.type}>{v.type}</option>)}
-  //             </select>
-  //           </div>
-  //           <div className='Confirmation-input'>
-  //             <b>Amount</b>
-  //             <input
-  //               id='amount'
-  //               type='number'
-  //               min={0}
-  //               step={0.1}
-  //               value={String(this.state.selected.amount)}
-  //               onChange={e => this.update(Number(e.target.value))}
-  //             />
-  //           </div>
-  //         </div>
-  //         <div className='Confirmation-buttons'>
-  //           <div id='Accept' title='Accept' onClick={this.accept}>
-  //             <Icon icon='fas fa-check' />
-  //           </div>
-  //           <div id='Cancel' title='Cancel' onClick={this.cancel}>
-  //             <Icon icon='fas fa-times' />
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
   render() {
     if (!this.state) {
       return <Message.Loading />
@@ -148,8 +104,16 @@ export default class Grid extends Component<{}, IState> {
             <div className='Grid' >
               {this.state.skullValues && this.state.skullValues.map((q, i) => this.buildSkullButton(q, i))}
             </div>
+            {/* {this.state.showConfirmation && <Confirmation ref={this.confirmationBox} types={this.state.skullValues.map(v => v.type)} onAccept={this.accept} onCancel={this.cancel} />} */}
+            <Confirmation
+              ref={this.confirmationBox}
+              visible={this.state.showConfirmation}
+              types={this.state.skullValues.map(v => v.type)}
+              onAccept={this.accept}
+              onCancel={this.cancel}
+            />
             {/* {this.state.showConfirmation && <Confirmation display={this.state.showConfirmation} skullValues={this.state.skullValues} selected={this.state.selected} onAccept={this.accept} onCancel={this.cancel} onUpdate={this.update} />} */}
-            <Confirmation display={this.state.showConfirmation} skullValues={this.state.skullValues} selected={this.state.selected} onAccept={this.accept} onCancel={this.cancel} onUpdate={this.update} />
+            {/* <Confirmation display={this.state.showConfirmation} skullValues={this.state.skullValues} onAccept={this.accept} onCancel={this.cancel} /> */}
           </Fragment>
       )
       case Status.FORBIDDEN:
