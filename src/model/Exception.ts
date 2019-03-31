@@ -1,5 +1,5 @@
-import HTTPStatusCode from "./HTTPStatusCode"
-import Status from "./Status"
+import HTTPStatusCode from './HTTPStatusCode'
+import Status from './Status'
 
 export class ApiException {
   httpStatus: number

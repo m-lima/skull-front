@@ -5,7 +5,9 @@
 [ ]  - Show daily/weekly/monthly frequency
 [ ]  - Show regular frequency (exclude long periods of absence)
 [ ]  Add plot
+[ ]! Move grid out of skull.tsx
 [ ]? Download file (move to summary?)
 [ ]? Google docs
 [x]! Add development banner when running development
 [x]  Allow reload on failure
+[ ]  Confirmation will show lower if quickvalues is long

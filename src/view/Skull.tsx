@@ -12,12 +12,8 @@ import Grid from './Grid'
 import ISkullValue, { IQuickValue } from '../model/ISkullValue'
 import Push from '../control/Push'
 import Status from '../model/Status'
-import { ApiException } from "../model/Exception"
-
-const dummySkullValue: ISkullValue = {
-  type: '',
-  amount: 0,
-}
+import Summary from './Summary'
+import { ApiException } from '../model/Exception'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -35,12 +31,6 @@ interface IState {
 }
 
 export default class Skull extends Component<{}, IState> {
-  state = {
-    skullValues: [],
-    status: Status.LOADING,
-    selected: dummySkullValue,
-    showConfirmation: false,
-  }
 
   constructor(props: {}) {
     super(props)
@@ -50,6 +40,7 @@ export default class Skull extends Component<{}, IState> {
   }
 
   componentDidMount() {
+    this.setState({ skullValues: [], status: Status.LOADING, showConfirmation: false })
     Fetch.quickValues()
       .then(q => this.setState({ skullValues: q, status: (q.length > 0 ? Status.OK : Status.EMPTY) }))
       .catch(ex => {
@@ -72,7 +63,7 @@ export default class Skull extends Component<{}, IState> {
   }
 
   update(value: string | number) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       this.state.selected.type = value
       this.setState({ selected: this.state.selected })
     } else {
@@ -105,6 +96,10 @@ export default class Skull extends Component<{}, IState> {
   }
 
   renderMain() {
+    if (!this.state) {
+      return <Message.Loading />
+    }
+
     switch (this.state.status) {
       case Status.LOADING:
         return <Message.Loading />

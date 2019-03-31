@@ -6,3 +6,7 @@ export default interface ISkullValue {
 export interface IQuickValue extends ISkullValue {
   icon: string
 }
+
+export interface IRegisteredValue extends ISkullValue {
+  millis: number
+}

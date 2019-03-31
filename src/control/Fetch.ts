@@ -1,6 +1,6 @@
-import * as Config from "../model/Config"
-import ISkullValue, { IQuickValue } from "../model/ISkullValue"
-import { ApiException } from "../model/Exception"
+import * as Config from '../model/Config'
+import ISkullValue, { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
+import { ApiException } from '../model/Exception'
 
 const mapToQuickValue = (rawValue: any): IQuickValue => {
   return {
@@ -10,13 +10,21 @@ const mapToQuickValue = (rawValue: any): IQuickValue => {
   }
 }
 
+const mapToRegisteredValue = (rawValue: any): IRegisteredValue => {
+  return {
+    type: rawValue.type,
+    amount: rawValue.amount ? rawValue.amount : 0,
+    millis: rawValue.millis ? rawValue.millis : 1,
+  }
+}
+
 export default class Fetch {
   static quickValues(): Promise<IQuickValue[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.data))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.quickValues))
       : fetch(Config.Endpoint.quickValues, {
         method: 'GET',
-        redirect: "follow",
+        redirect: 'follow',
         credentials: 'include',
       })
         .then(r => {
@@ -30,4 +38,25 @@ export default class Fetch {
 
     return data.then(v => v.map(mapToQuickValue))
   }
+
+  static registeredValues(): Promise<IRegisteredValue[]> {
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.registeredValues))
+      : fetch(Config.Endpoint.skull, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToRegisteredValue))
+  }
+
 }
