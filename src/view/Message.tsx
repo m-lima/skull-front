@@ -31,6 +31,6 @@ export const Unauthorized = () =>
 
 export const Empty = () =>
   <div className='Message'>
-    <Icon icon='fas smile-wink' />
+    <Icon icon='fas fa-smile-wink' />
     No skulls found
   </div>
