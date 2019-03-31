@@ -1,5 +1,5 @@
 .Confirmation {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
 
@@ -10,7 +10,7 @@
 }
 
 .Confirmation-container {
-  position: absolute;
+  position: fixed;
   top: 50%;
   width: 100%;
   transform: translate(0, -50%);

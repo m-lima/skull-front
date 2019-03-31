@@ -1,6 +1,6 @@
-import * as Config from "../model/Config"
-import ISkullValue from "../model/ISkullValue"
-import { ApiException } from "../model/Exception"
+import * as Config from '../model/Config'
+import ISkullValue from '../model/ISkullValue'
+import { ApiException } from '../model/Exception'
 
 export default class Push {
   static skullValue(value: ISkullValue): Promise<boolean> {
@@ -10,7 +10,7 @@ export default class Push {
 
     return fetch(Config.Endpoint.skull + '?type=' + value.type + '&amount=' + value.amount, {
       method: 'POST',
-      redirect: "follow",
+      redirect: 'follow',
       credentials: 'include',
     })
       .then(r => {

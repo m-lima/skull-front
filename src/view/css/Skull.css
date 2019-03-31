@@ -4,3 +4,29 @@
   width: 100%;
   min-height: 100vh;
 }
+
+.Skull-container {
+  border-color: var(--background-color);
+  border-style: solid;
+  border-width: 20px;
+  border-bottom-width: calc(var(--bar-size) + 20px);
+}
+
+.Banner-text {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+
+  width: 200px;
+  height: 30px;
+
+  line-height: 30px;
+  text-align: center;
+  font-weight: bold;
+
+  background-color: darkgreen;
+  color: white;
+
+  transform: rotate(-45deg) translate(-60px, -5px);
+}

@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-import Skull from './view/Skull'
 import * as serviceWorker from './serviceWorker'
+
+import Skull from './view/Skull'
 
 ReactDOM.render(<Skull />, document.getElementById('root'))
 
