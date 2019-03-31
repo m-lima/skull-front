@@ -3,4 +3,4 @@ docker run \
   --volume skull:/data \
   --rm \
   volume-updater \
-  sh -c 'cp -r /web/* /data/.'
+  sh -c 'cp -r /web/build/* /data/.'

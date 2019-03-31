@@ -1,0 +1,78 @@
+.Confirmation {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  min-width: 100%;
+  min-height: 100%;
+
+  background-color: #000000aa;
+}
+
+.Confirmation-container {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  transform: translate(0, -50%);
+
+  background-color: #16181d;
+}
+
+.Confirmation-inputs {
+  display: flex;
+}
+
+.Confirmation-input {
+  display: block;
+  text-align: left;
+  margin: 20px;
+  width: 100%;
+}
+
+.Confirmation-input input, select {
+  display: block;
+
+  width: 100%;
+  font-size: 100%;
+  font-weight: bold;
+
+  box-sizing: border-box;
+  padding: 12px 20px;
+  margin-top: 10px;
+
+  border-width: 1px;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 4px;
+}
+
+.Confirmation-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+  justify-content: center;
+
+  border-width: 0;
+
+  margin: 0;
+  padding: 0;
+  outline: none;
+
+  line-height: var(--bar-size);
+  font-size: calc(var(--bar-size) - 40px);
+}
+
+.Confirmation-buttons > * {
+  width: 100%;
+  cursor: pointer;
+}
+
+.Confirmation-buttons #Accept {
+  background-color: darkgreen;
+}
+
+.Confirmation-buttons #Cancel {
+  background-color: darkred;
+}
