@@ -25,17 +25,17 @@ export default class Skull extends Component {
     return (
       <div className='Skull'>
         {(Config.environment == Environment.DEVELOPMENT) && <Banner text='Development' />}
-        <div className='Skull-container'>
-          <Router>
+        <Router>
+          <div className='Skull-container'>
             <Switch>
               <Route exact={true} path={Config.Path.grid} component={Grid} />
               <Route exact={true} path={Config.Path.summary} component={Summary} />
               <Route exact={true} path={Config.Path.chart} component={Summary} />
             </Switch>
             {/* <Route component={Footer} /> */}
-          </Router>
-        </div>
-        <Footer />
+          </div>
+          <Footer />
+        </Router>
       </div>
     )
   }

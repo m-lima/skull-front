@@ -1,6 +1,7 @@
 .Summary {
   width: 100%;
   border-collapse: collapse;
+  text-align: left;
 
   margin: auto;
   padding-bottom: var(--footer-size);
@@ -9,7 +10,6 @@
 .Summary th {
   padding: 12px;
 
-  text-align: left;
   font-weight: bolder;
 
   background-color: var(--shade-0);

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import './css/Footer.css'
 
 import * as Config from '../model/Config'
@@ -12,15 +13,15 @@ export default class Footer extends Component {
           <a href={Config.Endpoint.skull} title='Download JSON'>
             <Icon icon='fas fa-file-download'/>
           </a>
-          <a href={Config.Path.grid} title='Quick values'>
+          <Link to={Config.Path.grid} title='Quick values'>
             <Icon icon='fas fa-th-large'/>
-          </a>
-          <a href={Config.Path.summary} title='Summary'>
+          </Link>
+          <Link to={Config.Path.summary} title='Summary'>
             <Icon icon='fas fa-th-list'/>
-          </a>
-          <a href={Config.Path.chart} title='Chart'>
+          </Link>
+          <Link to={Config.Path.chart} title='Chart'>
             <Icon icon='fas fa-chart-line'/>
-          </a>
+          </Link>
         </div>
       </div>
     )
