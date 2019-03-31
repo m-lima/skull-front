@@ -27,6 +27,7 @@
 .Footer-container > * {
   width: 100%;
   cursor: pointer;
+  color: var(--font-color-dim);
 }
 
 .Footer-container > *:hover {
@@ -35,4 +36,8 @@
 
 .Footer-container > *:active {
   background-color: var(--shade-3);
+}
+
+.Footer-container > #selected {
+  color: var(--background-color);
 }

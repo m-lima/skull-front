@@ -34,7 +34,7 @@ export default class Skull extends Component {
             </Switch>
             {/* <Route component={Footer} /> */}
           </div>
-          <Footer />
+          <Route render={match => <Footer path={match.location.pathname} />} />
         </Router>
       </div>
     )
