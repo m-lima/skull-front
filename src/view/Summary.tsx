@@ -4,21 +4,35 @@ import './css/Summary.css'
 import * as Message from './Message'
 import Access from '../control/Access'
 import Fetch from '../control/Fetch'
+import Icon from './Icon'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
 
 interface IState {
   skullValues: IRegisteredValue[]
+  icons: Map<string, string>
   status: Status
 }
 
 export default class Summary extends Component<{}, IState> {
 
+  constructor(props: {}) {
+    super(props)
+    this.renderRow = this.renderRow.bind(this)
+  }
+
   componentDidMount() {
     this.setState({ skullValues: [], status: Status.LOADING })
-    Fetch.registeredValues()
-      .then(r => this.setState({ skullValues: r, status: (r.length > 0 ? Status.OK : Status.EMPTY) }))
+    Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
+      .then(r => this.setState({
+        skullValues: r[0],
+        status: (r[0].length > 0 ? Status.OK : Status.EMPTY),
+        icons: r[1].reduce((m, v) => {
+          m.set(v.type, v.icon)
+          return m
+        }, new Map<string, string>())
+      }))
       .catch(ex => {
         if (ex instanceof ApiException) {
           if (ex.status == Status.UNAUTHORIZED) {
@@ -26,12 +40,25 @@ export default class Summary extends Component<{}, IState> {
             return
           }
           console.error('HTTP error status: ' + ex.httpStatus)
-          this.setState({ skullValues: [], status: ex.status })
+          this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>() })
         } else {
           console.error(ex)
-          this.setState({ skullValues: [], status: Status.ERROR })
+          this.setState({ skullValues: [], status: Status.ERROR , icons: new Map<string, string>() })
         }
       })
+  }
+
+  renderRow(value: IRegisteredValue, index: number) {
+    return (
+      <tr key={index}>
+        <td id='icon'>
+          {this.state.icons.has(value.type) && <Icon icon={this.state.icons.get(value.type) as string} />}
+        </td>
+        <td>{value.type}</td>
+        <td>{value.amount}</td>
+        <td>{new Date(value.millis).toLocaleString()}</td>
+      </tr>
+    )
   }
 
   render() {
@@ -46,20 +73,15 @@ export default class Summary extends Component<{}, IState> {
         return (
           <table className='Summary'>
             <tbody>
-            <tr>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Time</th>
-            </tr>
-            {this.state.skullValues.map((v, i) =>
-                                        <tr key={i}>
-                                          <td>{v.type}</td>
-                                          <td>{v.amount}</td>
-                                          <td>{new Date(v.millis).toLocaleString()}</td>
-                                        </tr>
-                                       )}
-                                     </tbody>
-                                     </table>
+              <tr>
+                <th id='icon'></th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Time</th>
+              </tr>
+              {this.state.skullValues.map(this.renderRow)}
+            </tbody>
+          </table>
       )
       case Status.EMPTY:
         return <Message.Empty />
@@ -68,7 +90,6 @@ export default class Summary extends Component<{}, IState> {
       case Status.ERROR:
         return <Message.Error />
     }
-
   }
 }
 

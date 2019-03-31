@@ -11,3 +11,4 @@
 [x]! Add development banner when running development
 [x]  Allow reload on failure
 [x]  Confirmation will show lower if quickvalues is long
+[ ]  Move the border padding to skull
