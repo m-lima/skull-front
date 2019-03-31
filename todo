@@ -10,4 +10,4 @@
 [ ]? Google docs
 [x]! Add development banner when running development
 [x]  Allow reload on failure
-[ ]  Confirmation will show lower if quickvalues is long
+[x]  Confirmation will show lower if quickvalues is long
