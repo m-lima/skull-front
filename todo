@@ -1,0 +1,11 @@
+[ ]  Allow reload on failure
+[ ]  Add navigation (top?)
+[ ]  Add summary
+[ ]  - List all entry
+[ ]  - Allow the deletion of an item
+[ ]  - Show daily/weekly/monthly frequency
+[ ]  - Show regular frequency (exclude long periods of absence)
+[ ]  Add plot
+[ ]? Download file (move to summary?)
+[ ]? Google docs
+[x]! Add development banner when running development
