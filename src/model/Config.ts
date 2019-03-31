@@ -79,6 +79,7 @@ export class Endpoint {
 }
 
 export class Path {
+  static readonly grid = '/'
   static readonly summary = '/summary'
   static readonly chart = '/chart'
 }
