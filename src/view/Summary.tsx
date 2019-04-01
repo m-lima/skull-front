@@ -49,7 +49,7 @@ export default class Summary extends Component<{}, IState> {
         skullValues: r[0],
         status: (r[0].length > 0 ? Status.OK : Status.EMPTY),
         icons: r[1].reduce((m, v) => {
-          m.set(v.type, v.icon)
+          m.set(v.type + v.amount, v.icon)
           return m
         }, new Map<string, string>()),
         selected: undefined,
@@ -72,7 +72,7 @@ export default class Summary extends Component<{}, IState> {
     return (
       <tr key={index}>
         <td>
-          {this.state.icons.has(value.type) && <Icon icon={this.state.icons.get(value.type) as string} />}
+          {this.state.icons.has(value.type + value.amount) && <Icon icon={this.state.icons.get(value.type + value.amount) as string} />}
         </td>
         <td>{value.type}</td>
         <td>{value.amount}</td>
