@@ -42,7 +42,7 @@ export default class Summary extends Component<{}, IState> {
     }
   }
 
-  componentDidMount() {
+  load() {
     this.setState({ skullValues: [], status: Status.LOADING, selected: undefined })
     Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
       .then(r => this.setState({
@@ -57,10 +57,14 @@ export default class Summary extends Component<{}, IState> {
       .catch(this.handleException)
   }
 
+  componentDidMount() {
+    this.load()
+  }
+
   accept() {
     this.setState({ status: Status.LOADING })
     Push.deletion(this.state.selected as IRegisteredValue)
-      .then(() => this.setState({ status: Status.OK, selected: undefined }))
+      .then(() => this.load())
       .catch(this.handleException)
   }
 
