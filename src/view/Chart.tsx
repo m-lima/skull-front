@@ -1,16 +1,23 @@
-import React, { Component, Fragment } from 'react'
-import './css/Summary.css'
+import React, { Component } from 'react'
+import * as d3 from 'd3'
+import './css/Chart.css'
 
 import * as Message from './Message'
 import Access from '../control/Access'
-import Confirmation from './Confirmation'
 import Fetch from '../control/Fetch'
 import IQueryState from '../model/IQueryState'
-import Icon from './Icon'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
-import { IRegisteredValue } from '../model/ISkullValue'
-import Push from '../control/Push'
+import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
+
+const getColorFromType = (skull: ISkullValue) => {
+  let color = 0
+  for (let i = 0; i < skull.type.length; i++) {
+    color += skull.type.charCodeAt(i)
+  }
+  color %= 255
+  return d3.rgb(color, color, color).hex()
+}
 
 interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
@@ -18,14 +25,13 @@ interface IState extends IQueryState {
   selected?: IRegisteredValue
 }
 
-export default class Summary extends Component<{}, IState> {
+export default class Chart extends Component<{}, IState> {
+  private svgRef = React.createRef<SVGSVGElement>()
 
   constructor(props: {}) {
     super(props)
     this.handleException = this.handleException.bind(this)
-    this.renderRow = this.renderRow.bind(this)
-    this.accept = this.accept.bind(this)
-    this.cancel = this.cancel.bind(this)
+    this.updateChart = this.updateChart.bind(this)
   }
 
   handleException(ex: any) {
@@ -54,6 +60,7 @@ export default class Summary extends Component<{}, IState> {
         }, new Map<string, string>()),
         selected: undefined,
       }))
+      .then(this.updateChart)
       .catch(this.handleException)
   }
 
@@ -61,31 +68,20 @@ export default class Summary extends Component<{}, IState> {
     this.load()
   }
 
-  accept() {
-    this.setState({ status: Status.LOADING })
-    Push.deletion(this.state.selected as IRegisteredValue)
-      .then(() => this.load())
-      .catch(this.handleException)
-  }
-
-  cancel() {
-    this.setState({ selected: undefined })
-  }
-
-  renderRow(value: IRegisteredValue, index: number) {
-    return (
-      <tr key={index}>
-        <td>
-          {this.state.icons.has(value.type + value.amount) && <Icon icon={this.state.icons.get(value.type + value.amount) as string} />}
-        </td>
-        <td>{value.type}</td>
-        <td>{value.amount}</td>
-        <td>{new Date(value.millis).toLocaleString()}</td>
-        <td id='delete' onClick={() => this.setState({ selected: value })}>
-          <Icon icon='fas fa-trash-alt' />
-        </td>
-      </tr>
-    )
+  updateChart() {
+    console.log('Update')
+    if (this.state.skullValues) {
+      d3.select(this.svgRef.current)
+        .selectAll("rect")
+        .data(this.state.skullValues)
+        .enter()
+        .append('rect')
+        .attr("x", (_, i) => i * 70)
+        .attr("y", d => 600 - (10 * d.amount))
+        .attr("width", 65)
+        .attr("height", (d, i) => d.amount * 10)
+        .attr("fill", getColorFromType)
+    }
   }
 
   render() {
@@ -97,28 +93,7 @@ export default class Summary extends Component<{}, IState> {
       case Status.LOADING:
         return <Message.Loading />
       case Status.OK:
-        return (
-          <Fragment>
-            <table className='Summary'>
-              <tbody>
-                <tr>
-                  <th id='icon'></th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Time</th>
-                  <th id='icon'></th>
-                </tr>
-                {this.state.skullValues.map(this.renderRow)}
-              </tbody>
-            </table>
-            <Confirmation
-              types={this.state.skullValues.map(v => v.type)}
-              value={this.state.selected}
-              onAccept={this.accept}
-              onCancel={this.cancel}
-            />
-          </Fragment>
-      )
+        return (<svg className="Chart" ref={this.svgRef} height={600} />)
       case Status.EMPTY:
         return <Message.Empty />
       case Status.FORBIDDEN:
@@ -128,4 +103,3 @@ export default class Summary extends Component<{}, IState> {
     }
   }
 }
-

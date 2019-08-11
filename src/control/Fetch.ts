@@ -1,5 +1,5 @@
 import * as Config from '../model/Config'
-import ISkullValue, { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
+import { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
 import { ApiException } from '../model/Exception'
 
 const mapToQuickValue = (rawValue: any): IQuickValue => {

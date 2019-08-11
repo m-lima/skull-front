@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 import './css/Message.css'
 
-import * as Config from '../model/Config'
 import Access from '../control/Access'
 import Icon from './Icon'
 

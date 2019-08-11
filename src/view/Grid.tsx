@@ -30,7 +30,7 @@ export default class Grid extends Component<{}, IState> {
 
   handleException(ex: any) {
     if (ex instanceof ApiException) {
-      if (ex.status == Status.UNAUTHORIZED) {
+      if (ex.status === Status.UNAUTHORIZED) {
         Access.login()
         return
       }

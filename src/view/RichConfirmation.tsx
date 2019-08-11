@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from 'react'
+import React from 'react'
 import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
-import ISkullValue, { IQuickValue } from '../model/ISkullValue'
+import ISkullValue from '../model/ISkullValue'
 
 interface IRichProps extends IProps<ISkullValue> {
   types: string[]

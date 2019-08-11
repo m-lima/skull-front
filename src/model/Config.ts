@@ -1,5 +1,4 @@
 import Environment from './Environment'
-import ISkullValue, { IQuickValue } from './ISkullValue'
 
 export class Mock {
   static readonly user = true
@@ -50,7 +49,7 @@ export class Mock {
       },
       {
         type:'bli',
-        amount:1,
+        amount:3,
         millis:1554023920833,
       },
       {
@@ -60,12 +59,12 @@ export class Mock {
       },
       {
         type:'blo',
-        amount:1,
+        amount:7,
         millis:1554030052772,
       },
       {
         type:'bli',
-        amount:1,
+        amount:2.5,
         millis:1554030055246}
     ]),
   }

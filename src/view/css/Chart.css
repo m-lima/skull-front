@@ -1,0 +1,43 @@
+.Chart {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  margin: auto;
+  padding-bottom: var(--footer-size);
+}
+
+.Chart th {
+  padding: 12px;
+
+  font-weight: bolder;
+
+  background-color: var(--shade-0);
+}
+
+.Chart td {
+  padding: 8px;
+}
+
+.Chart #icon {
+  padding: 0;
+  width: 1em;
+  text-align: center;
+}
+
+.Chart #delete {
+  color: tomato;
+  cursor: pointer;
+}
+
+.Chart tr {
+  background-color: var(--shade-1);
+}
+
+.Chart tr:nth-child(even) {
+  background-color: var(--shade-2);
+}
+
+.Chart tr:hover {
+  background-color: var(--shade-3);
+}

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import {
   BrowserRouter as Router,
   Route,
@@ -10,6 +10,7 @@ import * as Config from '../model/Config'
 import Environment from '../model/Environment'
 import Footer from './Footer'
 import Grid from './Grid'
+import Chart from './Chart'
 import Summary from './Summary'
 
 const Banner = (props: { text: string }) => {
@@ -26,14 +27,14 @@ export default class Skull extends Component {
       <div className='Skull'>
         {
           // @ts-ignore
-          (Config.environment == Environment.DEVELOPMENT) && <Banner text='Development' />
+          (Config.environment === Environment.DEVELOPMENT) && <Banner text='Development' />
         }
         <Router>
           <div className='Skull-container'>
             <Switch>
               <Route exact={true} path={Config.Path.grid} component={Grid} />
               <Route exact={true} path={Config.Path.summary} component={Summary} />
-              <Route exact={true} path={Config.Path.chart} component={Summary} />
+              <Route exact={true} path={Config.Path.chart} component={Chart} />
             </Switch>
             {/* <Route component={Footer} /> */}
           </div>
