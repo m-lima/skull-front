@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
-import './css/Confirmation.css'
 
 import * as Message from './Message'
 import Access from '../control/Access'
 import Fetch from '../control/Fetch'
 import IQueryState from '../model/IQueryState'
-import ISkullValue, { IQuickValue } from '../model/ISkullValue'
+import ISkullValue, { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
 import Icon from './Icon'
 import Push from '../control/Push'
 import RichConfirmation from './RichConfirmation'
@@ -15,7 +14,7 @@ import { ApiException } from '../model/Exception'
 
 interface IState extends IQueryState {
   skullValues: IQuickValue[]
-  selected?: ISkullValue
+  selected?: IRegisteredValue
 }
 
 export default class Grid extends Component<{}, IState> {
@@ -50,10 +49,10 @@ export default class Grid extends Component<{}, IState> {
   }
 
   showConfirmation(skullValue: ISkullValue) {
-    this.setState({ selected: { type: skullValue.type, amount: skullValue.amount } })
+    this.setState({ selected: { type: skullValue.type, amount: skullValue.amount, millis: Date.now() } })
   }
 
-  change(value: ISkullValue) {
+  change(value: IRegisteredValue) {
     this.setState({ selected: value })
   }
 

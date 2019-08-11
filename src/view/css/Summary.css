@@ -25,6 +25,10 @@
   text-align: center;
 }
 
+.Summary #edit {
+  cursor: pointer;
+}
+
 .Summary #delete {
   color: tomato;
   cursor: pointer;

@@ -1,15 +1,17 @@
 import React, { Component, Fragment } from 'react'
-import Confirmation, { IProps } from './Confirmation'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css';
 import './css/RichConfirmation.css'
 
-import ISkullValue, { IQuickValue } from '../model/ISkullValue'
+import Confirmation, { IProps } from './Confirmation'
+import { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
 
-interface IRichProps extends IProps<ISkullValue> {
+interface IRichProps extends IProps<IRegisteredValue> {
   types: string[]
-  onChange: (value: ISkullValue) => void
+  onChange: (value: IRegisteredValue) => void
 }
 
-export default class RichConfirmation extends Confirmation<ISkullValue, IRichProps> {
+export default class RichConfirmation extends Confirmation<IRegisteredValue, IRichProps> {
 
   buildComboBox() {
     return (
@@ -46,7 +48,40 @@ export default class RichConfirmation extends Confirmation<ISkullValue, IRichPro
             }}
           />
         </div>
+        <div className='Confirmation-input'>
+          <b>Time</b>
+          <DatePicker
+            selected={new Date(this.getValue().millis)}
+            showTimeSelect
+            dateFormat='dd/MM/yyyy HH:mm'
+            timeIntervals={5}
+            popperPlacement='top'
+            popperModifiers={{
+              preventOverflow: {
+                enabled: true,
+                escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
+                boundariesElement: 'window'
+              }
+            }}
+            onChange={d => {
+              console.log(d)
+              console.log(Number(d))
+              this.getValue().millis = Number(d)
+              this.props.onChange(this.getValue())
+            }}
+          />
+        </div>
       </div>
     )
   }
 }
+          // <input
+          //   id='time'
+          //   type='datetime-local'
+          //   value={new Date().toLocaleString()}
+          //   onChange={e => {
+          //     console.log(e.target.value)
+          //     this.getValue().millis = Number(e.target.value)
+          //     this.props.onChange(this.getValue())
+          //   }}
+          // />

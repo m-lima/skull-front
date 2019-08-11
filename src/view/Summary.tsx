@@ -81,6 +81,9 @@ export default class Summary extends Component<{}, IState> {
         <td>{value.type}</td>
         <td>{value.amount}</td>
         <td>{new Date(value.millis).toLocaleString()}</td>
+        <td id='edit' onClick={() => this.setState({ selected: value })}>
+          <Icon icon='fas fa-pencil-alt' />
+        </td>
         <td id='delete' onClick={() => this.setState({ selected: value })}>
           <Icon icon='fas fa-trash-alt' />
         </td>
@@ -107,12 +110,12 @@ export default class Summary extends Component<{}, IState> {
                   <th>Amount</th>
                   <th>Time</th>
                   <th id='icon'></th>
+                  <th id='icon'></th>
                 </tr>
                 {this.state.skullValues.map(this.renderRow)}
               </tbody>
             </table>
             <Confirmation
-              types={this.state.skullValues.map(v => v.type)}
               value={this.state.selected}
               onAccept={this.accept}
               onCancel={this.cancel}
