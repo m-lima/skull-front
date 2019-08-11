@@ -36,7 +36,6 @@ export default class Skull extends Component {
               <Route exact={true} path={Config.Path.summary} component={Summary} />
               <Route exact={true} path={Config.Path.chart} component={Chart} />
             </Switch>
-            {/* <Route component={Footer} /> */}
           </div>
           <Route render={match => <Footer path={match.location.pathname} />} />
         </Router>

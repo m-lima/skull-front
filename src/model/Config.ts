@@ -33,8 +33,8 @@ export class Mock {
     ]),
     registeredValues: JSON.stringify([
       {
-        type:'blo',
-        amout:1,
+        type:'blir',
+        amount:10,
         millis:1553991448013,
       },
       {
@@ -65,7 +65,8 @@ export class Mock {
       {
         type:'bli',
         amount:2.5,
-        millis:1554030055246}
+        millis:1554030055246,
+      },
     ]),
   }
 }

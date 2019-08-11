@@ -11,18 +11,21 @@ import { ApiException } from '../model/Exception'
 import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
 
 const getColorFromType = (skull: ISkullValue) => {
-  let color = 0
+  const prime = 16777619
+  const offset = 2166136261
+
+  let color = offset
   for (let i = 0; i < skull.type.length; i++) {
-    color += skull.type.charCodeAt(i)
+    color *= prime
+    color ^= skull.type.charCodeAt(i)
   }
-  color %= 255
-  return d3.rgb(color, color, color).hex()
+
+  color %= 16581375
+  return d3.rgb((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF).hex()
 }
 
 interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
-  icons: Map<string, string>
-  selected?: IRegisteredValue
 }
 
 export default class Chart extends Component<{}, IState> {
@@ -41,24 +44,19 @@ export default class Chart extends Component<{}, IState> {
         return
       }
       console.error('HTTP error status: ' + ex.httpStatus)
-      this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>(), selected: undefined })
+      this.setState({ skullValues: [], status: ex.status })
     } else {
       console.error(ex)
-      this.setState({ skullValues: [], status: Status.ERROR, icons: new Map<string, string>(), selected: undefined })
+      this.setState({ skullValues: [], status: Status.ERROR })
     }
   }
 
   load() {
-    this.setState({ skullValues: [], status: Status.LOADING, selected: undefined })
-    Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
+    this.setState({ skullValues: [], status: Status.LOADING })
+    Fetch.registeredValues()
       .then(r => this.setState({
-        skullValues: r[0],
-        status: (r[0].length > 0 ? Status.OK : Status.EMPTY),
-        icons: r[1].reduce((m, v) => {
-          m.set(v.type + v.amount, v.icon)
-          return m
-        }, new Map<string, string>()),
-        selected: undefined,
+        skullValues: r,
+        status: (r.length > 0 ? Status.OK : Status.EMPTY),
       }))
       .then(this.updateChart)
       .catch(this.handleException)
@@ -69,17 +67,22 @@ export default class Chart extends Component<{}, IState> {
   }
 
   updateChart() {
-    console.log('Update')
-    if (this.state.skullValues) {
+    if (this.state.skullValues && this.state.skullValues.length > 0) {
+      const maxAmount = this.state.skullValues.map(skull => skull.amount).reduce((prev, curr) => curr > prev ? curr : prev)
+      const width = this.svgRef.current!.clientWidth
+      const height = this.svgRef.current!.clientHeight
+      const barWidth = width / this.state.skullValues.length
+      const barHeightRatio = height / maxAmount
+
       d3.select(this.svgRef.current)
         .selectAll("rect")
         .data(this.state.skullValues)
         .enter()
         .append('rect')
-        .attr("x", (_, i) => i * 70)
-        .attr("y", d => 600 - (10 * d.amount))
-        .attr("width", 65)
-        .attr("height", (d, i) => d.amount * 10)
+        .attr("x", (_, i) => i * barWidth)
+        .attr("y", d => height - d.amount * barHeightRatio)
+        .attr("width", barWidth * 0.9)
+        .attr("height", d => d.amount * barHeightRatio)
         .attr("fill", getColorFromType)
     }
   }
@@ -93,7 +96,7 @@ export default class Chart extends Component<{}, IState> {
       case Status.LOADING:
         return <Message.Loading />
       case Status.OK:
-        return (<svg className="Chart" ref={this.svgRef} height={600} />)
+        return (<svg className="Chart" ref={this.svgRef} />)
       case Status.EMPTY:
         return <Message.Empty />
       case Status.FORBIDDEN:

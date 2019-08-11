@@ -2,7 +2,7 @@
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: var(--footer-size);
+  height: var(--bar-size);
 
   background-color: var(--shade-0);
   font-size: calc(var(--bar-size) - 40px);
