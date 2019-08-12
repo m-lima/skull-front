@@ -10,7 +10,7 @@ import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
 
-const getColorFromType = (type: string) => {
+const getColorFromType = (type: string, desaturation = 0.6) => {
   const prime = 16777619
   const offset = 2166136261
 
@@ -25,7 +25,6 @@ const getColorFromType = (type: string) => {
   const g = (color & 0xFF00) >> 8
   const b = color & 0xFF
   const length = 0.3 * r + 0.6 * g + 0.1 * b
-  const desaturation = 0.75
 
   return d3.rgb(r + desaturation * (length - r), g + desaturation * (length - g), b + desaturation * (length - b)).hex()
 }
@@ -105,13 +104,11 @@ export default class Chart extends Component<{}, IState> {
         .reduce(MinMax.update, new MinMax())
     const width = this.svgRef.current!.clientWidth
     const height = this.svgRef.current!.clientHeight
-    const barWidth = width / this.state.skullValues.length
-    const barHeightRatio = height / minMaxAmount.max
 
     const chart = d3.select(this.svgRef.current)
-
     const amountAxis = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
     const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
+
     chart.append('g')
         .classed('x', true)
         .classed('axis', true)
@@ -146,10 +143,14 @@ export default class Chart extends Component<{}, IState> {
       .append('rect')
       .classed('Chart-Bar', true)
       .attr('x', d => timeAxis(d.millis))
-      .attr('y', d => amountAxis(d.amount))// * barHeightRatio)
-      .attr('width', 10)
-      .attr('height', d => height - axisSize - amountAxis(d.amount))// * barHeightRatio - axisSize)
+      .attr('y', () => amountAxis(0))
+      .attr('width', 4)
+      .attr('height', () => 0)
       .attr('fill', getColorFromSkull)
+      .transition()
+      .duration(750)
+      .attr('y', d => amountAxis(d.amount))
+      .attr('height', d => height - axisSize - amountAxis(d.amount))
   }
 
   render() {
