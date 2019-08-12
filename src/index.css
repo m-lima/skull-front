@@ -12,6 +12,10 @@
   --shade-4: #5b667d;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   padding: 0;

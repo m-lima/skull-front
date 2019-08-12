@@ -2,15 +2,16 @@
   position: relative;
   text-align: center;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
 .Skull-container {
   border-color: var(--background-color);
   border-style: solid;
   border-width: 20px;
-  height: calc(100vh - 40px - var(--bar-size));
+  height: calc(100% - 40px - var(--bar-size));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .Banner-text {
