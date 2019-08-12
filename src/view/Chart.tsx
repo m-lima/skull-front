@@ -21,11 +21,32 @@ const getColorFromType = (skull: ISkullValue) => {
   }
 
   color %= 16581375
-  return d3.rgb((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF).hex()
+  const r = (color & 0xFF0000) >> 16
+  const g = (color & 0xFF00) >> 8
+  const b = color & 0xFF
+  const length = 0.3 * r + 0.6 * g + 0.1 * b
+  const desaturation = 0.75
+
+  return d3.rgb(r + desaturation * (length - r), g + desaturation * (length - g), b + desaturation * (length - b)).hex()
 }
 
 interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
+}
+
+class MinMax {
+  min = Number.MAX_VALUE
+  max = Number.MIN_VALUE
+
+  update(value: number) {
+    this.min = value < this.min ? value : this.min
+    this.max = value > this.max ? value : this.max
+  }
+
+  static update(minMax: MinMax, value: number): MinMax {
+    minMax.update(value)
+    return minMax
+  }
 }
 
 export default class Chart extends Component<{}, IState> {
@@ -68,22 +89,42 @@ export default class Chart extends Component<{}, IState> {
 
   updateChart() {
     if (this.state.skullValues && this.state.skullValues.length > 0) {
-      const maxAmount = this.state.skullValues.map(skull => skull.amount).reduce((prev, curr) => curr > prev ? curr : prev)
+      const axisWidth = 20
+      const minMaxAmount = this.state.skullValues
+          .map(skull => skull.amount)
+          .reduce(MinMax.update, new MinMax())
+      const minMaxMillis = this.state.skullValues
+          .map(skull => skull.millis)
+          .reduce(MinMax.update, new MinMax())
       const width = this.svgRef.current!.clientWidth
       const height = this.svgRef.current!.clientHeight
       const barWidth = width / this.state.skullValues.length
-      const barHeightRatio = height / maxAmount
+      const barHeightRatio = height / minMaxAmount.max
 
-      d3.select(this.svgRef.current)
-        .selectAll("rect")
+      const chart = d3.select(this.svgRef.current)
+      const plot = chart.append('svg')
+          .attr('width', width - axisWidth)
+          .attr('height', width - axisWidth)
+
+      const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisWidth, width - 2 * axisWidth])
+      const xAxis = d3.axisBottom(timeAxis)
+      let xAxisGroup = chart.append('g')
+          .classed('x', true)
+          .classed('axis', true)
+          .attr('transform', `translate(${0}, ${height - axisWidth})`)
+          .call(xAxis)
+
+      plot
+        .selectAll('rect')
         .data(this.state.skullValues)
         .enter()
         .append('rect')
-        .attr("x", (_, i) => i * barWidth)
-        .attr("y", d => height - d.amount * barHeightRatio)
-        .attr("width", barWidth * 0.9)
-        .attr("height", d => d.amount * barHeightRatio)
-        .attr("fill", getColorFromType)
+        .classed('Chart-Bar', true)
+        .attr('x', (_, i) => i * barWidth)
+        .attr('y', d => height - d.amount * barHeightRatio - axisWidth * 0.75)
+        .attr('width', barWidth * 0.9)
+        .attr('height', d => d.amount * barHeightRatio - axisWidth * 0.75)
+        .attr('fill', getColorFromType)
     }
   }
 
@@ -96,7 +137,7 @@ export default class Chart extends Component<{}, IState> {
       case Status.LOADING:
         return <Message.Loading />
       case Status.OK:
-        return (<svg className="Chart" ref={this.svgRef} />)
+        return (<svg className='Chart' ref={this.svgRef} />)
       case Status.EMPTY:
         return <Message.Empty />
       case Status.FORBIDDEN:

@@ -4,6 +4,8 @@
 [ ]  - Show daily/weekly/monthly frequency
 [ ]  - Show regular frequency (exclude long periods of absence)
 [ ]  Add plot
+[ ]  Unify views (they all have loading, forbidden, etc)
+[ ]? Remove state from views
 [ ]? Download file (move to summary?)
 [ ]? Google docs
 [x]! Move grid out of skull.tsx

@@ -12,60 +12,165 @@ export class Mock {
         amount: 1,
       },
       {
-        type: 'ble',
+        type: 'dois',
         icon: 'fas fa-beer',
         amount: 1.5,
       },
       {
-        type: 'bli',
+        type: 'quatro',
         icon: 'fas fa-coffee',
       },
       {
-        type: 'blo',
+        type: 'tres',
         icon: 'fas fa-receipt',
         amount: 0,
       },
       {
-        type: 'blu',
+        type: 'cinco',
         icon: 'fas fa-baby',
         amount: 2,
       },
     ]),
     registeredValues: JSON.stringify([
       {
-        type:'blir',
+        type:'um',
         amount:10,
         millis:1553991448013,
       },
       {
-        type:'ble',
+        type:'dois',
         amount:18.5,
         millis:1553991451467,
       },
       {
-        type:'blo',
+        type:'tres',
         amount:1,
         millis:1554021022579,
       },
       {
-        type:'bli',
+        type:'quatro',
         amount:3,
         millis:1554023920833,
       },
       {
-        type:'blo',
+        type:'tres',
         amount:1,
         millis:1554024801060,
       },
       {
-        type:'blo',
+        type:'tres',
         amount:7,
         millis:1554030052772,
       },
       {
-        type:'bli',
+        type:'quatro',
         amount:2.5,
         millis:1554030055246,
+      },
+      {
+        type:'um',
+        amount:10,
+        millis:1554991448013,
+      },
+      {
+        type:'dois',
+        amount:18.5,
+        millis:1554991451467,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1555021022579,
+      },
+      {
+        type:'quatro',
+        amount:3,
+        millis:1555023920833,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1555024801060,
+      },
+      {
+        type:'tres',
+        amount:7,
+        millis:1555030052772,
+      },
+      {
+        type:'quatro',
+        amount:2.5,
+        millis:1555030055246,
+      },
+      {
+        type:'um',
+        amount:10,
+        millis:1555991448013,
+      },
+      {
+        type:'dois',
+        amount:18.5,
+        millis:1555991451467,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1556021022579,
+      },
+      {
+        type:'quatro',
+        amount:3,
+        millis:1556023920833,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1556024801060,
+      },
+      {
+        type:'tres',
+        amount:7,
+        millis:1556030052772,
+      },
+      {
+        type:'quatro',
+        amount:2.5,
+        millis:1556030055246,
+      },
+      {
+        type:'um',
+        amount:10,
+        millis:1556991448013,
+      },
+      {
+        type:'dois',
+        amount:18.5,
+        millis:1556991451467,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1557021022579,
+      },
+      {
+        type:'quatro',
+        amount:3,
+        millis:1557023920833,
+      },
+      {
+        type:'tres',
+        amount:1,
+        millis:1557024801060,
+      },
+      {
+        type:'tres',
+        amount:7,
+        millis:1557030052772,
+      },
+      {
+        type:'quatro',
+        amount:2.5,
+        millis:1557030055246,
       },
     ]),
   }

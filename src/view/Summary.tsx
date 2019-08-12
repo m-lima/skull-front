@@ -63,7 +63,7 @@ export default class Summary extends Component<{}, IState> {
 
   accept() {
     this.setState({ status: Status.LOADING })
-    Push.deletion(this.state.selected as IRegisteredValue)
+    Push.deletion(this.state.selected!)
       .then(() => this.load())
       .catch(this.handleException)
   }

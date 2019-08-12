@@ -58,8 +58,9 @@ export default class Grid extends Component<{}, IState> {
   }
 
   accept() {
+    const selected = this.state.selected!
     this.setState({ status: Status.LOADING, selected: undefined })
-    Push.skullValue(this.state.selected as ISkullValue)
+    Push.skullValue(selected)
       .then(() => this.setState({  status: Status.OK }))
       .catch(this.handleException)
   }
