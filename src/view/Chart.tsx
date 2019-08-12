@@ -8,7 +8,7 @@ import Fetch from '../control/Fetch'
 import IQueryState from '../model/IQueryState'
 import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
-import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
+import { IRegisteredValue } from '../model/ISkullValue'
 
 const getColorFromType = (type: string, desaturation = 0.6) => {
   const prime = 16777619
@@ -29,8 +29,17 @@ const getColorFromType = (type: string, desaturation = 0.6) => {
   return d3.rgb(r + desaturation * (length - r), g + desaturation * (length - g), b + desaturation * (length - b)).hex()
 }
 
-const getColorFromSkull = (skull: ISkullValue) => {
+const getColorFromSkull = (skull: IRegisteredValue) => {
   return getColorFromType(skull.type)
+}
+
+const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
+  const normalizedDate = new Date(value.millis)
+  normalizedDate.setHours(0)
+  normalizedDate.setMinutes(0)
+  normalizedDate.setSeconds(0)
+  normalizedDate.setMilliseconds(0)
+  return { type: value.type, amount: value.amount, millis: normalizedDate.getTime() }
 }
 
 interface IState extends IQueryState {
@@ -109,6 +118,10 @@ export default class Chart extends Component<{}, IState> {
     const amountAxis = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
     const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
 
+    const dayWidth = (timeAxis(new Date(0, 0, 1).getTime()) - timeAxis(new Date(0, 0, 0).getTime())) * 0.8
+    const dayCenter = dayWidth / 2
+    const scaledZero = amountAxis(0)
+
     chart.append('g')
         .classed('x', true)
         .classed('axis', true)
@@ -116,6 +129,7 @@ export default class Chart extends Component<{}, IState> {
         .call(d3.axisBottom(timeAxis))
 
     // this.state.skullValues
+    //     .map(normalizeTime)
     //     .reduce((map, value) => {
     //       const list = map.get(value.type)
     //       if (list) {
@@ -138,19 +152,19 @@ export default class Chart extends Component<{}, IState> {
 
     chart
       .selectAll('rect')
-      .data(this.state.skullValues)
+      .data(this.state.skullValues.map(normalizeTime))
       .enter()
       .append('rect')
       .classed('Chart-Bar', true)
-      .attr('x', d => timeAxis(d.millis))
-      .attr('y', () => amountAxis(0))
-      .attr('width', 4)
-      .attr('height', () => 0)
+      .attr('x', d => timeAxis(d.millis) - dayCenter)
+      .attr('y', scaledZero)
+      .attr('width', dayWidth)
+      .attr('height', 0)
       .attr('fill', getColorFromSkull)
       .transition()
       .duration(750)
       .attr('y', d => amountAxis(d.amount))
-      .attr('height', d => height - axisSize - amountAxis(d.amount))
+      .attr('height', d => scaledZero - amountAxis(d.amount))
   }
 
   render() {
