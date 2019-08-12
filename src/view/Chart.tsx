@@ -10,14 +10,14 @@ import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
 
-const getColorFromType = (skull: ISkullValue) => {
+const getColorFromType = (type: string) => {
   const prime = 16777619
   const offset = 2166136261
 
   let color = offset
-  for (let i = 0; i < skull.type.length; i++) {
+  for (let i = 0; i < type.length; i++) {
     color *= prime
-    color ^= skull.type.charCodeAt(i)
+    color ^= type.charCodeAt(i)
   }
 
   color %= 16581375
@@ -28,6 +28,10 @@ const getColorFromType = (skull: ISkullValue) => {
   const desaturation = 0.75
 
   return d3.rgb(r + desaturation * (length - r), g + desaturation * (length - g), b + desaturation * (length - b)).hex()
+}
+
+const getColorFromSkull = (skull: ISkullValue) => {
+  return getColorFromType(skull.type)
 }
 
 interface IState extends IQueryState {
@@ -88,44 +92,64 @@ export default class Chart extends Component<{}, IState> {
   }
 
   updateChart() {
-    if (this.state.skullValues && this.state.skullValues.length > 0) {
-      const axisWidth = 20
-      const minMaxAmount = this.state.skullValues
-          .map(skull => skull.amount)
-          .reduce(MinMax.update, new MinMax())
-      const minMaxMillis = this.state.skullValues
-          .map(skull => skull.millis)
-          .reduce(MinMax.update, new MinMax())
-      const width = this.svgRef.current!.clientWidth
-      const height = this.svgRef.current!.clientHeight
-      const barWidth = width / this.state.skullValues.length
-      const barHeightRatio = height / minMaxAmount.max
-
-      const chart = d3.select(this.svgRef.current)
-      const plot = chart.append('svg')
-          .attr('width', width - axisWidth)
-          .attr('height', width - axisWidth)
-
-      const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisWidth, width - 2 * axisWidth])
-      const xAxis = d3.axisBottom(timeAxis)
-      let xAxisGroup = chart.append('g')
-          .classed('x', true)
-          .classed('axis', true)
-          .attr('transform', `translate(${0}, ${height - axisWidth})`)
-          .call(xAxis)
-
-      plot
-        .selectAll('rect')
-        .data(this.state.skullValues)
-        .enter()
-        .append('rect')
-        .classed('Chart-Bar', true)
-        .attr('x', (_, i) => i * barWidth)
-        .attr('y', d => height - d.amount * barHeightRatio - axisWidth * 0.75)
-        .attr('width', barWidth * 0.9)
-        .attr('height', d => d.amount * barHeightRatio - axisWidth * 0.75)
-        .attr('fill', getColorFromType)
+    if (!this.state.skullValues || this.state.skullValues.length < 1) {
+      return
     }
+
+    const axisSize = 20
+    const minMaxAmount = this.state.skullValues
+        .map(skull => skull.amount)
+        .reduce(MinMax.update, new MinMax())
+    const minMaxMillis = this.state.skullValues
+        .map(skull => skull.millis)
+        .reduce(MinMax.update, new MinMax())
+    const width = this.svgRef.current!.clientWidth
+    const height = this.svgRef.current!.clientHeight
+    const barWidth = width / this.state.skullValues.length
+    const barHeightRatio = height / minMaxAmount.max
+
+    const chart = d3.select(this.svgRef.current)
+
+    const amountAxis = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
+    const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
+    chart.append('g')
+        .classed('x', true)
+        .classed('axis', true)
+        .attr('transform', `translate(${0}, ${height - axisSize})`)
+        .call(d3.axisBottom(timeAxis))
+
+    // this.state.skullValues
+    //     .reduce((map, value) => {
+    //       const list = map.get(value.type)
+    //       if (list) {
+    //         list.push(value)
+    //       } else {
+    //         map.set(value.type, [value])
+    //       }
+    //       return map
+    //     }, new Map<string, IRegisteredValue[]>())
+    //     .forEach((data, type) => {
+    //         const color = getColorFromType(type)
+    //         const line = d3.line<IRegisteredValue>().x(d => timeAxis(d.millis)).y(d => amountAxis(d.amount))
+    //       chart
+    //           .append('path')
+    //           .datum(data)
+    //           .attr('fill', 'none')
+    //           .attr('stroke', color)
+    //           .attr('d', line)
+    //     })
+
+    chart
+      .selectAll('rect')
+      .data(this.state.skullValues)
+      .enter()
+      .append('rect')
+      .classed('Chart-Bar', true)
+      .attr('x', d => timeAxis(d.millis))
+      .attr('y', d => amountAxis(d.amount))// * barHeightRatio)
+      .attr('width', 10)
+      .attr('height', d => height - axisSize - amountAxis(d.amount))// * barHeightRatio - axisSize)
+      .attr('fill', getColorFromSkull)
   }
 
   render() {

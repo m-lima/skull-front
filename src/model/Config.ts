@@ -39,23 +39,23 @@ export class Mock {
       },
       {
         type:'dois',
-        amount:18.5,
+        amount:15.5,
         millis:1553991451467,
       },
       {
         type:'tres',
-        amount:1,
+        amount:2,
         millis:1554021022579,
       },
       {
         type:'quatro',
         amount:3,
-        millis:1554023920833,
+        millis:1554024920833,
       },
       {
         type:'tres',
-        amount:1,
-        millis:1554024801060,
+        amount:10,
+        millis:1554029801060,
       },
       {
         type:'tres',
@@ -69,7 +69,7 @@ export class Mock {
       },
       {
         type:'um',
-        amount:10,
+        amount:6,
         millis:1554991448013,
       },
       {
