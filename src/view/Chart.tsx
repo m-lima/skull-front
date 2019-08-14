@@ -88,7 +88,7 @@ export default class Chart extends Component<{}, IState> {
     this.setState({ skullValues: [], status: Status.LOADING })
     Fetch.registeredValues()
       .then(r => this.setState({
-        skullValues: r,
+        skullValues: r.map(normalizeTime),
         status: (r.length > 0 ? Status.OK : Status.EMPTY),
       }))
       .then(this.updateChart)
@@ -120,57 +120,89 @@ export default class Chart extends Component<{}, IState> {
     const height = this.svgRef.current!.clientHeight
 
     const chart = d3.select(this.svgRef.current)
-    const amountAxis = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
-    const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
+    const plot = chart.append('svg').attr('width', width).attr('height', height)
+    const amountDomain = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
+    const timeDomain = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
 
-    const dayWidth = (timeAxis(new Date(0, 0, 1).getTime()) - timeAxis(new Date(0, 0, 0).getTime())) * 0.8
-    const typeWidth = dayWidth / types.length
-    const typeCenter = typeWidth / 2
-    const scaledZero = amountAxis(0)
+    const fullDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
+    const fullHalfDayWidth = fullDayWidth / 2
+    const fullTypeWidth = fullDayWidth * 0.8 / types.length
+    const fullTypeStart  = fullDayWidth * 0.1
+    const fullTypeCenter = fullTypeWidth / 2
+    const scaledZero = amountDomain(0)
 
-    chart.append('g')
+    const timeAxis = plot.append('g')
         .classed('x', true)
         .classed('axis', true)
         .attr('transform', `translate(${0}, ${height - axisSize})`)
-        .call(d3.axisBottom(timeAxis))
+        .call(d3.axisBottom(timeDomain))
 
-    // this.state.skullValues
-    //     .map(normalizeTime)
-    //     .reduce((map, value) => {
-    //       const list = map.get(value.type)
-    //       if (list) {
-    //         list.push(value)
-    //       } else {
-    //         map.set(value.type, [value])
-    //       }
-    //       return map
-    //     }, new Map<string, IRegisteredValue[]>())
-    //     .forEach((data, type) => {
-    //         const color = getColorFromType(type)
-    //         const line = d3.line<IRegisteredValue>().x(d => timeAxis(d.millis)).y(d => amountAxis(d.amount))
-    //       chart
-    //           .append('path')
-    //           .datum(data)
-    //           .attr('fill', 'none')
-    //           .attr('stroke', color)
-    //           .attr('d', line)
-    //     })
+    const bars = plot
+        .selectAll('rect')
+        .data(this.state.skullValues)
+        .enter()
+        .append('rect')
+        .classed('Chart-Bar', true)
+        .attr('x', d => timeDomain(d.millis) - fullTypeCenter - fullHalfDayWidth + fullTypeStart + types.indexOf(d.type) * fullTypeWidth)
+        .attr('y', scaledZero)
+        .attr('width', fullTypeWidth)
+        .attr('height', 0)
+        .attr('fill', getColorFromSkull)
 
-    chart
-      .selectAll('rect')
-      .data(this.state.skullValues)
-      .enter()
-      .append('rect')
-      .classed('Chart-Bar', true)
-      .attr('x', d => timeAxis(d.millis) - typeCenter + types.indexOf(d.type) * typeWidth)
-      .attr('y', scaledZero)
-      .attr('width', typeWidth)
-      .attr('height', 0)
-      .attr('fill', getColorFromSkull)
-      .transition()
-      .duration(750)
-      .attr('y', d => amountAxis(d.amount))
-      .attr('height', d => scaledZero - amountAxis(d.amount))
+    bars
+        .transition()
+        .duration(750)
+        .attr('y', d => amountDomain(d.amount))
+        .attr('height', d => scaledZero - amountDomain(d.amount))
+
+    const plottedBrush = plot.append('g')
+
+    let zoomGuard = false
+
+    const brush = d3.brushX()
+    brush
+        .extent([[0, 0], [width, height]])
+        .on('end', () => {
+          const extent = d3.event.selection
+
+          if (!extent && zoomGuard) {
+            zoomGuard = false
+            return
+          }
+
+          let zoomDayWidth = fullDayWidth
+          let zoomHalfDayWidth = fullHalfDayWidth
+          let zoomTypeWidth = fullTypeWidth
+          let zoomTypeCenter = fullTypeCenter
+          let zoomTypeStart = fullTypeStart
+          if(extent) {
+            timeDomain.domain([timeDomain.invert(extent[0]), timeDomain.invert(extent[1])])
+            zoomDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
+            zoomHalfDayWidth = zoomDayWidth / 2
+            zoomTypeWidth = zoomDayWidth * 0.8 / types.length
+            zoomTypeStart = zoomDayWidth * 0.1
+            zoomTypeCenter = zoomTypeWidth / 2
+
+            zoomGuard = true
+            plottedBrush.call(brush.move)
+          } else {
+            timeDomain.domain([minMaxMillis.min, minMaxMillis.max]).nice()
+          }
+
+          timeAxis
+              .transition()
+              .duration(750)
+              .call(d3.axisBottom(timeDomain))
+
+          bars
+              .transition()
+              .duration(750)
+              .attr('x', d => timeDomain(d.millis) - zoomTypeCenter - zoomHalfDayWidth + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
+              .attr('width', zoomTypeWidth)
+        })
+
+    plottedBrush
+        .call(brush)
   }
 
   render() {

@@ -172,6 +172,26 @@ export class Mock {
         amount:2.5,
         millis:1557030055246,
       },
+      {
+        type:'um',
+        amount:1,
+        millis:1557200055246,
+      },
+      {
+        type:'dois',
+        amount:2,
+        millis:1557210055246,
+      },
+      {
+        type:'tres',
+        amount:3,
+        millis:1557220055246,
+      },
+      {
+        type:'quatro',
+        amount:4,
+        millis:1557230055246,
+      },
     ]),
   }
 }
