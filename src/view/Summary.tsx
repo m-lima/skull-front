@@ -46,7 +46,7 @@ export default class Summary extends Component<{}, IState> {
     this.setState({ skullValues: [], status: Status.LOADING, selected: undefined })
     Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
       .then(r => this.setState({
-        skullValues: r[0],
+        skullValues: r[0].reverse(),
         status: (r[0].length > 0 ? Status.OK : Status.EMPTY),
         icons: r[1].reduce((m, v) => {
           m.set(v.type + v.amount, v.icon)

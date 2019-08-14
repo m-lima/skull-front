@@ -111,6 +111,11 @@ export default class Chart extends Component<{}, IState> {
     const minMaxMillis = this.state.skullValues
         .map(skull => skull.millis)
         .reduce(MinMax.update, new MinMax())
+    const types = this.state.skullValues.map(skull => skull.type)
+        .reduce((list, value) => {
+          !list.find(v => value === v) && list.push(value)
+          return list
+        }, [] as string[])
     const width = this.svgRef.current!.clientWidth
     const height = this.svgRef.current!.clientHeight
 
@@ -119,7 +124,8 @@ export default class Chart extends Component<{}, IState> {
     const timeAxis = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
 
     const dayWidth = (timeAxis(new Date(0, 0, 1).getTime()) - timeAxis(new Date(0, 0, 0).getTime())) * 0.8
-    const dayCenter = dayWidth / 2
+    const typeWidth = dayWidth / types.length
+    const typeCenter = typeWidth / 2
     const scaledZero = amountAxis(0)
 
     chart.append('g')
@@ -152,13 +158,13 @@ export default class Chart extends Component<{}, IState> {
 
     chart
       .selectAll('rect')
-      .data(this.state.skullValues.map(normalizeTime))
+      .data(this.state.skullValues)
       .enter()
       .append('rect')
       .classed('Chart-Bar', true)
-      .attr('x', d => timeAxis(d.millis) - dayCenter)
+      .attr('x', d => timeAxis(d.millis) - typeCenter + types.indexOf(d.type) * typeWidth)
       .attr('y', scaledZero)
-      .attr('width', dayWidth)
+      .attr('width', typeWidth)
       .attr('height', 0)
       .attr('fill', getColorFromSkull)
       .transition()
