@@ -192,6 +192,46 @@ export class Mock {
         amount:4,
         millis:1557230055246,
       },
+      {
+        type:'um',
+        amount:1,
+        millis:1557200055246 + 86400000,
+      },
+      {
+        type:'dois',
+        amount:2,
+        millis:1557210055246 + 86400000,
+      },
+      {
+        type:'tres',
+        amount:3,
+        millis:1557220055246 + 86400000,
+      },
+      {
+        type:'quatro',
+        amount:4,
+        millis:1557230055246 + 86400000,
+      },
+      {
+        type:'um',
+        amount:1,
+        millis:1557200055246 + 86400000 * 2,
+      },
+      {
+        type:'dois',
+        amount:2,
+        millis:1557210055246 + 86400000 * 2,
+      },
+      {
+        type:'tres',
+        amount:3,
+        millis:1557220055246 + 86400000 * 2,
+      },
+      {
+        type:'quatro',
+        amount:4,
+        millis:1557230055246 + 86400000 * 2,
+      },
     ]),
   }
 }

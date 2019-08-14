@@ -105,6 +105,9 @@ export default class Chart extends Component<{}, IState> {
     }
 
     const axisSize = 20
+    const dayWidthRatio = 0.9
+    const dayWidthStart = (1.0 - dayWidthRatio) / 2
+
     const minMaxAmount = this.state.skullValues
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
@@ -126,16 +129,15 @@ export default class Chart extends Component<{}, IState> {
 
     const fullDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
     const fullHalfDayWidth = fullDayWidth / 2
-    const fullTypeWidth = fullDayWidth * 0.8 / types.length
-    const fullTypeStart  = fullDayWidth * 0.1
-    const fullTypeCenter = fullTypeWidth / 2
+    const fullTypeWidth = fullDayWidth * dayWidthRatio / types.length
+    const fullTypeStart  = fullDayWidth * dayWidthStart
     const scaledZero = amountDomain(0)
 
     const timeAxis = plot.append('g')
         .classed('x', true)
         .classed('axis', true)
         .attr('transform', `translate(${0}, ${height - axisSize})`)
-        .call(d3.axisBottom(timeDomain))
+        .call(d3.axisBottom(timeDomain).ticks(d3.timeDay.every(1)))
 
     const bars = plot
         .selectAll('rect')
@@ -143,7 +145,7 @@ export default class Chart extends Component<{}, IState> {
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', d => timeDomain(d.millis) - fullTypeCenter - fullHalfDayWidth + fullTypeStart + types.indexOf(d.type) * fullTypeWidth)
+        .attr('x', d => timeDomain(d.millis) - fullHalfDayWidth + fullTypeStart + types.indexOf(d.type) * fullTypeWidth)
         .attr('y', scaledZero)
         .attr('width', fullTypeWidth)
         .attr('height', 0)
@@ -173,15 +175,13 @@ export default class Chart extends Component<{}, IState> {
           let zoomDayWidth = fullDayWidth
           let zoomHalfDayWidth = fullHalfDayWidth
           let zoomTypeWidth = fullTypeWidth
-          let zoomTypeCenter = fullTypeCenter
           let zoomTypeStart = fullTypeStart
           if(extent) {
             timeDomain.domain([timeDomain.invert(extent[0]), timeDomain.invert(extent[1])])
             zoomDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
             zoomHalfDayWidth = zoomDayWidth / 2
-            zoomTypeWidth = zoomDayWidth * 0.8 / types.length
-            zoomTypeStart = zoomDayWidth * 0.1
-            zoomTypeCenter = zoomTypeWidth / 2
+            zoomTypeWidth = zoomDayWidth * dayWidthRatio / types.length
+            zoomTypeStart = zoomDayWidth * dayWidthStart
 
             zoomGuard = true
             plottedBrush.call(brush.move)
@@ -192,12 +192,12 @@ export default class Chart extends Component<{}, IState> {
           timeAxis
               .transition()
               .duration(750)
-              .call(d3.axisBottom(timeDomain))
+              .call(d3.axisBottom(timeDomain).ticks(d3.timeDay.every(1)))
 
           bars
               .transition()
               .duration(750)
-              .attr('x', d => timeDomain(d.millis) - zoomTypeCenter - zoomHalfDayWidth + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
+              .attr('x', d => timeDomain(d.millis) - zoomHalfDayWidth + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
               .attr('width', zoomTypeWidth)
         })
 
