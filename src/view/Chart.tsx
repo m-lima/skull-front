@@ -10,9 +10,10 @@ import Status from '../model/Status'
 import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
 
-const getColorFromType = (type: string, desaturation = 0.6) => {
+const getColorFromType = (type: string) => {
   const prime = 16777619
   const offset = 2166136261
+  const desaturation = 0.6
 
   let color = offset
   for (let i = 0; i < type.length; i++) {
@@ -31,6 +32,65 @@ const getColorFromType = (type: string, desaturation = 0.6) => {
 
 const getColorFromSkull = (skull: IRegisteredValue) => {
   return getColorFromType(skull.type)
+}
+
+const addLegend = (plot: d3.Selection<SVGSVGElement | null, {}, null, undefined>, types: string[]) => {
+  const legendMargin = 40
+  const legendGap = 15
+  const legendRadius = 4
+
+  plot
+      .selectAll('Legend-Dot')
+      .data(types)
+      .enter()
+      .append('circle')
+      .attr('cx', legendMargin)
+      .attr('cy', (d, i) => legendMargin + legendGap * i)
+      .attr('r', legendRadius)
+      .style('fill', getColorFromType)
+
+  plot
+      .selectAll('Legend-Text')
+      .data(types)
+      .enter()
+      .append('text')
+      .text(d => d)
+      .attr('x', legendMargin + legendGap - legendRadius)
+      .attr('y', (d, i) => legendMargin + legendGap * i)
+      .attr('text-anchor', 'left')
+      .attr('dominant-baseline', 'middle')
+      .style('fill', getColorFromType)
+      .style('font', `${legendRadius * 3}px sans-serif`)
+}
+
+const zoom = (timeDomain: d3.ScaleTime<number, number>,
+              timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
+              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGSVGElement | null, {}>,
+              types: string[],
+              initial: number | Date,
+              final: number | Date,
+              dayWidthRatio: number,
+              nice = true) => {
+  timeDomain.domain([initial, final])
+  if (nice) {
+    timeDomain.nice()
+  }
+
+  const dayWidthStart = (1.0 - dayWidthRatio) / 2
+  const zoomDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
+  const zoomTypeWidth = zoomDayWidth * dayWidthRatio / types.length
+  const zoomTypeStart = zoomDayWidth * dayWidthStart
+
+  timeAxis
+      .transition()
+      .duration(750)
+      .call(d3.axisBottom(timeDomain).tickFormat(DateFormatter.format))
+
+  bars
+      .transition()
+      .duration(750)
+      .attr('x', d => timeDomain(d.millis) + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
+      .attr('width', zoomTypeWidth)
 }
 
 const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
@@ -58,6 +118,24 @@ class MinMax {
   static update(minMax: MinMax, value: number): MinMax {
     minMax.update(value)
     return minMax
+  }
+}
+
+class DateFormatter {
+  private static readonly formatEmpty = d3.timeFormat('')
+  private static readonly formatDay = d3.timeFormat('%a %d')
+  private static readonly formatWeek = d3.timeFormat('%b %d')
+  private static readonly formatMonth = d3.timeFormat('%B')
+  private static readonly formatYear = d3.timeFormat('%Y')
+
+  static format = (value: number | Date | { valueOf(): number }, index: number) => {
+    const date = new Date(value.valueOf())
+
+    return ((d3.timeDay(date) < date && index > 0) ? DateFormatter.formatEmpty
+        : d3.timeWeek(date) < date ? DateFormatter.formatDay
+        : d3.timeMonth(date) < date ? DateFormatter.formatWeek
+        : d3.timeYear(date) < date ? DateFormatter.formatMonth
+        : DateFormatter.formatYear)(date)
   }
 }
 
@@ -104,10 +182,13 @@ export default class Chart extends Component<{}, IState> {
       return
     }
 
-    const axisSize = 20
+    // Static constants
+    const margin = 20
     const dayWidthRatio = 0.9
     const dayWidthStart = (1.0 - dayWidthRatio) / 2
+    const dayInMillis = 86400000
 
+    // Calculated constants
     const minMaxAmount = this.state.skullValues
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
@@ -119,35 +200,37 @@ export default class Chart extends Component<{}, IState> {
           !list.find(v => value === v) && list.push(value)
           return list
         }, [] as string[])
+
+    // Sizes
     const width = this.svgRef.current!.clientWidth
     const height = this.svgRef.current!.clientHeight
+    const plotHeight = height - margin
 
+    // Chart basis
     const chart = d3.select(this.svgRef.current)
-    const plot = chart.append('svg').attr('width', width).attr('height', height)
-    const amountDomain = d3.scaleLinear().domain([0, minMaxAmount.max]).range([height - axisSize, 0]).nice()
-    const timeDomain = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max]).range([axisSize, width - axisSize]).nice()
+    const plot = chart.attr('width', width).attr('height', plotHeight)
+    const amountDomain = d3.scaleLinear().domain([0, minMaxAmount.max]).range([plotHeight, 0]).nice()
+    const timeDomain = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max + dayInMillis]).range([margin, width - margin]).nice()
 
-    const fullDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-    const fullHalfDayWidth = fullDayWidth / 2
-    const fullTypeWidth = fullDayWidth * dayWidthRatio / types.length
-    const fullTypeStart  = fullDayWidth * dayWidthStart
+    // Chart-derived constants
+    const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
+    const typeWidth = dayWidth * dayWidthRatio / types.length
+    const typeStart  = dayWidth * dayWidthStart
     const scaledZero = amountDomain(0)
 
-    const timeAxis = plot.append('g')
-        .classed('x', true)
-        .classed('axis', true)
-        .attr('transform', `translate(${0}, ${height - axisSize})`)
-        .call(d3.axisBottom(timeDomain).ticks(d3.timeDay.every(1)))
+    const timeAxis = chart.append('g')
+        .attr('transform', `translate(${0}, ${plotHeight})`)
+        .call(d3.axisBottom(timeDomain).tickFormat(DateFormatter.format))
 
     const bars = plot
-        .selectAll('rect')
+        .selectAll('Bars')
         .data(this.state.skullValues)
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', d => timeDomain(d.millis) - fullHalfDayWidth + fullTypeStart + types.indexOf(d.type) * fullTypeWidth)
+        .attr('x', d => timeDomain(d.millis) + typeStart + types.indexOf(d.type) * typeWidth)
         .attr('y', scaledZero)
-        .attr('width', fullTypeWidth)
+        .attr('width', typeWidth)
         .attr('height', 0)
         .attr('fill', getColorFromSkull)
 
@@ -157,52 +240,22 @@ export default class Chart extends Component<{}, IState> {
         .attr('y', d => amountDomain(d.amount))
         .attr('height', d => scaledZero - amountDomain(d.amount))
 
-    const plottedBrush = plot.append('g')
-
-    let zoomGuard = false
-
     const brush = d3.brushX()
-    brush
-        .extent([[0, 0], [width, height]])
+        .extent([[0, 0], [width, plotHeight]])
         .on('end', () => {
           const extent = d3.event.selection
-
-          if (!extent && zoomGuard) {
-            zoomGuard = false
+          if (!extent) {
             return
           }
-
-          let zoomDayWidth = fullDayWidth
-          let zoomHalfDayWidth = fullHalfDayWidth
-          let zoomTypeWidth = fullTypeWidth
-          let zoomTypeStart = fullTypeStart
-          if(extent) {
-            timeDomain.domain([timeDomain.invert(extent[0]), timeDomain.invert(extent[1])])
-            zoomDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-            zoomHalfDayWidth = zoomDayWidth / 2
-            zoomTypeWidth = zoomDayWidth * dayWidthRatio / types.length
-            zoomTypeStart = zoomDayWidth * dayWidthStart
-
-            zoomGuard = true
-            plottedBrush.call(brush.move)
-          } else {
-            timeDomain.domain([minMaxMillis.min, minMaxMillis.max]).nice()
-          }
-
-          timeAxis
-              .transition()
-              .duration(750)
-              .call(d3.axisBottom(timeDomain).ticks(d3.timeDay.every(1)))
-
-          bars
-              .transition()
-              .duration(750)
-              .attr('x', d => timeDomain(d.millis) - zoomHalfDayWidth + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
-              .attr('width', zoomTypeWidth)
+          plottedBrush.call(brush.move)
+          zoom(timeDomain, timeAxis, bars, types, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), dayWidthRatio, false)
         })
 
-    plottedBrush
+    const plottedBrush = plot.append('g')
         .call(brush)
+        .on('dblclick', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis, dayWidthRatio))
+
+    addLegend(plot, types)
   }
 
   render() {

@@ -16,15 +16,19 @@ export default class Footer extends Component<IProps> {
         <div className='Footer-container'>
           <a href={Config.Endpoint.skull} title='Download JSON'>
             <Icon icon='fas fa-file-download'/>
+            {'D'}
           </a>
           <Link to={Config.Path.grid} title='Quick values' id={this.props.path === Config.Path.grid ? 'selected' : undefined}>
             <Icon icon='fas fa-th-large'/>
+            {'Q'}
           </Link>
           <Link to={Config.Path.summary} title='Summary' id={this.props.path === Config.Path.summary ? 'selected' : undefined}>
             <Icon icon='fas fa-th-list'/>
+            {'S'}
           </Link>
           <Link to={Config.Path.chart} title='Chart' id={this.props.path === Config.Path.chart ? 'selected' : undefined}>
             <Icon icon='fas fa-chart-line'/>
+            {'C'}
           </Link>
         </div>
       </div>
