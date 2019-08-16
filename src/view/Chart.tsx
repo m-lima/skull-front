@@ -69,17 +69,14 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
               types: string[],
               initial: number | Date,
               final: number | Date,
-              dayWidthRatio: number,
               nice = true) => {
   timeDomain.domain([initial, final])
   if (nice) {
     timeDomain.nice()
   }
 
-  const dayWidthStart = (1.0 - dayWidthRatio) / 2
-  const zoomDayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-  const zoomTypeWidth = zoomDayWidth * dayWidthRatio / types.length
-  const zoomTypeStart = zoomDayWidth * dayWidthStart
+  const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
+  const typeWidth = dayWidth / types.length
 
   timeAxis
       .transition()
@@ -89,8 +86,8 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
   bars
       .transition()
       .duration(750)
-      .attr('x', d => timeDomain(d.millis) + zoomTypeStart + types.indexOf(d.type) * zoomTypeWidth)
-      .attr('width', zoomTypeWidth)
+      .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
+      .attr('width', typeWidth)
 }
 
 const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
@@ -184,8 +181,6 @@ export default class Chart extends Component<{}, IState> {
 
     // Static constants
     const margin = 20
-    const dayWidthRatio = 0.9
-    const dayWidthStart = (1.0 - dayWidthRatio) / 2
     const dayInMillis = 86400000
 
     // Calculated constants
@@ -214,8 +209,7 @@ export default class Chart extends Component<{}, IState> {
 
     // Chart-derived constants
     const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-    const typeWidth = dayWidth * dayWidthRatio / types.length
-    const typeStart  = dayWidth * dayWidthStart
+    const typeWidth = dayWidth / types.length
     const scaledZero = amountDomain(0)
 
     const timeAxis = chart.append('g')
@@ -228,7 +222,7 @@ export default class Chart extends Component<{}, IState> {
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', d => timeDomain(d.millis) + typeStart + types.indexOf(d.type) * typeWidth)
+        .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
         .attr('y', scaledZero)
         .attr('width', typeWidth)
         .attr('height', 0)
@@ -248,12 +242,12 @@ export default class Chart extends Component<{}, IState> {
             return
           }
           plottedBrush.call(brush.move)
-          zoom(timeDomain, timeAxis, bars, types, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), dayWidthRatio, false)
+          zoom(timeDomain, timeAxis, bars, types, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), false)
         })
 
     const plottedBrush = plot.append('g')
         .call(brush)
-        .on('dblclick', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis, dayWidthRatio))
+        .on('dblclick', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
 
     addLegend(plot, types)
   }
