@@ -195,6 +195,9 @@ export default class Chart extends Component<{}, IState> {
           !list.find(v => value === v) && list.push(value)
           return list
         }, [] as string[])
+    const initialZoom = this.state.skullValues
+        .map(skull => skull.millis)
+        .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
 
     // Sizes
     const width = this.svgRef.current!.clientWidth
@@ -204,8 +207,16 @@ export default class Chart extends Component<{}, IState> {
     // Chart basis
     const chart = d3.select(this.svgRef.current)
     const plot = chart.attr('width', width).attr('height', plotHeight)
-    const amountDomain = d3.scaleLinear().domain([0, minMaxAmount.max]).range([plotHeight, 0]).nice()
-    const timeDomain = d3.scaleTime().domain([minMaxMillis.min, minMaxMillis.max + dayInMillis]).range([margin, width - margin]).nice()
+    const amountDomain = d3
+        .scaleLinear()
+        .domain([0, minMaxAmount.max])
+        .range([plotHeight, 0])
+        .nice()
+    const timeDomain = d3
+        .scaleTime()
+        .domain([initialZoom, minMaxMillis.max + dayInMillis])
+        .range([margin, width - margin])
+        .nice()
 
     // Chart-derived constants
     const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
