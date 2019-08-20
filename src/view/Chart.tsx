@@ -34,7 +34,7 @@ const getColorFromSkull = (skull: IRegisteredValue) => {
   return getColorFromType(skull.type)
 }
 
-const addLegend = (plot: d3.Selection<SVGSVGElement | null, {}, null, undefined>, types: string[]) => {
+const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: string[]) => {
   const legendMargin = 40
   const legendGap = 15
   const legendRadius = 4
@@ -65,7 +65,7 @@ const addLegend = (plot: d3.Selection<SVGSVGElement | null, {}, null, undefined>
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
               timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGSVGElement | null, {}>,
+              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
               types: string[],
               initial: number | Date,
               final: number | Date,
@@ -101,6 +101,11 @@ const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
 
 interface IState extends IQueryState {
   skullValues: IRegisteredValue[]
+}
+
+enum Orientation {
+  HORIZONTAL,
+  VERTICAL,
 }
 
 class MinMax {
@@ -174,6 +179,18 @@ export default class Chart extends Component<{}, IState> {
     this.load()
   }
 
+  getSizesAndOrientation(margin: number) {
+    const screenWidth = this.svgRef.current!.clientWidth
+    const screenHeight = this.svgRef.current!.clientHeight
+    const orientation = screenWidth >= screenHeight ? Orientation.HORIZONTAL : Orientation.VERTICAL
+
+    const width = orientation === Orientation.HORIZONTAL ? screenWidth : screenHeight
+    const height = orientation === Orientation.HORIZONTAL ? screenHeight : screenWidth
+    const plotHeight = height - margin
+
+    return { width, height, plotHeight, orientation }
+  }
+
   updateChart() {
     if (!this.state.skullValues || this.state.skullValues.length < 1) {
       return
@@ -200,13 +217,13 @@ export default class Chart extends Component<{}, IState> {
         .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
 
     // Sizes
-    const width = this.svgRef.current!.clientWidth
-    const height = this.svgRef.current!.clientHeight
-    const plotHeight = height - margin
+    const { width, height, plotHeight, orientation } = this.getSizesAndOrientation(margin)
 
     // Chart basis
-    const chart = d3.select(this.svgRef.current)
-    const plot = chart.attr('width', width).attr('height', plotHeight)
+    const chart = d3.select(this.svgRef.current).append('g').attr('width', width).attr('height', plotHeight)
+    const plot = orientation === Orientation.HORIZONTAL
+        ? chart
+        : chart.attr('transform', `rotate(90, 0, ${height}) translate(-${height}, 0)`)
     const amountDomain = d3
         .scaleLinear()
         .domain([0, minMaxAmount.max])
@@ -223,7 +240,7 @@ export default class Chart extends Component<{}, IState> {
     const typeWidth = dayWidth / types.length
     const scaledZero = amountDomain(0)
 
-    const timeAxis = chart.append('g')
+    const timeAxis = plot.append('g')
         .attr('transform', `translate(${0}, ${plotHeight})`)
         .call(d3.axisBottom(timeDomain).tickFormat(DateFormatter.format))
 
