@@ -240,7 +240,7 @@ export default class Chart extends Component<IProps> {
 
     const plottedBrush = plot.append('g')
         .call(brush)
-        .on('dblclick', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
+        .on('click', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
 
     addLegend(plot, types)
   }
