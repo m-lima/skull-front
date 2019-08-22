@@ -2,70 +2,34 @@ import React, { Component, Fragment } from 'react'
 import './css/Summary.css'
 
 import * as Message from './Message'
-import Access from '../control/Access'
 import Confirmation from './Confirmation'
-import Fetch from '../control/Fetch'
-import IQueryState from '../model/IQueryState'
 import Icon from './Icon'
-import Status from '../model/Status'
-import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
-import Push from '../control/Push'
 
-interface IState extends IQueryState {
+interface IProps {
   skullValues: IRegisteredValue[]
   icons: Map<string, string>
+  delete: (skullValue: IRegisteredValue) => void
+}
+
+interface IState {
   selected?: IRegisteredValue
 }
 
-export default class Summary extends Component<{}, IState> {
+export default class Summary extends Component<IProps, IState> {
 
-  constructor(props: {}) {
+  constructor(props: IProps) {
     super(props)
-    this.handleException = this.handleException.bind(this)
+    this.state = { selected: undefined }
     this.renderRow = this.renderRow.bind(this)
     this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
   }
 
-  handleException(ex: any) {
-    if (ex instanceof ApiException) {
-      if (ex.status === Status.UNAUTHORIZED) {
-        Access.login()
-        return
-      }
-      console.error('HTTP error status: ' + ex.httpStatus)
-      this.setState({ skullValues: [], status: ex.status, icons: new Map<string, string>(), selected: undefined })
-    } else {
-      console.error(ex)
-      this.setState({ skullValues: [], status: Status.ERROR, icons: new Map<string, string>(), selected: undefined })
-    }
-  }
-
-  load() {
-    this.setState({ skullValues: [], status: Status.LOADING, selected: undefined })
-    Promise.all([Fetch.registeredValues(), Fetch.quickValues()])
-      .then(r => this.setState({
-        skullValues: r[0].reverse(),
-        status: (r[0].length > 0 ? Status.OK : Status.EMPTY),
-        icons: r[1].reduce((m, v) => {
-          m.set(v.type + v.amount, v.icon)
-          return m
-        }, new Map<string, string>()),
-        selected: undefined,
-      }))
-      .catch(this.handleException)
-  }
-
-  componentDidMount() {
-    this.load()
-  }
-
   accept() {
-    this.setState({ status: Status.LOADING })
-    Push.deletion(this.state.selected!)
-      .then(() => this.load())
-      .catch(this.handleException)
+    const selected = this.state.selected!
+    this.setState({ selected: undefined })
+    this.props.delete(selected)
   }
 
   cancel() {
@@ -76,7 +40,7 @@ export default class Summary extends Component<{}, IState> {
     return (
       <tr key={index}>
         <td>
-          {this.state.icons.has(value.type + value.amount) && <Icon icon={this.state.icons.get(value.type + value.amount) as string} />}
+          {this.props.icons.has(value.type + value.amount) && <Icon icon={this.props.icons.get(value.type + value.amount) as string} />}
         </td>
         <td>{value.type}</td>
         <td>{value.amount}</td>
@@ -88,44 +52,28 @@ export default class Summary extends Component<{}, IState> {
     )
   }
 
-  render() {
-    if (!this.state) {
-      return <Message.Loading />
-    }
-
-    switch (this.state.status) {
-      case Status.LOADING:
-        return <Message.Loading />
-      case Status.OK:
-        return (
-          <Fragment>
-            <table className='Summary'>
-              <tbody>
-                <tr>
-                  <th id='icon'></th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Time</th>
-                  <th id='icon'></th>
-                </tr>
-                {this.state.skullValues.map(this.renderRow)}
-              </tbody>
-            </table>
-            <Confirmation
-              types={this.state.skullValues.map(v => v.type)}
+  render = () =>
+    this.props.skullValues.length < 1
+      ? <Message.Empty />
+      : <Fragment>
+          <table className='Summary'>
+            <tbody>
+            <tr>
+              <th id='icon'></th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Time</th>
+              <th id='icon'></th>
+            </tr>
+            {this.props.skullValues.map(this.renderRow)}
+            </tbody>
+          </table>
+          <Confirmation
+              types={this.props.skullValues.map(v => v.type)}
               value={this.state.selected}
               onAccept={this.accept}
               onCancel={this.cancel}
-            />
-          </Fragment>
-      )
-      case Status.EMPTY:
-        return <Message.Empty />
-      case Status.FORBIDDEN:
-        return <Message.Unauthorized />
-      case Status.ERROR:
-        return <Message.Error />
-    }
-  }
+          />
+        </Fragment>
 }
 

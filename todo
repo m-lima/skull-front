@@ -1,13 +1,13 @@
 [ ]  Add summary
 [x]  - List all entry
-[ ]  - Allow the deletion of an item
+[x]  - Allow the deletion of an item
 [ ]  - Show daily/weekly/monthly frequency
 [ ]  - Show regular frequency (exclude long periods of absence)
-[ ]  Add plot
-[ ]  Unify views (they all have loading, forbidden, etc)
-[ ]? Remove state from views
 [ ]? Download file (move to summary?)
 [ ]? Google docs
+[x]? Remove state from views
+[x]  Add plot
+[x]  Unify views (they all have loading, forbidden, etc)
 [x]! Move grid out of skull.tsx
 [x]! Add development banner when running development
 [x]  Allow reload on failure

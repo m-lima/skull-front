@@ -3,11 +3,6 @@ import * as d3 from 'd3'
 import './css/Chart.css'
 
 import * as Message from './Message'
-import Access from '../control/Access'
-import Fetch from '../control/Fetch'
-import IQueryState from '../model/IQueryState'
-import Status from '../model/Status'
-import { ApiException } from '../model/Exception'
 import { IRegisteredValue } from '../model/ISkullValue'
 
 const getColorFromType = (type: string) => {
@@ -99,7 +94,7 @@ const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
   return { type: value.type, amount: value.amount, millis: normalizedDate.getTime() }
 }
 
-interface IState extends IQueryState {
+interface IProps {
   skullValues: IRegisteredValue[]
 }
 
@@ -141,43 +136,8 @@ class DateFormatter {
   }
 }
 
-export default class Chart extends Component<{}, IState> {
+export default class Chart extends Component<IProps> {
   private svgRef = React.createRef<SVGSVGElement>()
-
-  constructor(props: {}) {
-    super(props)
-    this.handleException = this.handleException.bind(this)
-    this.updateChart = this.updateChart.bind(this)
-  }
-
-  handleException(ex: any) {
-    if (ex instanceof ApiException) {
-      if (ex.status === Status.UNAUTHORIZED) {
-        Access.login()
-        return
-      }
-      console.error('HTTP error status: ' + ex.httpStatus)
-      this.setState({ skullValues: [], status: ex.status })
-    } else {
-      console.error(ex)
-      this.setState({ skullValues: [], status: Status.ERROR })
-    }
-  }
-
-  load() {
-    this.setState({ skullValues: [], status: Status.LOADING })
-    Fetch.registeredValues()
-      .then(r => this.setState({
-        skullValues: r.map(normalizeTime),
-        status: (r.length > 0 ? Status.OK : Status.EMPTY),
-      }))
-      .then(this.updateChart)
-      .catch(this.handleException)
-  }
-
-  componentDidMount() {
-    this.load()
-  }
 
   getSizesAndOrientation(margin: number) {
     const screenWidth = this.svgRef.current!.clientWidth
@@ -191,8 +151,12 @@ export default class Chart extends Component<{}, IState> {
     return { width, height, plotHeight, orientation }
   }
 
+  componentDidMount() {
+    this.updateChart()
+  }
+
   updateChart() {
-    if (!this.state.skullValues || this.state.skullValues.length < 1) {
+    if (this.props.skullValues.length < 1) {
       return
     }
 
@@ -201,18 +165,19 @@ export default class Chart extends Component<{}, IState> {
     const dayInMillis = 86400000
 
     // Calculated constants
-    const minMaxAmount = this.state.skullValues
+    const skullValues = this.props.skullValues.map(normalizeTime)
+    const minMaxAmount = skullValues
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
-    const minMaxMillis = this.state.skullValues
+    const minMaxMillis = skullValues
         .map(skull => skull.millis)
         .reduce(MinMax.update, new MinMax())
-    const types = this.state.skullValues.map(skull => skull.type)
+    const types = skullValues.map(skull => skull.type)
         .reduce((list, value) => {
           !list.find(v => value === v) && list.push(value)
           return list
         }, [] as string[])
-    const initialZoom = this.state.skullValues
+    const initialZoom = skullValues
         .map(skull => skull.millis)
         .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
 
@@ -246,7 +211,7 @@ export default class Chart extends Component<{}, IState> {
 
     const bars = plot
         .selectAll('Bars')
-        .data(this.state.skullValues)
+        .data(skullValues)
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
@@ -280,22 +245,8 @@ export default class Chart extends Component<{}, IState> {
     addLegend(plot, types)
   }
 
-  render() {
-    if (!this.state) {
-      return <Message.Loading />
-    }
-
-    switch (this.state.status) {
-      case Status.LOADING:
-        return <Message.Loading />
-      case Status.OK:
-        return (<svg className='Chart' ref={this.svgRef} />)
-      case Status.EMPTY:
-        return <Message.Empty />
-      case Status.FORBIDDEN:
-        return <Message.Unauthorized />
-      case Status.ERROR:
-        return <Message.Error />
-    }
-  }
+  render = () =>
+    this.props.skullValues.length < 1
+      ? <Message.Empty />
+      : <svg className='Chart' ref={this.svgRef} />
 }
