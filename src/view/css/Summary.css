@@ -29,15 +29,22 @@
   cursor: pointer;
 }
 
-.Summary tr {
+.Summary tr#dark, .Summary tr#bright {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.Summary tr#dark {
   background-color: var(--shade-1);
+  border-bottom-color: var(--shade-2);
 }
 
-.Summary tr:nth-child(even) {
+.Summary tr#bright {
   background-color: var(--shade-2);
+  border-bottom-color: var(--shade-1);
 }
 
-.Summary tr:hover {
+.Summary tr#dark:hover, .Summary tr#bright:hover {
   background-color: var(--shade-3);
 }
 

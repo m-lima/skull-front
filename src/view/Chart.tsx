@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import './css/Chart.css'
 
 import * as Message from './Message'
+import * as Util from '../Util'
 import { IRegisteredValue } from '../model/ISkullValue'
 
 const getColorFromType = (type: string) => {
@@ -60,7 +61,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: 
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
               timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
+              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}> | d3.Transition<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
               types: string[],
               initial: number | Date,
               final: number | Date,
@@ -83,15 +84,6 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
       .duration(750)
       .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
       .attr('width', typeWidth)
-}
-
-const normalizeTime = (value: IRegisteredValue): IRegisteredValue => {
-  const normalizedDate = new Date(value.millis)
-  normalizedDate.setHours(0)
-  normalizedDate.setMinutes(0)
-  normalizedDate.setSeconds(0)
-  normalizedDate.setMilliseconds(0)
-  return { type: value.type, amount: value.amount, millis: normalizedDate.getTime() }
 }
 
 interface IProps {
@@ -165,7 +157,7 @@ export default class Chart extends Component<IProps> {
     const dayInMillis = 86400000
 
     // Calculated constants
-    const skullValues = this.props.skullValues.map(normalizeTime)
+    const skullValues = this.props.skullValues.map(Util.normalizeDate)
     const minMaxAmount = skullValues
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
@@ -196,7 +188,7 @@ export default class Chart extends Component<IProps> {
         .nice()
     const timeDomain = d3
         .scaleTime()
-        .domain([initialZoom, minMaxMillis.max + dayInMillis])
+        .domain([minMaxMillis.min, minMaxMillis.max + dayInMillis])
         .range([margin, width - margin])
         .nice()
 
@@ -243,6 +235,8 @@ export default class Chart extends Component<IProps> {
         .on('click', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
 
     addLegend(plot, types)
+
+    setTimeout(() => zoom(timeDomain, timeAxis, bars, types, initialZoom, minMaxMillis.max + dayInMillis), 750)
   }
 
   render = () =>

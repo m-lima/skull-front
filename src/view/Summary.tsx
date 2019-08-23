@@ -2,9 +2,14 @@ import React, { Component, Fragment } from 'react'
 import './css/Summary.css'
 
 import * as Message from './Message'
+import * as Util from '../Util'
 import Confirmation from './Confirmation'
 import Icon from './Icon'
 import { IRegisteredValue } from '../model/ISkullValue'
+
+interface ISummaryValue extends IRegisteredValue {
+  dark: boolean
+}
 
 interface IProps {
   skullValues: IRegisteredValue[]
@@ -14,6 +19,29 @@ interface IProps {
 
 interface IState {
   selected?: IRegisteredValue
+}
+
+const alternateDays = (skullValues: IRegisteredValue[]) => {
+  let millis = 0
+  let dark = false
+  return skullValues.map((v): ISummaryValue=> {
+    const newValue = Util.normalizeDate(v)
+    if (newValue.millis !== millis) {
+      millis = newValue.millis
+      dark = !dark
+    }
+    return { type: v.type, amount: v.amount, millis: v.millis, dark: dark}
+  })
+}
+
+const formatDate = (millis: number) => {
+  const date = new Date(millis)
+  return Util.addLeadingZero(date.getDate())
+      + '/' + Util.mapMonthToName(date.getMonth())
+      + '/' + date.getFullYear()
+      + ' '
+      + Util.addLeadingZero(date.getHours())
+      + ':' + Util.addLeadingZero(date.getMinutes())
 }
 
 export default class Summary extends Component<IProps, IState> {
@@ -36,15 +64,16 @@ export default class Summary extends Component<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  renderRow(value: IRegisteredValue, index: number) {
+  renderRow(value: ISummaryValue, index: number) {
     return (
-      <tr key={index}>
+      <tr id={value.dark ? 'dark' : 'bright'} key={index}>
         <td>
-          {this.props.icons.has(value.type + value.amount) && <Icon icon={this.props.icons.get(value.type + value.amount) as string} />}
+          {this.props.icons.has(value.type + value.amount)
+          && <Icon icon={this.props.icons.get(value.type + value.amount) as string} />}
         </td>
         <td>{value.type}</td>
         <td>{value.amount}</td>
-        <td>{new Date(value.millis).toLocaleString()}</td>
+        <td>{formatDate(value.millis)}</td>
         <td id='delete' onClick={() => this.setState({ selected: value })}>
           <Icon icon='fas fa-trash-alt' />
         </td>
@@ -61,11 +90,11 @@ export default class Summary extends Component<IProps, IState> {
             <tr>
               <th id='icon'></th>
               <th>Type</th>
-              <th>Amount</th>
+              <th>Count</th>
               <th>Time</th>
               <th id='icon'></th>
             </tr>
-            {this.props.skullValues.map(this.renderRow)}
+            {alternateDays(this.props.skullValues).map(this.renderRow)}
             </tbody>
           </table>
           <Confirmation
