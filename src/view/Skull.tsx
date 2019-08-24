@@ -40,6 +40,8 @@ export default class Skull extends Component<{}, IState> {
   constructor(props: {}) {
     super(props)
     this.handleException = this.handleException.bind(this)
+    this.push = this.push.bind(this)
+    this.delete = this.delete.bind(this)
   }
 
   handleException(ex: any) {
