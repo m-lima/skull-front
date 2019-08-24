@@ -61,7 +61,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: 
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
               timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}> | d3.Transition<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
+              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
               types: string[],
               initial: number | Date,
               final: number | Date,
@@ -144,11 +144,7 @@ export default class Chart extends Component<IProps> {
   }
 
   componentDidMount() {
-    this.updateChart()
-  }
-
-  updateChart() {
-    if (this.props.skullValues.length < 1) {
+    if (!this.svgRef.current || this.props.skullValues.length < 1) {
       return
     }
 
@@ -188,7 +184,7 @@ export default class Chart extends Component<IProps> {
         .nice()
     const timeDomain = d3
         .scaleTime()
-        .domain([minMaxMillis.min, minMaxMillis.max + dayInMillis])
+        .domain([initialZoom, minMaxMillis.max + dayInMillis])
         .range([margin, width - margin])
         .nice()
 
@@ -208,8 +204,8 @@ export default class Chart extends Component<IProps> {
         .append('rect')
         .classed('Chart-Bar', true)
         .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
-        .attr('y', scaledZero)
         .attr('width', typeWidth)
+        .attr('y', scaledZero)
         .attr('height', 0)
         .attr('fill', getColorFromSkull)
 
@@ -235,8 +231,6 @@ export default class Chart extends Component<IProps> {
         .on('click', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
 
     addLegend(plot, types)
-
-    setTimeout(() => zoom(timeDomain, timeAxis, bars, types, initialZoom, minMaxMillis.max + dayInMillis), 750)
   }
 
   render = () =>
