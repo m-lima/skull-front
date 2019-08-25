@@ -1,16 +1,19 @@
 [ ]  Add summary
-[x]  - List all entry
-[x]  - Allow the deletion of an item
 [ ]  - Show daily/weekly/monthly frequency
 [ ]  - Show regular frequency (exclude long periods of absence)
+[x]  - List all entry
+[x]  - Allow the deletion of an item
 [ ]? Download file (move to summary?)
 [ ]? Google docs
-[x]? Remove state from views
-[x]  Add plot
-[x]  Unify views (they all have loading, forbidden, etc)
+
+[x]! On zoom, bars overflow to the side
 [x]! Move grid out of skull.tsx
 [x]! Add development banner when running development
+[x]! Bars are not summing multiple occurrences in same day
+[x]  Add plot
+[x]  Unify views (they all have loading, forbidden, etc)
 [x]  Allow reload on failure
 [x]  Confirmation will show lower if quickvalues is long
 [x]  Add navigation (top?)
 [x]  Move the border padding to skull
+[x]? Remove state from views

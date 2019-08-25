@@ -84,6 +84,31 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
       .duration(750)
       .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
       .attr('width', typeWidth)
+      // .attr('x', d => {
+      //   const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
+      //   if (x + typeWidth > 20) {
+      //     return Math.max(20, x)
+      //   } else {
+      //     return x
+      //   }
+      // })
+      // .attr('width', d => {
+      //   const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
+      //   if (x > 20) {
+      //     return typeWidth
+      //   } else if (x + typeWidth > 20) {
+      //     return typeWidth - (20 - x)
+      //   } else {
+      //     return typeWidth
+      //   }
+      //
+      //
+      //   // const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
+      //   // if (x + typeWidth > 0) {
+      //   //   return typeWidth - (20 - x)
+      //   // }
+      //   // return typeWidth
+      // })
 }
 
 interface IProps {
@@ -153,7 +178,18 @@ export default class Chart extends Component<IProps> {
     const dayInMillis = 86400000
 
     // Calculated constants
-    const skullValues = this.props.skullValues.map(Util.normalizeDate)
+    const skullValues = this.props.skullValues
+        .map(Util.normalizeDate)
+        .sort((a, b) => a.millis === b.millis ? a.type.localeCompare(b.type) : a.millis - b.millis)
+        .reduce((list, value) => {
+          const last = list[list.length - 1]
+          if (last && value.millis === last.millis && value.type === last.type) {
+            last.amount += value.amount
+          } else {
+            list.push(value)
+          }
+          return list
+        }, [] as IRegisteredValue[])
     const minMaxAmount = skullValues
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
@@ -173,31 +209,36 @@ export default class Chart extends Component<IProps> {
     const { width, height, plotHeight, orientation } = this.getSizesAndOrientation(margin)
 
     // Chart basis
-    const chart = d3.select(this.svgRef.current).append('g').attr('width', width).attr('height', plotHeight)
+    const chart = d3.select(this.svgRef.current).append('g')
     const plot = orientation === Orientation.HORIZONTAL
         ? chart
         : chart.attr('transform', `rotate(90, 0, ${height}) translate(-${height}, 0)`)
     const amountDomain = d3
         .scaleLinear()
         .domain([0, minMaxAmount.max])
-        .range([plotHeight, 0])
+        .range([plotHeight, margin])
         .nice()
     const timeDomain = d3
         .scaleTime()
         .domain([initialZoom, minMaxMillis.max + dayInMillis])
         .range([margin, width - margin])
         .nice()
+    plot
+        .append('clipPath')
+        .attr('id', 'clip-rect')
+        .append('rect')
+        .attr('width', width - 2 * margin)
+        .attr('height', plotHeight)
+        .attr('x', margin)
 
     // Chart-derived constants
     const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
     const typeWidth = dayWidth / types.length
     const scaledZero = amountDomain(0)
 
-    const timeAxis = plot.append('g')
-        .attr('transform', `translate(${0}, ${plotHeight})`)
-        .call(d3.axisBottom(timeDomain).tickFormat(DateFormatter.format))
-
     const bars = plot
+        .append('g')
+        .attr('clip-path', 'url(#clip-rect)')
         .selectAll('Bars')
         .data(skullValues)
         .enter()
@@ -215,7 +256,8 @@ export default class Chart extends Component<IProps> {
         .attr('y', d => amountDomain(d.amount))
         .attr('height', d => scaledZero - amountDomain(d.amount))
 
-    const brush = d3.brushX()
+    const brush = d3
+        .brushX()
         .extent([[0, 0], [width, plotHeight]])
         .on('end', () => {
           const extent = d3.event.selection
@@ -226,9 +268,20 @@ export default class Chart extends Component<IProps> {
           zoom(timeDomain, timeAxis, bars, types, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), false)
         })
 
-    const plottedBrush = plot.append('g')
+    const plottedBrush = plot
+        .append('g')
         .call(brush)
         .on('click', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
+
+    const timeAxis = plot
+        .append('g')
+        .attr('transform', `translate(${0}, ${plotHeight})`)
+        .call(d3.axisBottom(timeDomain).tickFormat(DateFormatter.format))
+
+    plot
+        .append('g')
+        .attr('transform', `translate(${margin}, 0)`)
+        .call(d3.axisLeft(amountDomain))
 
     addLegend(plot, types)
   }
