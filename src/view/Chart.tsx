@@ -71,9 +71,6 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
     timeDomain.nice()
   }
 
-  const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-  const typeWidth = dayWidth / types.length
-
   timeAxis
       .transition()
       .duration(750)
@@ -82,8 +79,16 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
   bars
       .transition()
       .duration(750)
-      .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
-      .attr('width', typeWidth)
+      .attr('x', d => {
+        const dayEnd = new Date(d.millis)
+        dayEnd.setDate(dayEnd.getDate() + 1)
+        return timeDomain(d.millis) + types.indexOf(d.type) * (timeDomain(dayEnd.getTime()) - timeDomain(d.millis)) / types.length
+      })
+      .attr('width', d => {
+        const dayEnd = new Date(d.millis)
+        dayEnd.setDate(dayEnd.getDate() + 1)
+        return (timeDomain(dayEnd.getTime()) - timeDomain(d.millis)) / types.length
+      })
 }
 
 interface IProps {
@@ -177,6 +182,7 @@ export default class Chart extends Component<IProps> {
           !list.find(v => value === v) && list.push(value)
           return list
         }, [] as string[])
+        .sort()
     const initialZoom = skullValues
         .map(skull => skull.millis)
         .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)

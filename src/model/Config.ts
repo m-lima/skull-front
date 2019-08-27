@@ -34,6 +34,26 @@ export class Mock {
     registeredValues: JSON.stringify([
       {
         type:'um',
+        amount:3,
+        millis:1553901448013,
+      },
+      {
+        type:'dois',
+        amount:15.5,
+        millis:1553901448013,
+      },
+      {
+        type:'tres',
+        amount:15.5,
+        millis:1553901448013,
+      },
+      {
+        type:'quatro',
+        amount:15.5,
+        millis:1553901448013,
+      },
+      {
+        type:'um',
         amount:10,
         millis:1553991448013,
       },
@@ -66,6 +86,21 @@ export class Mock {
         type:'quatro',
         amount:2.5,
         millis:1554030055246,
+      },
+      {
+        type:'dois',
+        amount:3.5,
+        millis:1554090045246,
+      },
+      {
+        type:'dois',
+        amount:2.5,
+        millis:1554090055246,
+      },
+      {
+        type:'quatro',
+        amount:2.5,
+        millis:1554090055246,
       },
       {
         type:'um',
