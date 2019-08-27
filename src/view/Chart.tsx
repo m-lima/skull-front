@@ -84,31 +84,6 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
       .duration(750)
       .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
       .attr('width', typeWidth)
-      // .attr('x', d => {
-      //   const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
-      //   if (x + typeWidth > 20) {
-      //     return Math.max(20, x)
-      //   } else {
-      //     return x
-      //   }
-      // })
-      // .attr('width', d => {
-      //   const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
-      //   if (x > 20) {
-      //     return typeWidth
-      //   } else if (x + typeWidth > 20) {
-      //     return typeWidth - (20 - x)
-      //   } else {
-      //     return typeWidth
-      //   }
-      //
-      //
-      //   // const x = timeDomain(d.millis) + types.indexOf(d.type) * typeWidth
-      //   // if (x + typeWidth > 0) {
-      //   //   return typeWidth - (20 - x)
-      //   // }
-      //   // return typeWidth
-      // })
 }
 
 interface IProps {
@@ -163,9 +138,10 @@ export default class Chart extends Component<IProps> {
 
     const width = orientation === Orientation.HORIZONTAL ? screenWidth : screenHeight
     const height = orientation === Orientation.HORIZONTAL ? screenHeight : screenWidth
+    const plotWidth = width - 2 * margin
     const plotHeight = height - margin
 
-    return { width, height, plotHeight, orientation }
+    return { width, height, plotWidth, plotHeight, orientation }
   }
 
   componentDidMount() {
@@ -206,7 +182,7 @@ export default class Chart extends Component<IProps> {
         .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
 
     // Sizes
-    const { width, height, plotHeight, orientation } = this.getSizesAndOrientation(margin)
+    const { width, height, plotWidth, plotHeight, orientation } = this.getSizesAndOrientation(margin)
 
     // Chart basis
     const chart = d3.select(this.svgRef.current).append('g')
@@ -227,7 +203,7 @@ export default class Chart extends Component<IProps> {
         .append('clipPath')
         .attr('id', 'clip-rect')
         .append('rect')
-        .attr('width', width - 2 * margin)
+        .attr('width', plotWidth)
         .attr('height', plotHeight)
         .attr('x', margin)
 
