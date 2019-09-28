@@ -30,12 +30,13 @@
 }
 
 .Grid-button {
-  align-content: center;
+  font-size: 6em;
+  display: flex;
+  cursor: pointer;
+
   width: var(--button-size);
   height: var(--button-size);
-  cursor: pointer;
   border-radius: calc(var(--button-size) / 10);
-  overflow: hidden;
 
   color: var(--background-color);
 }
@@ -47,32 +48,4 @@
 .Grid-button:active{
   filter: brightness(125%);
   border-radius: var(--button-size);
-}
-
-.Grid-button > i {
-  width: 100%;
-  height: 75%;
-  font-size: 6em;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-
-  align-items: center;
-  justify-content: center;
-}
-
-.Grid-button-amount {
-  width: 100%;
-  height: 25%;
-  font-size: 2em;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-
-  align-items: center;
-  justify-content: center;
-
-  background-color: #00000010;
 }

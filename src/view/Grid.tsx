@@ -54,9 +54,6 @@ export default class Grid extends Component<IProps, IState> {
         onClick={() => this.showConfirmation(skullValue)}
       >
         <Icon icon={skullValue.icon} />
-        <div className='Grid-button-amount'>
-          {skullValue.amount}
-        </div>
       </div>
     )
   }
