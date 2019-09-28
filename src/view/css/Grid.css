@@ -8,21 +8,21 @@
   margin: auto;
 }
 
-@media screen and (min-width: calc(2 * (150px + 10px) + 40px)) {
+@media screen and (min-width: calc(2 * (150px + 20px) + 40px)) {
   .Grid {
     max-width: calc(2 * (var(--button-size) + 10px));
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media screen and (min-width: calc(3 * (150px + 10px) + 40px)) {
+@media screen and (min-width: calc(3 * (150px + 20px) + 40px)) {
   .Grid {
     max-width: calc(3 * (var(--button-size) + 10px));
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media screen and (min-width: calc(4 * (150px + 10px) + 40px)) {
+@media screen and (min-width: calc(4 * (150px + 20px) + 40px)) {
   .Grid {
     max-width: calc(4 * (var(--button-size) + 10px));
     grid-template-columns: repeat(4, 1fr);
@@ -30,19 +30,49 @@
 }
 
 .Grid-button {
-  font-size: 6em;
-  display: flex;
+  align-content: center;
+  width: var(--button-size);
+  height: var(--button-size);
   cursor: pointer;
+  border-radius: calc(var(--button-size) / 10);
+  overflow: hidden;
 
-  background-color: var(--shade-2);
+  color: var(--background-color);
 }
 
 .Grid-button:hover{
-  color: var(--font-color-accent);
-  background-color: var(--shade-3);
+  filter: brightness(125%);
 }
 
 .Grid-button:active{
-  color: var(--font-color-accent);
-  background-color: var(--shade-4);
+  filter: brightness(125%);
+  border-radius: var(--button-size);
+}
+
+.Grid-button > i {
+  width: 100%;
+  height: 75%;
+  font-size: 6em;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.Grid-button-amount {
+  width: 100%;
+  height: 25%;
+  font-size: 2em;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #00000010;
 }
