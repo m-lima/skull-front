@@ -165,7 +165,8 @@ export default class Chart extends Component<IProps> {
         .sort()
     const initialZoom = skullValues
         .map(skull => skull.millis)
-        .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
+        .reverse()
+        .reduce((prev, curr) => prev - curr > 2 * dayInMillis ? prev : curr)
 
     // Sizes
     const { width, height, plotWidth, plotHeight, orientation } = this.getSizesAndOrientation(margin)
