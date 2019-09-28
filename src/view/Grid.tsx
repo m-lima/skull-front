@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
+import * as Util from '../Util'
 import ISkullValue, { IQuickValue } from '../model/ISkullValue'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
@@ -49,6 +50,7 @@ export default class Grid extends Component<IProps, IState> {
         key={index}
         className='Grid-button'
         title={skullValue.type + ': ' + skullValue.amount}
+        style={{ background: Util.getColorFromType(skullValue.type) }}
         onClick={() => this.showConfirmation(skullValue)}
       >
         <Icon icon={skullValue.icon} />

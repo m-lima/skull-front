@@ -35,3 +35,26 @@ export const mapMonthToNumber = (month: number) => {
 export const addLeadingZero = (value: number) => {
   return (value < 10 ? '0' : '') + value
 }
+
+export const getColorFromType = (type: string) => {
+  const prime = 16777619
+  const offset = 2166136261
+  const desaturation = 0.6
+
+  let color = offset
+  for (let i = 0; i < type.length; i++) {
+    color *= prime
+    color ^= type.charCodeAt(i)
+  }
+
+  color %= 16581375
+  const r = (color & 0xFF0000) >> 16
+  const g = (color & 0xFF00) >> 8
+  const b = color & 0xFF
+  const length = 0.3 * r + 0.6 * g + 0.1 * b
+
+  return '#' + ((((r + desaturation * (length - r)) << 16) & 0xff0000)
+    | (((g + desaturation * (length - g)) << 8) & 0xff00)
+      | ((b + desaturation * (length - b)) & 0xff)).toString(16)
+}
+

@@ -67,7 +67,7 @@ export default class Summary extends Component<IProps, IState> {
   renderRow(value: ISummaryValue, index: number) {
     return (
       <tr id={value.dark ? 'dark' : 'bright'} key={index}>
-        <td>
+        <td id='icon' style={{ color: Util.getColorFromType(value.type)}}>
           {this.props.icons.has(value.type + value.amount)
           && <Icon icon={this.props.icons.get(value.type + value.amount) as string} />}
         </td>

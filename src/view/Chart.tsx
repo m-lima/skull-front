@@ -6,28 +6,8 @@ import * as Message from './Message'
 import * as Util from '../Util'
 import { IRegisteredValue } from '../model/ISkullValue'
 
-const getColorFromType = (type: string) => {
-  const prime = 16777619
-  const offset = 2166136261
-  const desaturation = 0.6
-
-  let color = offset
-  for (let i = 0; i < type.length; i++) {
-    color *= prime
-    color ^= type.charCodeAt(i)
-  }
-
-  color %= 16581375
-  const r = (color & 0xFF0000) >> 16
-  const g = (color & 0xFF00) >> 8
-  const b = color & 0xFF
-  const length = 0.3 * r + 0.6 * g + 0.1 * b
-
-  return d3.rgb(r + desaturation * (length - r), g + desaturation * (length - g), b + desaturation * (length - b)).hex()
-}
-
 const getColorFromSkull = (skull: IRegisteredValue) => {
-  return getColorFromType(skull.type)
+  return Util.getColorFromType(skull.type)
 }
 
 const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: string[]) => {
@@ -43,7 +23,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: 
       .attr('cx', legendMargin)
       .attr('cy', (d, i) => legendMargin + legendGap * i)
       .attr('r', legendRadius)
-      .style('fill', getColorFromType)
+      .style('fill', Util.getColorFromType)
 
   plot
       .selectAll('Legend-Text')
@@ -55,7 +35,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: 
       .attr('y', (d, i) => legendMargin + legendGap * i)
       .attr('text-anchor', 'left')
       .attr('dominant-baseline', 'middle')
-      .style('fill', getColorFromType)
+      .style('fill', Util.getColorFromType)
       .style('font', `${legendRadius * 3}px sans-serif`)
 }
 
@@ -185,7 +165,8 @@ export default class Chart extends Component<IProps> {
         .sort()
     const initialZoom = skullValues
         .map(skull => skull.millis)
-        .reduce((prev, curr) => curr - prev > 2 * dayInMillis ? curr : prev)
+        .reverse()
+        .reduce((prev, curr) => prev - curr > 2 * dayInMillis ? prev : curr)
 
     // Sizes
     const { width, height, plotWidth, plotHeight, orientation } = this.getSizesAndOrientation(margin)
