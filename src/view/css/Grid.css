@@ -47,5 +47,4 @@
 
 .Grid-button:active{
   filter: brightness(125%);
-  border-radius: var(--button-size);
 }
