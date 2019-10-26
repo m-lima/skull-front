@@ -2,6 +2,9 @@ import { IRegisteredValue } from './model/ISkullValue'
 
 export const normalizeDate = (value: IRegisteredValue): IRegisteredValue => {
   const date = new Date(value.millis)
+  if (date.getHours() < 5) {
+    date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
+  }
   date.setHours(0)
   date.setHours(0)
   date.setMinutes(0)
