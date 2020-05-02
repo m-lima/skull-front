@@ -5,7 +5,7 @@ export class Mock {
   static readonly values = true
 
   static readonly Data = {
-    quickValues: JSON.stringify([
+    skull: JSON.stringify([
       {
         type: 'bla',
         icon: 'fas fa-vial',
@@ -31,7 +31,33 @@ export class Mock {
         amount: 2,
       },
     ]),
-    registeredValues: JSON.stringify([
+    quick: JSON.stringify([
+      {
+        type: 'bla',
+        icon: 'fas fa-vial',
+        amount: 1,
+      },
+      {
+        type: 'dois',
+        icon: 'fas fa-beer',
+        amount: 1.5,
+      },
+      {
+        type: 'quatro',
+        icon: 'fas fa-coffee',
+      },
+      {
+        type: 'tres',
+        icon: 'fas fa-receipt',
+        amount: 0,
+      },
+      {
+        type: 'cinco',
+        icon: 'fas fa-baby',
+        amount: 2,
+      },
+    ]),
+    registered: JSON.stringify([
       {
         type:'um',
         amount:3,
@@ -280,7 +306,8 @@ export class Endpoint {
   static readonly login = ''
   static readonly logout = ''
   static readonly skull = ''
-  static readonly quickValues = ''
+  static readonly quick = ''
+  static readonly registered = ''
 }
 
 export class Path {

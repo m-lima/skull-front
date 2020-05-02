@@ -1,47 +1,37 @@
 import * as Config from '../model/Config'
-import { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
+import Color from '../model/Color'
+import { ISkull, IQuick, IRegistered} from '../model/ISkull'
 import { ApiException } from '../model/Exception'
 
-const mapToQuickValue = (rawValue: any): IQuickValue => {
+const mapToSkull = (raw: any): ISkull => {
+    return {
+        id: raw.id,
+        name: raw.name,
+        color: new Color(raw.color),
+        icon: raw.icon,
+        unitPrice: raw.unitPrice,
+    }
+}
+
+const mapToQuick = (raw: any): IQuick => {
   return {
-    type: rawValue.type,
-    amount: rawValue.amount ? rawValue.amount : 1,
-    icon: rawValue.icon,
+      skull: raw.skull,
+      amount: raw.amount ? raw.amount : 0,
   }
 }
 
-const mapToRegisteredValue = (rawValue: any): IRegisteredValue => {
+const mapToRegistered = (raw: any): IRegistered => {
   return {
-    type: rawValue.type,
-    amount: rawValue.amount ? rawValue.amount : 0,
-    millis: rawValue.millis ? rawValue.millis : 1,
+    skull: raw.skull,
+    amount: raw.amount ? raw.amount : 0,
+    millis: raw.millis ? raw.millis : 1,
   }
 }
 
 export default class Fetch {
-  static quickValues(): Promise<IQuickValue[]> {
+  static skull(): Promise<ISkull[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.quickValues))
-      : fetch(Config.Endpoint.quickValues, {
-        method: 'GET',
-        redirect: 'follow',
-        credentials: 'include',
-      })
-        .then(r => {
-          if (r.ok) {
-            return r
-          } else {
-            throw new ApiException(r.status)
-          }
-        })
-        .then(r => r.json())
-
-    return data.then(v => v.map(mapToQuickValue))
-  }
-
-  static registeredValues(): Promise<IRegisteredValue[]> {
-    let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.registeredValues))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.skull))
       : fetch(Config.Endpoint.skull, {
         method: 'GET',
         redirect: 'follow',
@@ -56,7 +46,46 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToRegisteredValue))
+    return data.then(v => v.map(mapToSkull))
   }
 
+  static quick(): Promise<IQuick[]> {
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.quick))
+      : fetch(Config.Endpoint.quick, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToQuick))
+  }
+
+  static registered(): Promise<IRegistered[]> {
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.registered))
+      : fetch(Config.Endpoint.registered, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToRegistered))
+  }
 }
