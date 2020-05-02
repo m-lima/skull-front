@@ -57,7 +57,7 @@ export class Mock {
         amount: 2,
       },
     ]),
-    registered: JSON.stringify([
+    occurrence: JSON.stringify([
       {
         type:'um',
         amount:3,
@@ -307,7 +307,7 @@ export class Endpoint {
   static readonly logout = ''
   static readonly skull = ''
   static readonly quick = ''
-  static readonly registered = ''
+  static readonly occurrence = ''
 }
 
 export class Path {

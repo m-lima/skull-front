@@ -1,6 +1,6 @@
 import * as Config from '../model/Config'
 import Color from '../model/Color'
-import { ISkull, IQuick, IRegistered} from '../model/ISkull'
+import { ISkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
 import { ApiException } from '../model/Exception'
 
 const mapToSkull = (raw: any): ISkull => {
@@ -20,8 +20,9 @@ const mapToQuick = (raw: any): IQuick => {
   }
 }
 
-const mapToRegistered = (raw: any): IRegistered => {
+const mapToOccurrence = (raw: any): IOccurrence => {
   return {
+    id: raw.id,
     skull: raw.skull,
     amount: raw.amount ? raw.amount : 0,
     millis: raw.millis ? raw.millis : 1,
@@ -69,10 +70,10 @@ export default class Fetch {
     return data.then(v => v.map(mapToQuick))
   }
 
-  static registered(): Promise<IRegistered[]> {
+  static occurrence(): Promise<IOccurrence[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.registered))
-      : fetch(Config.Endpoint.registered, {
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrence))
+      : fetch(Config.Endpoint.occurrence, {
         method: 'GET',
         redirect: 'follow',
         credentials: 'include',
@@ -86,6 +87,6 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToRegistered))
+    return data.then(v => v.map(mapToOccurrence))
   }
 }

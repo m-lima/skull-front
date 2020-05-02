@@ -1,18 +1,30 @@
 import Color from './Color'
 
-export interface ISkull {
+export interface IRegistered {
   id: number
+}
+
+export interface ISkull extends IRegistered {
   name: string
   color: Color
   icon: string
   unitPrice: number
 }
 
-export interface IQuick {
+export interface IRValuedSkull {
   skull: number
   amount: number
 }
 
-export interface IRegistered extends IQuick {
+export interface IROccurrence extends IRegistered, IRValuedSkull {
+  millis: number
+}
+
+export interface IValuedSkull {
+  skull: ISkull
+  amount: number
+}
+
+export interface IOccurrence extends IRegistered, IValuedSkull {
   millis: number
 }
