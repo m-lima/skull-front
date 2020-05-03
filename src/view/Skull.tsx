@@ -4,6 +4,7 @@ import './css/Skull.css'
 
 import * as Config from '../model/Config'
 import * as Message from './Message'
+import * as Util from '../Util'
 import Access from '../control/Access'
 import Chart from './Chart'
 import Environment from '../model/Environment'
@@ -15,7 +16,7 @@ import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
 import {ApiException} from '../model/Exception'
-import {ISkull, IValuedSkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
+import { Skull as SkullModel, ValuedSkull, ValuedSkull as Quick, Occurrence } from '../model/Skull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -26,9 +27,9 @@ const Banner = (props: { text: string }) => {
 }
 
 interface IState extends IQueryState {
-  skulls: ISkull[]
-  quicks: IQuick[]
-  occurrences: IOccurrence[]
+  skulls: SkullModel[]
+  quicks: Quick[]
+  occurrences: Occurrence[]
 }
 
 export default class Skull extends Component<{}, IState> {
@@ -60,35 +61,27 @@ export default class Skull extends Component<{}, IState> {
         .then(r => this.setState({
           skulls: r[0],
           quicks: r[1]
-              .map(v => {
-                return { skull: r[0].find(s => s.id === v.skull), amount: v.amount }
-              })
-              .filter(v => v.skull)
-              .map(v => {
-                return { skull: v.skull!, amount: v.amount}
-              }),
+              .map(q => Util.logAndUndefineIfException(() => new Quick(q, r[0])))
+              .filter(q => q !== undefined)
+              .map(q => q!),
           occurrences: r[2]
-              .map(v => {
-                return { skull: r[0].find(s => s.id === v.skull), id: v.id, amount: v.amount, millis: v.millis }
-              })
-              .filter(v => v.skull)
-              .map(v => {
-                return { skull: v.skull!, id: v.id, amount: v.amount, millis: v.millis }
-              })
+              .map(o => Util.logAndUndefineIfException(() => new Occurrence(o, r[0])))
+              .filter(o => o !== undefined)
+              .map(o => o!)
               .reverse(),
           status: Status.OK,
         }))
         .catch(this.handleException)
   }
 
-  push(skull: IValuedSkull) {
+  push(skull: ValuedSkull) {
     this.setState({ status: Status.LOADING })
     Push.skull(skull)
         .then(() => this.load())
         .catch(this.handleException)
   }
 
-  delete(occurrence: IOccurrence) {
+  delete(occurrence: Occurrence) {
     this.setState({ status: Status.LOADING })
     Push.deletion(occurrence)
         .then(() => this.load())

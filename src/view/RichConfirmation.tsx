@@ -2,14 +2,14 @@ import React from 'react'
 import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
-import { ISkull, IValuedSkull } from '../model/ISkull'
+import { Skull, ValuedSkull } from '../model/Skull'
 
-interface IRichProps extends IProps<IValuedSkull> {
-  skulls: ISkull[]
-  onChange: (skull: IValuedSkull) => void
+interface IRichProps extends IProps<ValuedSkull> {
+  skulls: Skull[]
+  onChange: (skull: ValuedSkull) => void
 }
 
-export default class RichConfirmation extends Confirmation<IValuedSkull, IRichProps> {
+export default class RichConfirmation extends Confirmation<ValuedSkull, IRichProps> {
 
   buildComboBox() {
     return (

@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
 import { ScaleLinear, ScaleTime } from 'd3'
 
-import { ISkull, IOccurrence } from '../../model/ISkull'
+import { Skull, Occurrence } from '../../model/Skull'
 
 interface IProps<T> {
   svg: SVGSVGElement | null,
   data: T[],
   clip?: string,
-  skulls: ISkull[],
+  skulls: Skull[],
   domain: ScaleTime<number, number>,
   range: ScaleLinear<number, number>,
   colorMapper: (type: string) => string,
 }
 
-export default class Bars<T extends IOccurrence> extends Component<IProps<T>> {
+export default class Bars<T extends Occurrence> extends Component<IProps<T>> {
   render() {
     const dayWidth = (this.props.domain(new Date(0, 0, 1).getTime()) - this.props.domain(new Date(0, 0, 0).getTime()))
     const typeWidth = dayWidth / this.props.skulls.length

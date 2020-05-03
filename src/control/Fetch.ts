@@ -1,36 +1,22 @@
 import * as Config from '../model/Config'
-import Color from '../model/Color'
-import { ISkull, IRValuedSkull as IRQuick, IROccurrence} from '../model/ISkull'
+import { Skull, RawValuedSkull as RawQuick, RawOccurrence} from '../model/Skull'
 import { ApiException } from '../model/Exception'
+import { logAndUndefineIfException, Optional } from '../Util'
 
-const mapToSkull = (raw: any): ISkull => {
-    return {
-        id: raw.id,
-        name: raw.name,
-        color: new Color(raw.color),
-        icon: raw.icon,
-        unitPrice: raw.unitPrice,
-    }
+const mapToSkull = (raw: any): Optional<Skull> => {
+  return logAndUndefineIfException(() => new Skull(raw))
 }
 
-const mapToQuick = (raw: any): IRQuick => {
-  return {
-      skull: raw.skull,
-      amount: raw.amount ? raw.amount : 0,
-  }
+const mapToQuick = (raw: any): Optional<RawQuick> => {
+  return logAndUndefineIfException(() => new RawQuick(raw))
 }
 
-const mapToOccurrence = (raw: any): IROccurrence => {
-  return {
-    id: raw.id,
-    skull: raw.skull,
-    amount: raw.amount ? raw.amount : 0,
-    millis: raw.millis ? raw.millis : 1,
-  }
+const mapToOccurrence = (raw: any): Optional<RawOccurrence> => {
+  return logAndUndefineIfException(() => new RawOccurrence(raw))
 }
 
 export default class Fetch {
-  static skulls(): Promise<ISkull[]> {
+  static skulls(): Promise<Skull[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
@@ -47,10 +33,10 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToSkull))
+    return data.then(v => v.map(mapToSkull).filter((v: Optional<Skull>) => v))
   }
 
-  static quicks(): Promise<IRQuick[]> {
+  static quicks(): Promise<RawQuick[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.quicks))
       : fetch(Config.Endpoint.quick, {
@@ -67,10 +53,10 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToQuick))
+    return data.then(v => v.map(mapToQuick).filter((v: Optional<RawQuick>) => v))
   }
 
-  static occurrences(): Promise<IROccurrence[]> {
+  static occurrences(): Promise<RawOccurrence[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
       : fetch(Config.Endpoint.occurrence, {
@@ -87,6 +73,6 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToOccurrence))
+    return data.then(v => v.map(mapToOccurrence).filter((v: Optional<RawOccurrence>) => v))
   }
 }

@@ -19,3 +19,21 @@ export class ApiException {
     }
   }
 }
+
+export class ModelException<T> {
+  model: string
+  field: string
+  value: T
+  message: string
+
+  constructor(model: string, field: string, value: T, message: string) {
+    this.model = model
+    this.field = field
+    this.value = value
+    this.message = message
+  }
+
+  toString() {
+    return `Invalid ${this.field} (${this.value}) for ${this.model}: ${this.message}`
+  }
+}

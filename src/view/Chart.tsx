@@ -4,9 +4,9 @@ import './css/Chart.css'
 
 import * as Message from './Message'
 import * as Util from '../Util'
-import { ISkull, IOccurrence } from '../model/ISkull'
+import { Skull, Occurrence } from '../model/Skull'
 
-const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: ISkull[]) => {
+const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: Skull[]) => {
   const legendMargin = 40
   const legendGap = 15
   const legendRadius = 4
@@ -37,8 +37,8 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
               timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, IOccurrence, SVGGElement, {}>,
-              skulls: ISkull[],
+              bars: d3.Selection<SVGRectElement, Occurrence, SVGGElement, {}>,
+              skulls: Skull[],
               initial: number | Date,
               final: number | Date,
               nice = true) => {
@@ -68,8 +68,8 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
 }
 
 interface IProps {
-  skulls: ISkull[]
-  occurrences: IOccurrence[]
+  skulls: Skull[]
+  occurrences: Occurrence[]
 }
 
 enum Orientation {
@@ -147,7 +147,7 @@ export default class Chart extends Component<IProps> {
             acc.push(curr)
           }
           return acc
-        }, [] as IOccurrence[])
+        }, [] as Occurrence[])
     const minMaxAmount = occurrences
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())

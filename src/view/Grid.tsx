@@ -2,18 +2,18 @@ import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
-import { ISkull, IValuedSkull, IValuedSkull as IQuick} from '../model/ISkull'
+import { Skull, ValuedSkull, ValuedSkull as Quick} from '../model/Skull'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
 
 interface IProps {
-  skulls: ISkull[]
-  quicks: IQuick[]
-  push: (skull: IValuedSkull) => void
+  skulls: Skull[]
+  quicks: Quick[]
+  push: (skull: ValuedSkull) => void
 }
 
 interface IState {
-  selected?: IValuedSkull
+  selected?: ValuedSkull
 }
 
 export default class Grid extends Component<IProps, IState> {
@@ -26,11 +26,11 @@ export default class Grid extends Component<IProps, IState> {
     this.cancel = this.cancel.bind(this)
   }
 
-  showConfirmation(quick: IQuick) {
+  showConfirmation(quick: Quick) {
     this.setState({ selected: { skull: quick.skull, amount: quick.amount } })
   }
 
-  change(value: IValuedSkull) {
+  change(value: ValuedSkull) {
     this.setState({ selected: value })
   }
 
@@ -44,7 +44,7 @@ export default class Grid extends Component<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  buildSkullButton(quick: IQuick, index?: number) {
+  buildSkullButton(quick: Quick, index?: number) {
     return (
         <div
             key={index}

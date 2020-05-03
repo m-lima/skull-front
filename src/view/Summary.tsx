@@ -5,22 +5,22 @@ import * as Message from './Message'
 import * as Util from '../Util'
 import Confirmation from './Confirmation'
 import Icon from './Icon'
-import { IOccurrence } from '../model/ISkull'
+import { Occurrence } from '../model/Skull'
 
-interface ISummaryOccurrence extends IOccurrence {
-  dark: boolean
+class ISummaryOccurrence extends Occurrence {
+  dark = false
 }
 
 interface IProps {
-  occurrences: IOccurrence[]
-  delete: (occurrence: IOccurrence) => void
+  occurrences: Occurrence[]
+  delete: (occurrence: Occurrence) => void
 }
 
 interface IState {
-  selected?: IOccurrence
+  selected?: Occurrence
 }
 
-const alternateDays = (occurrences: IOccurrence[]): ISummaryOccurrence[] => {
+const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
   let millis = 0
   let dark = false
   return occurrences.map(o => {

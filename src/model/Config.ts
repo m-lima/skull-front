@@ -7,296 +7,54 @@ export class Mock {
   static readonly Data = {
     skulls: JSON.stringify([
       {
-        type: 'bla',
+        id: 0,
+        name: 'bla',
+        color: 'FF0000',
         icon: 'fas fa-vial',
-        amount: 1,
+        unitPrice: 1,
       },
       {
-        type: 'dois',
-        icon: 'fas fa-beer',
-        amount: 1.5,
+        id: 1,
+        name: 'ble',
+        color: '0000FF',
+        icon: 'fas fa-vial',
+        unitPrice: 2.7,
       },
       {
-        type: 'quatro',
-        icon: 'fas fa-coffee',
-      },
-      {
-        type: 'tres',
-        icon: 'fas fa-receipt',
-        amount: 0,
-      },
-      {
-        type: 'cinco',
-        icon: 'fas fa-baby',
-        amount: 2,
+        id: 2,
+        name: 'bli',
+        color: 'FFFF00',
+        icon: 'fas fa-vial',
+        unitPrice: 3,
       },
     ]),
     quicks: JSON.stringify([
       {
-        type: 'bla',
-        icon: 'fas fa-vial',
+        skull: 0,
         amount: 1,
       },
       {
-        type: 'dois',
-        icon: 'fas fa-beer',
+        skull: 1,
         amount: 1.5,
       },
       {
-        type: 'quatro',
-        icon: 'fas fa-coffee',
+        skull: 2,
       },
       {
-        type: 'tres',
-        icon: 'fas fa-receipt',
+        skull: 2,
         amount: 0,
       },
       {
-        type: 'cinco',
-        icon: 'fas fa-baby',
+        skull: 5,
         amount: 2,
       },
     ]),
     occurrences: JSON.stringify([
       {
-        type:'um',
-        amount:3,
-        millis:1553901448013,
-      },
-      {
-        type:'dois',
-        amount:15.5,
-        millis:1553901448013,
-      },
-      {
-        type:'tres',
-        amount:15.5,
-        millis:1553901448013,
-      },
-      {
-        type:'quatro',
-        amount:15.5,
-        millis:1553901448013,
-      },
-      {
-        type:'um',
-        amount:10,
-        millis:1553991448013,
-      },
-      {
-        type:'dois',
-        amount:15.5,
-        millis:1553991451467,
-      },
-      {
-        type:'tres',
-        amount:2,
-        millis:1554021022579,
-      },
-      {
-        type:'quatro',
-        amount:3,
-        millis:1554024920833,
-      },
-      {
-        type:'tres',
-        amount:10,
-        millis:1554029801060,
-      },
-      {
-        type:'tres',
-        amount:7,
-        millis:1554030052772,
-      },
-      {
-        type:'quatro',
-        amount:2.5,
-        millis:1554030055246,
-      },
-      {
-        type:'dois',
-        amount:3.5,
-        millis:1554090045246,
-      },
-      {
-        type:'dois',
-        amount:2.5,
-        millis:1554090055246,
-      },
-      {
-        type:'quatro',
-        amount:2.5,
-        millis:1554090055246,
-      },
-      {
-        type:'um',
-        amount:6,
-        millis:1554991448013,
-      },
-      {
-        type:'dois',
-        amount:18.5,
-        millis:1554991451467,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1555021022579,
-      },
-      {
-        type:'quatro',
-        amount:3,
-        millis:1555023920833,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1555024801060,
-      },
-      {
-        type:'tres',
-        amount:7,
-        millis:1555030052772,
-      },
-      {
-        type:'quatro',
-        amount:2.5,
-        millis:1555030055246,
-      },
-      {
-        type:'um',
-        amount:10,
-        millis:1555991448013,
-      },
-      {
-        type:'dois',
-        amount:18.5,
-        millis:1555991451467,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1556021022579,
-      },
-      {
-        type:'quatro',
-        amount:3,
-        millis:1556023920833,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1556024801060,
-      },
-      {
-        type:'tres',
-        amount:7,
-        millis:1556030052772,
-      },
-      {
-        type:'quatro',
-        amount:2.5,
-        millis:1556030055246,
-      },
-      {
-        type:'um',
-        amount:10,
-        millis:1556991448013,
-      },
-      {
-        type:'dois',
-        amount:18.5,
-        millis:1556991451467,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1557021022579,
-      },
-      {
-        type:'quatro',
-        amount:3,
-        millis:1557023920833,
-      },
-      {
-        type:'tres',
-        amount:1,
-        millis:1557024801060,
-      },
-      {
-        type:'tres',
-        amount:7,
-        millis:1557030052772,
-      },
-      {
-        type:'quatro',
-        amount:2.5,
-        millis:1557030055246,
-      },
-      {
-        type:'um',
-        amount:1,
-        millis:1557200055246,
-      },
-      {
-        type:'dois',
-        amount:2,
-        millis:1557210055246,
-      },
-      {
-        type:'tres',
-        amount:3,
-        millis:1557220055246,
-      },
-      {
-        type:'quatro',
-        amount:4,
-        millis:1557230055246,
-      },
-      {
-        type:'um',
-        amount:1,
-        millis:1557200055246 + 86400000,
-      },
-      {
-        type:'dois',
-        amount:2,
-        millis:1557210055246 + 86400000,
-      },
-      {
-        type:'tres',
-        amount:3,
-        millis:1557220055246 + 86400000,
-      },
-      {
-        type:'quatro',
-        amount:4,
-        millis:1557230055246 + 86400000,
-      },
-      {
-        type:'um',
-        amount:1,
-        millis:1557200055246 + 86400000 * 2,
-      },
-      {
-        type:'dois',
-        amount:2,
-        millis:1557210055246 + 86400000 * 2,
-      },
-      {
-        type:'tres',
-        amount:3,
-        millis:1557220055246 + 86400000 * 2,
-      },
-      {
-        type:'quatro',
-        amount:4,
-        millis:1557230055246 + 86400000 * 2,
-      },
-      {
-        type:'quatro',
-        amount:4,
-        millis:1565876475000,
+        id: 0,
+        skull: 0,
+        amount: 3,
+        millis: 1553901448013,
       },
     ]),
   }

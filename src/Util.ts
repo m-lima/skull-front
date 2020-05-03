@@ -1,6 +1,8 @@
-import { IOccurrence } from './model/ISkull'
+import { Occurrence } from './model/Skull'
 
-export const normalizeDate = (occurrence: IOccurrence): IOccurrence => {
+export type Optional<T> = T | undefined
+
+export const normalizeDate = (occurrence: Occurrence): Occurrence => {
   const date = new Date(occurrence.millis)
   if (date.getHours() < 5) {
     date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
@@ -37,4 +39,13 @@ export const mapMonthToNumber = (month: number) => {
 
 export const addLeadingZero = (value: number) => {
   return (value < 10 ? '0' : '') + value
+}
+
+export const logAndUndefineIfException = <F, T>(f: () => T): Optional<T> => {
+  try {
+    return f()
+  } catch (e) {
+    console.log(e)
+    return undefined
+  }
 }

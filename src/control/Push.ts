@@ -1,9 +1,9 @@
 import * as Config from '../model/Config'
-import { IValuedSkull, IOccurrence } from '../model/ISkull'
+import { ValuedSkull, Occurrence } from '../model/Skull'
 import { ApiException } from '../model/Exception'
 
 export default class Push {
-  static skull(skull: IValuedSkull): Promise<boolean> {
+  static skull(skull: ValuedSkull): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
@@ -22,7 +22,7 @@ export default class Push {
       })
   }
 
-  static deletion(occurrence: IOccurrence): Promise<boolean> {
+  static deletion(occurrence: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
