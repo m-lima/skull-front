@@ -1,6 +1,6 @@
 import * as Config from '../model/Config'
 import Color from '../model/Color'
-import { ISkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
+import { ISkull, IRValuedSkull as IRQuick, IROccurrence} from '../model/ISkull'
 import { ApiException } from '../model/Exception'
 
 const mapToSkull = (raw: any): ISkull => {
@@ -13,14 +13,14 @@ const mapToSkull = (raw: any): ISkull => {
     }
 }
 
-const mapToQuick = (raw: any): IQuick => {
+const mapToQuick = (raw: any): IRQuick => {
   return {
       skull: raw.skull,
       amount: raw.amount ? raw.amount : 0,
   }
 }
 
-const mapToOccurrence = (raw: any): IOccurrence => {
+const mapToOccurrence = (raw: any): IROccurrence => {
   return {
     id: raw.id,
     skull: raw.skull,
@@ -50,7 +50,7 @@ export default class Fetch {
     return data.then(v => v.map(mapToSkull))
   }
 
-  static quick(): Promise<IQuick[]> {
+  static quick(): Promise<IRQuick[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.quick))
       : fetch(Config.Endpoint.quick, {
@@ -70,7 +70,7 @@ export default class Fetch {
     return data.then(v => v.map(mapToQuick))
   }
 
-  static occurrence(): Promise<IOccurrence[]> {
+  static occurrence(): Promise<IROccurrence[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrence))
       : fetch(Config.Endpoint.occurrence, {
