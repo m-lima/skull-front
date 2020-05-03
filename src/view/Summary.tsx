@@ -7,12 +7,12 @@ import Confirmation from './Confirmation'
 import Icon from './Icon'
 import { IOccurrence } from '../model/ISkull'
 
-interface ISummary extends IOccurrence {
+interface ISummaryOccurrence extends IOccurrence {
   dark: boolean
 }
 
 interface IProps {
-  occurrence: IOccurrence[]
+  occurrences: IOccurrence[]
   delete: (occurrence: IOccurrence) => void
 }
 
@@ -20,16 +20,16 @@ interface IState {
   selected?: IOccurrence
 }
 
-const alternateDays = (occurence: IOccurrence[]): ISummary[] => {
+const alternateDays = (occurrences: IOccurrence[]): ISummaryOccurrence[] => {
   let millis = 0
   let dark = false
-  return occurence.map(v => {
-    const newValue = Util.normalizeDate(v)
+  return occurrences.map(o => {
+    const newValue = Util.normalizeDate(o)
     if (newValue.millis !== millis) {
       millis = newValue.millis
       dark = !dark
     }
-    return { id: v.id, skull: v.skull, amount: v.amount, millis: v.millis, dark: dark}
+    return { id: o.id, skull: o.skull, amount: o.amount, millis: o.millis, dark: dark}
   })
 }
 
@@ -63,16 +63,16 @@ export default class Summary extends Component<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  renderRow(value: ISummary, index: number) {
+  renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
-      <tr id={value.dark ? 'dark' : 'bright'} key={index}>
-        <td id='icon' style={{ color: value.skull.color.toHexString() }}>
-          <Icon icon={ value.skull.icon } />
+      <tr id={occurrence.dark ? 'dark' : 'bright'} key={index}>
+        <td id='icon' style={{ color: occurrence.skull.color.toHexString() }}>
+          <Icon icon={ occurrence.skull.icon } />
         </td>
-        <td>{value.skull.name}</td>
-        <td>{value.amount}</td>
-        <td>{formatDate(value.millis)}</td>
-        <td id='delete' onClick={() => this.setState({ selected: value })}>
+        <td>{occurrence.skull.name}</td>
+        <td>{occurrence.amount}</td>
+        <td>{formatDate(occurrence.millis)}</td>
+        <td id='delete' onClick={() => this.setState({ selected: occurrence })}>
           <Icon icon='fas fa-trash-alt' />
         </td>
       </tr>
@@ -80,7 +80,7 @@ export default class Summary extends Component<IProps, IState> {
   }
 
   render = () =>
-    this.props.occurrence.length < 1
+    this.props.occurrences.length < 1
       ? <Message.Empty />
       : <Fragment>
           <table className='Summary'>
@@ -92,11 +92,11 @@ export default class Summary extends Component<IProps, IState> {
               <th>Time</th>
               <th id='icon'></th>
             </tr>
-            {alternateDays(this.props.occurrence).map(this.renderRow)}
+            {alternateDays(this.props.occurrences).map(this.renderRow)}
             </tbody>
           </table>
           <Confirmation
-              types={this.props.occurrence.map(v => v.skull.name)}
+              types={this.props.occurrences.map(o => o.skull.name)}
               value={this.state.selected}
               onAccept={this.accept}
               onCancel={this.cancel}

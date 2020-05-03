@@ -15,7 +15,7 @@ import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
 import {ApiException} from '../model/Exception'
-import {ISkull, IRValuedSkull, IROccurrence, IValuedSkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
+import {ISkull, IValuedSkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -26,9 +26,9 @@ const Banner = (props: { text: string }) => {
 }
 
 interface IState extends IQueryState {
-  skull: ISkull[]
-  quick: IQuick[]
-  occurrence: IOccurrence[]
+  skulls: ISkull[]
+  quicks: IQuick[]
+  occurrences: IOccurrence[]
 }
 
 export default class Skull extends Component<{}, IState> {
@@ -47,19 +47,19 @@ export default class Skull extends Component<{}, IState> {
         return
       }
       console.error('HTTP error status: ' + ex.httpStatus)
-      this.setState({ skull: [], quick: [], occurrence: [], status: ex.status })
+      this.setState({ skulls: [], quicks: [], occurrences: [], status: ex.status })
     } else {
       console.error(ex)
-      this.setState({ skull: [], quick: [], occurrence: [], status: Status.ERROR })
+      this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.ERROR })
     }
   }
 
   load() {
-    this.setState({ skull: [], quick: [], occurrence: [], status: Status.LOADING })
-    Promise.all([Fetch.skull(), Fetch.quick(), Fetch.occurrence()])
+    this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.LOADING })
+    Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
         .then(r => this.setState({
-          skull: r[0],
-          quick: r[1]
+          skulls: r[0],
+          quicks: r[1]
               .map(v => {
                 return { skull: r[0].find(s => s.id === v.skull), amount: v.amount }
               })
@@ -67,7 +67,7 @@ export default class Skull extends Component<{}, IState> {
               .map(v => {
                 return { skull: v.skull!, amount: v.amount}
               }),
-          occurrence: r[2]
+          occurrences: r[2]
               .map(v => {
                 return { skull: r[0].find(s => s.id === v.skull), id: v.id, amount: v.amount, millis: v.millis }
               })
@@ -124,8 +124,8 @@ export default class Skull extends Component<{}, IState> {
                     exact={true}
                     path={Config.Path.grid}
                     render={() => <Grid
-                        skull={this.state.skull}
-                        quick={this.state.quick}
+                        skulls={this.state.skulls}
+                        quicks={this.state.quicks}
                         push={this.push}
                     />}
                 />
@@ -133,7 +133,7 @@ export default class Skull extends Component<{}, IState> {
                     exact={true}
                     path={Config.Path.summary}
                     render={() => <Summary
-                        occurrence={this.state.occurrence}
+                        occurrences={this.state.occurrences}
                         delete={this.delete}
                     />}
                 />
@@ -141,8 +141,8 @@ export default class Skull extends Component<{}, IState> {
                     exact={true}
                     path={Config.Path.chart}
                     render={() => <Chart
-                        skull={this.state.skull}
-                        occurrence={this.state.occurrence}
+                        skulls={this.state.skulls}
+                        occurrences={this.state.occurrences}
                     />}
                 />
               </Switch>

@@ -5,7 +5,7 @@ export class Mock {
   static readonly values = true
 
   static readonly Data = {
-    skull: JSON.stringify([
+    skulls: JSON.stringify([
       {
         type: 'bla',
         icon: 'fas fa-vial',
@@ -31,7 +31,7 @@ export class Mock {
         amount: 2,
       },
     ]),
-    quick: JSON.stringify([
+    quicks: JSON.stringify([
       {
         type: 'bla',
         icon: 'fas fa-vial',
@@ -57,7 +57,7 @@ export class Mock {
         amount: 2,
       },
     ]),
-    occurrence: JSON.stringify([
+    occurrences: JSON.stringify([
       {
         type:'um',
         amount:3,

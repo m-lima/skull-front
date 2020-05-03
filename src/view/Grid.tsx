@@ -2,14 +2,13 @@ import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
-import * as Util from '../Util'
-import {IOccurrence, ISkull, IValuedSkull, IValuedSkull as IQuick} from '../model/ISkull'
+import { ISkull, IValuedSkull, IValuedSkull as IQuick} from '../model/ISkull'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
 
 interface IProps {
-  skull: ISkull[]
-  quick: IQuick[]
+  skulls: ISkull[]
+  quicks: IQuick[]
   push: (skull: IValuedSkull) => void
 }
 
@@ -59,13 +58,14 @@ export default class Grid extends Component<IProps, IState> {
     )
   }
 
+  // TODO: Render skulls that do not have a quick
   render = () =>
     <Fragment>
       <div className='Grid' >
-        {this.props.skull && this.props.quick && this.props.quick.map((q, i) => this.buildSkullButton(q, i))}
+        {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(q, i))}
       </div>
       <RichConfirmation
-        types={this.props.skull.map(v => v.name)}
+        skulls={this.props.skulls}
         value={this.state.selected}
         onChange={this.change}
         onAccept={this.accept}

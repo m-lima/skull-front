@@ -1,7 +1,7 @@
-import { IRegisteredValue } from './model/ISkullValue'
+import { IOccurrence } from './model/ISkull'
 
-export const normalizeDate = (value: IRegisteredValue): IRegisteredValue => {
-  const date = new Date(value.millis)
+export const normalizeDate = (occurrence: IOccurrence): IOccurrence => {
+  const date = new Date(occurrence.millis)
   if (date.getHours() < 5) {
     date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
   }
@@ -10,7 +10,7 @@ export const normalizeDate = (value: IRegisteredValue): IRegisteredValue => {
   date.setMinutes(0)
   date.setSeconds(0)
   date.setMilliseconds(0)
-  return { type: value.type, amount: value.amount, millis: date.getTime() }
+  return { id: occurrence.id, skull: occurrence.skull, amount: occurrence.amount, millis: date.getTime() }
 }
 
 export const mapMonthToName = (month: number) => {
@@ -38,26 +38,3 @@ export const mapMonthToNumber = (month: number) => {
 export const addLeadingZero = (value: number) => {
   return (value < 10 ? '0' : '') + value
 }
-
-export const getColorFromType = (type: string) => {
-  const prime = 16777619
-  const offset = 2166136261
-  const desaturation = 0.6
-
-  let color = offset
-  for (let i = 0; i < type.length; i++) {
-    color *= prime
-    color ^= type.charCodeAt(i)
-  }
-
-  color %= 16581375
-  const r = (color & 0xFF0000) >> 16
-  const g = (color & 0xFF00) >> 8
-  const b = color & 0xFF
-  const length = 0.3 * r + 0.6 * g + 0.1 * b
-
-  return '#' + ((((r + desaturation * (length - r)) << 16) & 0xff0000)
-    | (((g + desaturation * (length - g)) << 8) & 0xff00)
-      | ((b + desaturation * (length - b)) & 0xff)).toString(16)
-}
-

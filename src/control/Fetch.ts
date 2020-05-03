@@ -30,9 +30,9 @@ const mapToOccurrence = (raw: any): IROccurrence => {
 }
 
 export default class Fetch {
-  static skull(): Promise<ISkull[]> {
+  static skulls(): Promise<ISkull[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.skull))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
         method: 'GET',
         redirect: 'follow',
@@ -50,9 +50,9 @@ export default class Fetch {
     return data.then(v => v.map(mapToSkull))
   }
 
-  static quick(): Promise<IRQuick[]> {
+  static quicks(): Promise<IRQuick[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.quick))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.quicks))
       : fetch(Config.Endpoint.quick, {
         method: 'GET',
         redirect: 'follow',
@@ -70,9 +70,9 @@ export default class Fetch {
     return data.then(v => v.map(mapToQuick))
   }
 
-  static occurrence(): Promise<IROccurrence[]> {
+  static occurrences(): Promise<IROccurrence[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrence))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
       : fetch(Config.Endpoint.occurrence, {
         method: 'GET',
         redirect: 'follow',

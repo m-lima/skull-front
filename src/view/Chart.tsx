@@ -4,45 +4,41 @@ import './css/Chart.css'
 
 import * as Message from './Message'
 import * as Util from '../Util'
-import { IRegisteredValue } from '../model/ISkullValue'
+import { ISkull, IOccurrence } from '../model/ISkull'
 
-const getColorFromSkull = (skull: IRegisteredValue) => {
-  return Util.getColorFromType(skull.type)
-}
-
-const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, types: string[]) => {
+const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: ISkull[]) => {
   const legendMargin = 40
   const legendGap = 15
   const legendRadius = 4
 
   plot
       .selectAll('Legend-Dot')
-      .data(types)
+      .data(skull)
       .enter()
       .append('circle')
       .attr('cx', legendMargin)
-      .attr('cy', (d, i) => legendMargin + legendGap * i)
+      .attr('cy', (s, i) => legendMargin + legendGap * i)
       .attr('r', legendRadius)
-      .style('fill', Util.getColorFromType)
+      .style('fill', s => s.color.toHexString())
 
   plot
       .selectAll('Legend-Text')
-      .data(types)
+      .data(skull)
       .enter()
       .append('text')
-      .text(d => d)
+      .text(s => s.name)
       .attr('x', legendMargin + legendGap - legendRadius)
-      .attr('y', (d, i) => legendMargin + legendGap * i)
+      .attr('y', (s, i) => legendMargin + legendGap * i)
       .attr('text-anchor', 'left')
       .attr('dominant-baseline', 'middle')
-      .style('fill', Util.getColorFromType)
+      .style('fill', s => s.color.toHexString())
       .style('font', `${legendRadius * 3}px sans-serif`)
 }
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
               timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, IRegisteredValue, SVGGElement, {}>,
-              types: string[],
+              bars: d3.Selection<SVGRectElement, IOccurrence, SVGGElement, {}>,
+              skulls: ISkull[],
               initial: number | Date,
               final: number | Date,
               nice = true) => {
@@ -59,20 +55,21 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
   bars
       .transition()
       .duration(750)
-      .attr('x', d => {
-        const dayEnd = new Date(d.millis)
+      .attr('x', o => {
+        const dayEnd = new Date(o.millis)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        return timeDomain(d.millis) + types.indexOf(d.type) * (timeDomain(dayEnd.getTime()) - timeDomain(d.millis)) / types.length
+        return timeDomain(o.millis) + skulls.indexOf(o.skull) * (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
       })
-      .attr('width', d => {
-        const dayEnd = new Date(d.millis)
+      .attr('width', o => {
+        const dayEnd = new Date(o.millis)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        return (timeDomain(dayEnd.getTime()) - timeDomain(d.millis)) / types.length
+        return (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
       })
 }
 
 interface IProps {
-  skullValues: IRegisteredValue[]
+  skulls: ISkull[]
+  occurrences: IOccurrence[]
 }
 
 enum Orientation {
@@ -130,7 +127,7 @@ export default class Chart extends Component<IProps> {
   }
 
   componentDidMount() {
-    if (!this.svgRef.current || this.props.skullValues.length < 1) {
+    if (!this.svgRef.current || this.props.skulls.length < 1 || this.props.occurrences.length < 1) {
       return
     }
 
@@ -139,31 +136,25 @@ export default class Chart extends Component<IProps> {
     const dayInMillis = 86400000
 
     // Calculated constants
-    const skullValues = this.props.skullValues
+    const occurrences = this.props.occurrences
         .map(Util.normalizeDate)
-        .sort((a, b) => a.millis === b.millis ? a.type.localeCompare(b.type) : a.millis - b.millis)
-        .reduce((list, value) => {
-          const last = list[list.length - 1]
-          if (last && value.millis === last.millis && value.type === last.type) {
-            last.amount += value.amount
+        .sort((a, b) => a.millis === b.millis ? a.skull.id - b.skull.id : a.millis - b.millis)
+        .reduce((acc, curr) => {
+          const tail = acc[acc.length - 1]
+          if (tail && curr.millis === tail.millis && curr.skull.id === tail.skull.id) {
+            tail.amount += curr.amount
           } else {
-            list.push(value)
+            acc.push(curr)
           }
-          return list
-        }, [] as IRegisteredValue[])
-    const minMaxAmount = skullValues
+          return acc
+        }, [] as IOccurrence[])
+    const minMaxAmount = occurrences
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
-    const minMaxMillis = skullValues
+    const minMaxMillis = occurrences
         .map(skull => skull.millis)
         .reduce(MinMax.update, new MinMax())
-    const types = skullValues.map(skull => skull.type)
-        .reduce((list, value) => {
-          !list.find(v => value === v) && list.push(value)
-          return list
-        }, [] as string[])
-        .sort()
-    const initialZoom = skullValues
+    const initialZoom = occurrences
         .map(skull => skull.millis)
         .reverse()
         .reduce((prev, curr) => prev - curr > 2 * dayInMillis ? prev : curr)
@@ -196,22 +187,22 @@ export default class Chart extends Component<IProps> {
 
     // Chart-derived constants
     const dayWidth = (timeDomain(new Date(0, 0, 1).getTime()) - timeDomain(new Date(0, 0, 0).getTime()))
-    const typeWidth = dayWidth / types.length
+    const skullWidth = dayWidth / this.props.skulls.length
     const scaledZero = amountDomain(0)
 
     const bars = plot
         .append('g')
         .attr('clip-path', 'url(#clip-rect)')
         .selectAll('Bars')
-        .data(skullValues)
+        .data(occurrences)
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', d => timeDomain(d.millis) + types.indexOf(d.type) * typeWidth)
-        .attr('width', typeWidth)
+        .attr('x', o => timeDomain(o.millis) + this.props.skulls.indexOf(o.skull) * skullWidth)
+        .attr('width', skullWidth)
         .attr('y', scaledZero)
         .attr('height', 0)
-        .attr('fill', getColorFromSkull)
+        .attr('fill', o => o.skull.color.toHexString())
 
     bars
         .transition()
@@ -228,13 +219,13 @@ export default class Chart extends Component<IProps> {
             return
           }
           plottedBrush.call(brush.move)
-          zoom(timeDomain, timeAxis, bars, types, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), false)
+          zoom(timeDomain, timeAxis, bars, this.props.skulls, timeDomain.invert(extent[0]), timeDomain.invert(extent[1]), false)
         })
 
     const plottedBrush = plot
         .append('g')
         .call(brush)
-        .on('click', () => zoom(timeDomain, timeAxis, bars, types, minMaxMillis.min, minMaxMillis.max + dayInMillis))
+        .on('click', () => zoom(timeDomain, timeAxis, bars, this.props.skulls, minMaxMillis.min, minMaxMillis.max + dayInMillis))
 
     const timeAxis = plot
         .append('g')
@@ -246,11 +237,11 @@ export default class Chart extends Component<IProps> {
         .attr('transform', `translate(${margin}, 0)`)
         .call(d3.axisLeft(amountDomain))
 
-    addLegend(plot, types)
+    addLegend(plot, this.props.skulls)
   }
 
   render = () =>
-    this.props.skullValues.length < 1
+    this.props.skulls.length < 1 || this.props.occurrences.length < 1
       ? <Message.Empty />
       : <svg className='Chart' ref={this.svgRef} />
 }
