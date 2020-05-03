@@ -28,7 +28,7 @@ export default class Bars<T extends Occurrence> extends Component<IProps<T>> {
               y={this.props.range(datum.amount)}
               height={scaledZero - this.props.range(datum.amount)}
               clipPath={this.props.clip}
-              fill={datum.skull.color.toHexString()}
+              fill={datum.skull.color}
           />
       )}
     </g>

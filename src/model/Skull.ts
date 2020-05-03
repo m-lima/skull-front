@@ -1,10 +1,16 @@
-import Color from './Color'
 import { ModelException } from './Exception'
+
+const isCssColor = (color: string) => {
+  const style = new Option().style;
+  style.color = color;
+
+  return style.color !== ''
+}
 
 export class Skull {
   id: number
   name: string
-  color: Color
+  color: string
   icon: string
   unitPrice: number
 
@@ -17,8 +23,8 @@ export class Skull {
       throw new ModelException('skull', 'name', raw.name, 'must be a non-empty string')
     }
 
-    if (raw.color as string === undefined || raw.color.length < 0) {
-      throw new ModelException('skull', 'color', raw.color, 'must be a non-empty string')
+    if (raw.color as string === undefined || !isCssColor(raw.color)) {
+      throw new ModelException('color', 'color', raw.color, 'must be a valid CSS color')
     }
 
     if (raw.icon as string === undefined || raw.icon.length < 0) {
@@ -29,14 +35,9 @@ export class Skull {
       throw new ModelException('skull', 'unitPrice', raw.unitPrice, 'must be a non-negative number')
     }
 
-    try {
-      this.color = new Color(raw.color)
-    } catch (e) {
-      throw new ModelException('skull', 'color', raw.color, 'must be a vlid hex color')
-    }
-
     this.id = raw.id
     this.name = raw.name
+    this.color = raw.color
     this.icon = raw.icon
     this.unitPrice = raw.unitPrice
   }

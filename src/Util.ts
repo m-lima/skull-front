@@ -1,7 +1,5 @@
 import { Occurrence } from './model/Skull'
 
-export type Optional<T> = T | undefined
-
 export const normalizeDate = (occurrence: Occurrence): Occurrence => {
   const date = new Date(occurrence.millis)
   if (date.getHours() < 5) {
@@ -39,13 +37,4 @@ export const mapMonthToNumber = (month: number) => {
 
 export const addLeadingZero = (value: number) => {
   return (value < 10 ? '0' : '') + value
-}
-
-export const logAndUndefineIfException = <F, T>(f: () => T): Optional<T> => {
-  try {
-    return f()
-  } catch (e) {
-    console.log(e)
-    return undefined
-  }
 }

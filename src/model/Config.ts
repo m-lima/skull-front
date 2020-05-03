@@ -9,21 +9,21 @@ export class Mock {
       {
         id: 0,
         name: 'bla',
-        color: 'FF0000',
+        color: 'red',
         icon: 'fas fa-vial',
         unitPrice: 1,
       },
       {
         id: 1,
         name: 'ble',
-        color: '0000FF',
+        color: 'blue',
         icon: 'fas fa-vial',
         unitPrice: 2.7,
       },
       {
         id: 2,
         name: 'bli',
-        color: 'FFFF00',
+        color: 'yellow',
         icon: 'fas fa-vial',
         unitPrice: 3,
       },
@@ -39,13 +39,14 @@ export class Mock {
       },
       {
         skull: 2,
+        amount: 2.7
       },
       {
         skull: 2,
-        amount: 0,
+        amount: 0.1,
       },
       {
-        skull: 5,
+        skull: 2,
         amount: 2,
       },
     ]),
@@ -54,7 +55,25 @@ export class Mock {
         id: 0,
         skull: 0,
         amount: 3,
-        millis: 1553901448013,
+        millis: new Date().valueOf(),
+      },
+      {
+        id: 1,
+        skull: 2,
+        amount: 3,
+        millis: new Date().valueOf() + 1,
+      },
+      {
+        id: 2,
+        skull: 2,
+        amount: 3,
+        millis: new Date().valueOf() + 2,
+      },
+      {
+        id: 3,
+        skull: 2,
+        amount: 3,
+        millis: new Date().valueOf() + 3,
       },
     ]),
   }

@@ -1,18 +1,17 @@
 import * as Config from '../model/Config'
 import { Skull, RawValuedSkull as RawQuick, RawOccurrence} from '../model/Skull'
 import { ApiException } from '../model/Exception'
-import { logAndUndefineIfException, Optional } from '../Util'
 
-const mapToSkull = (raw: any): Optional<Skull> => {
-  return logAndUndefineIfException(() => new Skull(raw))
+const mapToSkull = (raw: any): Skull => {
+  return new Skull(raw)
 }
 
-const mapToQuick = (raw: any): Optional<RawQuick> => {
-  return logAndUndefineIfException(() => new RawQuick(raw))
+const mapToQuick = (raw: any): RawQuick => {
+  return new RawQuick(raw)
 }
 
-const mapToOccurrence = (raw: any): Optional<RawOccurrence> => {
-  return logAndUndefineIfException(() => new RawOccurrence(raw))
+const mapToOccurrence = (raw: any): RawOccurrence => {
+  return new RawOccurrence(raw)
 }
 
 export default class Fetch {
@@ -33,7 +32,7 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToSkull).filter((v: Optional<Skull>) => v))
+    return data.then(v => v.map(mapToSkull).filter((v: Skull) => v))
   }
 
   static quicks(): Promise<RawQuick[]> {
@@ -53,7 +52,7 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToQuick).filter((v: Optional<RawQuick>) => v))
+    return data.then(v => v.map(mapToQuick).filter((v: RawQuick) => v))
   }
 
   static occurrences(): Promise<RawOccurrence[]> {
@@ -73,6 +72,6 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToOccurrence).filter((v: Optional<RawOccurrence>) => v))
+    return data.then(v => v.map(mapToOccurrence).filter((v: RawOccurrence) => v))
   }
 }

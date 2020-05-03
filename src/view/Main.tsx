@@ -4,7 +4,6 @@ import './css/Skull.css'
 
 import * as Config from '../model/Config'
 import * as Message from './Message'
-import * as Util from '../Util'
 import Access from '../control/Access'
 import Chart from './Chart'
 import Environment from '../model/Environment'
@@ -60,14 +59,9 @@ export default class Skull extends Component<{}, IState> {
     Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
         .then(r => this.setState({
           skulls: r[0],
-          quicks: r[1]
-              .map(q => Util.logAndUndefineIfException(() => new Quick(q, r[0])))
-              .filter(q => q !== undefined)
-              .map(q => q!),
+          quicks: r[1].map(q => new Quick(q, r[0])),
           occurrences: r[2]
-              .map(o => Util.logAndUndefineIfException(() => new Occurrence(o, r[0])))
-              .filter(o => o !== undefined)
-              .map(o => o!)
+              .map(o => new Occurrence(o, r[0]))
               .reverse(),
           status: Status.OK,
         }))

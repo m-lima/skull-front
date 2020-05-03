@@ -50,7 +50,7 @@ export default class Grid extends Component<IProps, IState> {
             key={index}
             className='Grid-button'
             title={quick.skull.name + ': ' + quick.amount}
-            style={{background: quick.skull.color.toHexString()}}
+            style={{background: quick.skull.color}}
             onClick={() => this.showConfirmation(quick)}
         >
           <Icon icon={quick.skull.icon}/>

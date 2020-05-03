@@ -19,7 +19,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
       .attr('cx', legendMargin)
       .attr('cy', (s, i) => legendMargin + legendGap * i)
       .attr('r', legendRadius)
-      .style('fill', s => s.color.toHexString())
+      .style('fill', s => s.color)
 
   plot
       .selectAll('Legend-Text')
@@ -31,7 +31,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
       .attr('y', (s, i) => legendMargin + legendGap * i)
       .attr('text-anchor', 'left')
       .attr('dominant-baseline', 'middle')
-      .style('fill', s => s.color.toHexString())
+      .style('fill', s => s.color)
       .style('font', `${legendRadius * 3}px sans-serif`)
 }
 
@@ -202,7 +202,7 @@ export default class Chart extends Component<IProps> {
         .attr('width', skullWidth)
         .attr('y', scaledZero)
         .attr('height', 0)
-        .attr('fill', o => o.skull.color.toHexString())
+        .attr('fill', o => o.skull.color)
 
     bars
         .transition()

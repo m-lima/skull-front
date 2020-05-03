@@ -66,7 +66,7 @@ export default class Summary extends Component<IProps, IState> {
   renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
       <tr id={occurrence.dark ? 'dark' : 'bright'} key={index}>
-        <td id='icon' style={{ color: occurrence.skull.color.toHexString() }}>
+        <td id='icon' style={{ color: occurrence.skull.color }}>
           <Icon icon={ occurrence.skull.icon } />
         </td>
         <td>{occurrence.skull.name}</td>
@@ -88,7 +88,7 @@ export default class Summary extends Component<IProps, IState> {
             <tr>
               <th id='icon'></th>
               <th>Name</th>
-              <th>Count</th>
+              <th>Amount</th>
               <th>Time</th>
               <th id='icon'></th>
             </tr>
