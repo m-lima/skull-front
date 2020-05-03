@@ -15,7 +15,7 @@ import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
 import {ApiException} from '../model/Exception'
-import {ISkull, IValuedSkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
+import {ISkull, IRValuedSkull, IROccurrence, IValuedSkull, IValuedSkull as IQuick, IOccurrence} from '../model/ISkull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -59,8 +59,23 @@ export default class Skull extends Component<{}, IState> {
     Promise.all([Fetch.skull(), Fetch.quick(), Fetch.occurrence()])
         .then(r => this.setState({
           skull: r[0],
-          quick: r[1],
-          occurrence: r[2].reverse(),
+          quick: r[1]
+              .map(v => {
+                return { skull: r[0].find(s => s.id === v.skull), amount: v.amount }
+              })
+              .filter(v => v.skull)
+              .map(v => {
+                return { skull: v.skull!, amount: v.amount}
+              }),
+          occurrence: r[2]
+              .map(v => {
+                return { skull: r[0].find(s => s.id === v.skull), id: v.id, amount: v.amount, millis: v.millis }
+              })
+              .filter(v => v.skull)
+              .map(v => {
+                return { skull: v.skull!, id: v.id, amount: v.amount, millis: v.millis }
+              })
+              .reverse(),
           status: Status.OK,
         }))
         .catch(this.handleException)
@@ -118,7 +133,6 @@ export default class Skull extends Component<{}, IState> {
                     exact={true}
                     path={Config.Path.summary}
                     render={() => <Summary
-                        skull={this.state.skull}
                         occurrence={this.state.occurrence}
                         delete={this.delete}
                     />}

@@ -47,12 +47,11 @@ export default class Grid extends Component<IProps, IState> {
 
   buildSkullButton(quick: IQuick, index?: number) {
     return (
-        // TODO: Make dedicated class for quick button
         <div
             key={index}
             className='Grid-button'
             title={quick.skull.name + ': ' + quick.amount}
-            style={{background: skull.color.toHexString()}}
+            style={{background: quick.skull.color.toHexString()}}
             onClick={() => this.showConfirmation(quick)}
         >
           <Icon icon={quick.skull.icon}/>
