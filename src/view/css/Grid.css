@@ -38,6 +38,11 @@
   height: var(--button-size);
   border-radius: calc(var(--button-size) / 10);
 
+  box-sizing: border-box;
+  /* border-style: solid; */
+  /* border-color: red; */
+  /* border-width: 5px; */
+
   color: var(--background-color);
 }
 

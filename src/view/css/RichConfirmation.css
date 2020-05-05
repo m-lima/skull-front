@@ -11,6 +11,9 @@
 
 .Confirmation-input input, select {
   display: block;
+  appearance: none;
+
+  background: white;
 
   width: 100%;
   font-size: 100%;
@@ -25,3 +28,4 @@
   border-color: #cccccc;
   border-radius: 4px;
 }
+
