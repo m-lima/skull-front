@@ -37,9 +37,10 @@ export default class RichConfirmation extends Confirmation<ISkullValue, IRichPro
           <input
             id='amount'
             type='number'
+            inputMode='decimal'
             min={0}
             step={0.1}
-            value={String(this.getValue().amount)}
+            value={this.getValue().amount}
             onChange={e => {
               this.getValue().amount = Number(e.target.value)
               this.props.onChange(this.getValue())
