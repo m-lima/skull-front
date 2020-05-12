@@ -10,21 +10,21 @@
 
 @media screen and (min-width: calc(2 * (150px + 20px) + 40px)) {
   .Grid {
-    max-width: calc(2 * (var(--button-size) + 10px));
+    max-width: calc(2 * (var(--button-size) + 15px));
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media screen and (min-width: calc(3 * (150px + 20px) + 40px)) {
   .Grid {
-    max-width: calc(3 * (var(--button-size) + 10px));
+    max-width: calc(3 * (var(--button-size) + 15px));
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media screen and (min-width: calc(4 * (150px + 20px) + 40px)) {
   .Grid {
-    max-width: calc(4 * (var(--button-size) + 10px));
+    max-width: calc(4 * (var(--button-size) + 15px));
     grid-template-columns: repeat(4, 1fr);
   }
 }
