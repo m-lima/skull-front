@@ -6,10 +6,10 @@
 }
 
 .Skull-container {
-  height: calc(100% - 40px - var(--bar-size));
+  height: calc(100% - 20px - var(--bar-size));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
 }
 
 .Skull-container:after {
