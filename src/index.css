@@ -10,6 +10,7 @@
   --shade-2: #383e4a;
   --shade-3: #4f5768;
   --shade-4: #5b667d;
+  --padding-size: 20px;
 }
 
 html, body, #root {
