@@ -10,6 +10,7 @@
   --shade-2: #383e4a;
   --shade-3: #4f5768;
   --shade-4: #5b667d;
+  --padding-size: 20px;
 }
 
 html, body, #root {
@@ -24,7 +25,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   background-color: var(--background-color);
   color: var(--font-color);
 }

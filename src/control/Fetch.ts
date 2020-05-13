@@ -17,7 +17,7 @@ const mapToOccurrence = (raw: any): RawOccurrence => {
 export default class Fetch {
   static skulls(): Promise<Skull[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.skulls))
+      ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
         method: 'GET',
         redirect: 'follow',
@@ -37,7 +37,7 @@ export default class Fetch {
 
   static quicks(): Promise<RawQuick[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.quicks))
+      ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.quicks)))
       : fetch(Config.Endpoint.quick, {
         method: 'GET',
         redirect: 'follow',

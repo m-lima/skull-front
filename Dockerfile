@@ -2,7 +2,7 @@ FROM node
 
 WORKDIR /web
 
-COPY package.json /web
+COPY package.json package-lock.json /web/
 RUN npm install
 
 RUN curl https://use.fontawesome.com/releases/v5.11.2/fontawesome-free-5.11.2-web.zip -o /fontawesome.zip && \
