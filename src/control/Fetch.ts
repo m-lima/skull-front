@@ -21,7 +21,7 @@ const mapToRegisteredValue = (rawValue: any): IRegisteredValue => {
 export default class Fetch {
   static quickValues(): Promise<IQuickValue[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.quickValues))
+      ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.quickValues))
       : fetch(Config.Endpoint.quickValues, {
         method: 'GET',
         redirect: 'follow',
@@ -41,7 +41,7 @@ export default class Fetch {
 
   static registeredValues(): Promise<IRegisteredValue[]> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.Data.registeredValues))
+      ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.registeredValues)))
       : fetch(Config.Endpoint.skull, {
         method: 'GET',
         redirect: 'follow',
