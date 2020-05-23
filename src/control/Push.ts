@@ -8,7 +8,7 @@ export default class Push {
       return Promise.resolve(true)
     }
 
-    return fetch(Config.Endpoint.skull + '?skull=' + skull.skull + '&amount=' + skull.amount, {
+    return fetch(Config.Endpoint.occurrence + '?skull=' + skull.skull.id + '&amount=' + skull.amount, {
       method: 'POST',
       redirect: 'follow',
       credentials: 'include',
@@ -27,7 +27,7 @@ export default class Push {
       return Promise.resolve(true)
     }
 
-    return fetch(Config.Endpoint.skull + '?id=' + occurrence.id, {
+    return fetch(Config.Endpoint.occurrence + '?id=' + occurrence.id, {
       method: 'DELETE',
       redirect: 'follow',
       credentials: 'include',

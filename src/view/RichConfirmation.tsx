@@ -20,7 +20,7 @@ export default class RichConfirmation extends Confirmation<ValuedSkull, IRichPro
           this.props.onChange(this.getValue())
         }}
       >
-        {this.props.skulls.map((s, i) => <option key={i} value={s.name}>{s}</option>)}
+        {this.props.skulls.map((s, i) => <option key={i} value={s.name}>{s.name}</option>)}
       </select>
     )
   }
