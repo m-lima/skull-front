@@ -26,6 +26,7 @@ export class Mock {
         color: 'yellow',
         icon: 'fas fa-vial',
         unitPrice: 3,
+        limit: 4,
       },
     ]),
     quicks: JSON.stringify([

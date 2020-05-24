@@ -13,6 +13,7 @@ export class Skull {
   color: string
   icon: string
   unitPrice: number
+  limit?: number
 
   constructor(raw: any) {
     if (raw.id as number === undefined || raw.id < 0) {
@@ -40,6 +41,10 @@ export class Skull {
     this.color = raw.color
     this.icon = raw.icon
     this.unitPrice = raw.unitPrice
+
+    if (raw.limit as number !== undefined && raw.limit >= 0) {
+      this.limit = raw.limit
+    }
   }
 }
 
