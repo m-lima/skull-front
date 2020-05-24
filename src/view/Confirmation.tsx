@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import './css/Confirmation.css'
 
 import Icon from './Icon'
@@ -9,7 +9,7 @@ export interface IProps<T> {
   onCancel: () => void
 }
 
-export default class Confirmation<T, P extends IProps<T> = IProps<T>> extends Component<P> {
+export default class Confirmation<T, P extends IProps<T> = IProps<T>> extends PureComponent<P> {
 
   protected getValue(): T {
     return this.props.value as T

@@ -9,24 +9,24 @@ export class Mock {
       {
         id: 0,
         name: 'bla',
-        color: 'red',
+        color: '#dd5555',
         icon: 'fas fa-vial',
         unitPrice: 1,
       },
       {
         id: 1,
         name: 'ble',
-        color: 'blue',
-        icon: 'fas fa-vial',
+        color: 'rgb(85, 85, 170)',
+        icon: 'fas fa-coffee',
         unitPrice: 2.7,
       },
       {
         id: 2,
         name: 'bli',
-        color: 'yellow',
-        icon: 'fas fa-vial',
+        color: 'orange',
+        icon: 'fas fa-box',
         unitPrice: 3,
-        limit: 4,
+        limit: 14,
       },
     ]),
     quicks: JSON.stringify([
@@ -40,7 +40,7 @@ export class Mock {
       },
       {
         skull: 2,
-        amount: 2.7
+        amount: 5
       },
       {
         skull: 2,
