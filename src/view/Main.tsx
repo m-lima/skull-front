@@ -113,6 +113,7 @@ export default class Skull extends Component<{}, IState> {
                     render={() => <Grid
                         skulls={this.state.skulls}
                         quicks={this.state.quicks}
+                        occurrences={this.state.occurrences}
                         push={this.push}
                     />}
                 />

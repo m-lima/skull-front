@@ -2,18 +2,46 @@ import React, { Fragment, PureComponent } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
-import { Skull, ValuedSkull, ValuedSkull as Quick} from '../model/Skull'
+import { Occurrence, Skull, ValuedSkull, ValuedSkull as Quick } from '../model/Skull'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
+
+type SkullId = number
 
 interface IProps {
   skulls: Skull[]
   quicks: Quick[]
+  occurrences: Occurrence[]
   push: (skull: ValuedSkull) => void
 }
 
 interface IState {
   selected?: ValuedSkull
+}
+
+class SkullAmount {
+  skull: SkullId
+  amount: number
+
+  constructor(skull: SkullId, amount: number) {
+    this.skull = skull
+    this.amount = amount
+  }
+}
+
+const idForQuick = (skullAmounts: Map<SkullId, number>, quick: Quick) => {
+   if (quick.skull.limit && skullAmounts.has(quick.skull.id)) {
+    const skullAmount = skullAmounts.get(quick.skull.id)! + quick.amount
+    if (skullAmount >= quick.skull.limit) {
+      return 'Grid-button-over-limit'
+    } else if (skullAmount >= quick.skull.limit * 0.75) {
+      return 'Grid-button-near-limit'
+    } else {
+      return undefined
+    }
+  } else {
+    return undefined
+  }
 }
 
 export default class Grid extends PureComponent<IProps, IState> {
@@ -44,32 +72,56 @@ export default class Grid extends PureComponent<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  buildSkullButton(quick: Quick, index?: number) {
+  buildSkullButton = (skullAmounts: Map<SkullId, number>, quick: Quick, index?: number) =>
+    <div
+        key={index}
+        className='Grid-button'
+        title={
+          'Skull: ' + quick.skull.name
+          + '\nAmount: ' + quick.amount
+          + (quick.skull.limit ? '\nLimit: ' + quick.skull.limit : '')
+        }
+        style={{background: quick.skull.color}}
+        onClick={() => this.showConfirmation(quick)}
+    >
+      <Icon icon={quick.skull.icon}/>
+      <div
+          className='Grid-button-amount'
+          id={idForQuick(skullAmounts, quick)}
+      >
+        {quick.amount}
+      </div>
+    </div>
+
+  render() {
+    const twentyFourHoursAgo = new Date().valueOf() - 24 * 60 * 60 * 1000;
+    const skullAmounts = this.props.occurrences
+        .filter(o => o.millis > twentyFourHoursAgo)
+        .map(o => new SkullAmount(o.skull.id, o.amount))
+        .reduce((acc, curr) => {
+          let amount = acc.get(curr.skull)
+          if (amount) {
+            amount += curr.amount
+          } else {
+            amount = curr.amount
+          }
+          acc.set(curr.skull, amount)
+          return acc
+        }, new Map<SkullId, number>())
+
     return (
-        <div
-            key={index}
-            className='Grid-button'
-            title={quick.skull.name + ': ' + quick.amount}
-            style={{background: quick.skull.color}}
-            onClick={() => this.showConfirmation(quick)}
-        >
-          <Icon icon={quick.skull.icon}/>
-        </div>
+        <Fragment>
+          <div className='Grid'>
+            {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(skullAmounts, q, i))}
+          </div>
+          <RichConfirmation
+              skulls={this.props.skulls}
+              value={this.state.selected}
+              onChange={this.change}
+              onAccept={this.accept}
+              onCancel={this.cancel}
+          />
+        </Fragment>
     )
   }
-
-  // TODO: Render skulls that do not have a quick
-  render = () =>
-    <Fragment>
-      <div className='Grid' >
-        {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(q, i))}
-      </div>
-      <RichConfirmation
-        skulls={this.props.skulls}
-        value={this.state.selected}
-        onChange={this.change}
-        onAccept={this.accept}
-        onCancel={this.cancel}
-      />
-    </Fragment>
 }
