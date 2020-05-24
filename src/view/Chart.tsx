@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import * as d3 from 'd3'
 import './css/Chart.css'
 
@@ -110,7 +110,7 @@ class DateFormatter {
   }
 }
 
-export default class Chart extends Component<IProps> {
+export default class Chart extends PureComponent<IProps> {
   private svgRef = React.createRef<SVGSVGElement>()
 
   getSizesAndOrientation(margin: number) {

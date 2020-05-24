@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
@@ -16,7 +16,7 @@ interface IState {
   selected?: ValuedSkull
 }
 
-export default class Grid extends Component<IProps, IState> {
+export default class Grid extends PureComponent<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)
