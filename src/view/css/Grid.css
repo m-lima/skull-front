@@ -31,20 +31,52 @@
 }
 
 .Grid-button {
-  font-size: 6em;
-  display: flex;
+  display: block;
   cursor: pointer;
 
   width: var(--button-size);
   height: var(--button-size);
   border-radius: calc(var(--button-size) / 10);
-
+  overflow: hidden;
   box-sizing: border-box;
-  /* border-style: solid; */
-  /* border-color: red; */
-  /* border-width: 5px; */
 
   color: var(--background-color);
+}
+
+.Grid-button > i {
+  font-size: 6em;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+  justify-content: center;
+
+  height: 75%;
+}
+
+.Grid-button > .Grid-button-amount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--font-color);
+  background: rgba(0, 0, 0, 0.5);
+
+  height: calc(var(--button-size) / 4);
+
+  font-size: 1.5em;
+}
+
+.Grid-button > #Grid-button-near-limit {
+  color: orange;
+  background: black;
+}
+
+.Grid-button > #Grid-button-over-limit {
+  color: red;
+  background: black;
 }
 
 .Grid-button:hover{
