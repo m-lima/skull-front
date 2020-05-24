@@ -1,9 +1,5 @@
-import React, { Component } from 'react'
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-} from 'react-router-dom'
+import React, {Component} from 'react'
+import {BrowserRouter as Router, Route, Switch,} from 'react-router-dom'
 import './css/Skull.css'
 
 import * as Config from '../model/Config'
@@ -18,8 +14,8 @@ import IQueryState from '../model/IQueryState'
 import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
-import { ApiException } from '../model/Exception'
-import ISkullValue, { IRegisteredValue, IQuickValue } from '../model/ISkullValue'
+import {ApiException} from '../model/Exception'
+import { Skull as SkullModel, ValuedSkull, ValuedSkull as Quick, Occurrence } from '../model/Skull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -30,9 +26,9 @@ const Banner = (props: { text: string }) => {
 }
 
 interface IState extends IQueryState {
-  quickValues: IQuickValue[]
-  skullValues: IRegisteredValue[]
-  icons: Map<string, string>
+  skulls: SkullModel[]
+  quicks: Quick[]
+  occurrences: Occurrence[]
 }
 
 export default class Skull extends Component<{}, IState> {
@@ -51,38 +47,37 @@ export default class Skull extends Component<{}, IState> {
         return
       }
       console.error('HTTP error status: ' + ex.httpStatus)
-      this.setState({ quickValues: [], skullValues: [], icons: new Map<string, string>(), status: ex.status })
+      this.setState({ skulls: [], quicks: [], occurrences: [], status: ex.status })
     } else {
       console.error(ex)
-      this.setState({ quickValues: [], skullValues: [], icons: new Map<string, string>(), status: Status.ERROR })
+      this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.ERROR })
     }
   }
 
   load() {
-    this.setState({ quickValues: [], skullValues: [], icons: new Map<string, string>(), status: Status.LOADING })
-    Promise.all([Fetch.quickValues(), Fetch.registeredValues()])
+    this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.LOADING })
+    Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
         .then(r => this.setState({
-          quickValues: r[0],
-          icons: r[0].reduce((m, v) => {
-            m.set(v.type + v.amount, v.icon)
-            return m
-          }, new Map<string, string>()),
-          skullValues: r[1].reverse(),
+          skulls: r[0],
+          quicks: r[1].map(q => new Quick(q, r[0])),
+          occurrences: r[2]
+              .map(o => new Occurrence(o, r[0]))
+              .reverse(),
           status: Status.OK,
         }))
         .catch(this.handleException)
   }
 
-  push(skullValue: ISkullValue) {
+  push(skull: ValuedSkull) {
     this.setState({ status: Status.LOADING })
-    Push.skullValue(skullValue)
+    Push.skull(skull)
         .then(() => this.load())
         .catch(this.handleException)
   }
 
-  delete(skullValue: IRegisteredValue) {
+  delete(occurrence: Occurrence) {
     this.setState({ status: Status.LOADING })
-    Push.deletion(skullValue)
+    Push.deletion(occurrence)
         .then(() => this.load())
         .catch(this.handleException)
   }
@@ -115,21 +110,27 @@ export default class Skull extends Component<{}, IState> {
                 <Route
                     exact={true}
                     path={Config.Path.grid}
-                    render={() => <Grid skullValues={this.state.quickValues} push={this.push} />}
+                    render={() => <Grid
+                        skulls={this.state.skulls}
+                        quicks={this.state.quicks}
+                        push={this.push}
+                    />}
                 />
                 <Route
                     exact={true}
                     path={Config.Path.summary}
                     render={() => <Summary
-                        skullValues={this.state.skullValues}
-                        icons={this.state.icons}
+                        occurrences={this.state.occurrences}
                         delete={this.delete}
                     />}
                 />
                 <Route
                     exact={true}
                     path={Config.Path.chart}
-                    render={() => <Chart skullValues={this.state.skullValues} />}
+                    render={() => <Chart
+                        skulls={this.state.skulls}
+                        occurrences={this.state.occurrences}
+                    />}
                 />
               </Switch>
             </div>

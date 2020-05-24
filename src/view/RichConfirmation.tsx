@@ -2,29 +2,30 @@ import React from 'react'
 import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
-import ISkullValue from '../model/ISkullValue'
+import { Skull, ValuedSkull } from '../model/Skull'
 
-interface IRichProps extends IProps<ISkullValue> {
-  types: string[]
-  onChange: (value: ISkullValue) => void
+interface IRichProps extends IProps<ValuedSkull> {
+  skulls: Skull[]
+  onChange: (skull: ValuedSkull) => void
 }
 
-export default class RichConfirmation extends Confirmation<ISkullValue, IRichProps> {
+export default class RichConfirmation extends Confirmation<ValuedSkull, IRichProps> {
 
   buildComboBox() {
     return (
       <select
-        value={this.getValue().type}
+        value={this.getValue().skull.name}
         onChange={e => {
-          this.getValue().type = e.target.value
+          this.getValue().skull.name = e.target.value
           this.props.onChange(this.getValue())
         }}
       >
-        {this.props.types.map((v, i) => <option key={i} value={v}>{v}</option>)}
+        {this.props.skulls.map((s, i) => <option key={i} value={s.name}>{s.name}</option>)}
       </select>
     )
   }
 
+  // TODO: iOS doesn't like the fractional number input
   renderInputs() {
     return (
       <div className='Confirmation-inputs'>

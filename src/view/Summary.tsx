@@ -5,32 +5,31 @@ import * as Message from './Message'
 import * as Util from '../Util'
 import Confirmation from './Confirmation'
 import Icon from './Icon'
-import { IRegisteredValue } from '../model/ISkullValue'
+import { Occurrence } from '../model/Skull'
 
-interface ISummaryValue extends IRegisteredValue {
-  dark: boolean
+class ISummaryOccurrence extends Occurrence {
+  dark = false
 }
 
 interface IProps {
-  skullValues: IRegisteredValue[]
-  icons: Map<string, string>
-  delete: (skullValue: IRegisteredValue) => void
+  occurrences: Occurrence[]
+  delete: (occurrence: Occurrence) => void
 }
 
 interface IState {
-  selected?: IRegisteredValue
+  selected?: Occurrence
 }
 
-const alternateDays = (skullValues: IRegisteredValue[]) => {
+const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
   let millis = 0
   let dark = false
-  return skullValues.map((v): ISummaryValue=> {
-    const newValue = Util.normalizeDate(v)
+  return occurrences.map(o => {
+    const newValue = Util.normalizeDate(o)
     if (newValue.millis !== millis) {
       millis = newValue.millis
       dark = !dark
     }
-    return { type: v.type, amount: v.amount, millis: v.millis, dark: dark}
+    return { id: o.id, skull: o.skull, amount: o.amount, millis: o.millis, dark: dark}
   })
 }
 
@@ -64,17 +63,16 @@ export default class Summary extends Component<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  renderRow(value: ISummaryValue, index: number) {
+  renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
-      <tr id={value.dark ? 'dark' : 'bright'} key={index}>
-        <td id='icon' style={{ color: Util.getColorFromType(value.type)}}>
-          {this.props.icons.has(value.type + value.amount)
-          && <Icon icon={this.props.icons.get(value.type + value.amount) as string} />}
+      <tr id={occurrence.dark ? 'dark' : 'bright'} key={index}>
+        <td id='icon' style={{ color: occurrence.skull.color }}>
+          <Icon icon={ occurrence.skull.icon } />
         </td>
-        <td>{value.type}</td>
-        <td>{value.amount}</td>
-        <td>{formatDate(value.millis)}</td>
-        <td id='delete' onClick={() => this.setState({ selected: value })}>
+        <td>{occurrence.skull.name}</td>
+        <td>{occurrence.amount}</td>
+        <td>{formatDate(occurrence.millis)}</td>
+        <td id='delete' onClick={() => this.setState({ selected: occurrence })}>
           <Icon icon='fas fa-trash-alt' />
         </td>
       </tr>
@@ -82,23 +80,23 @@ export default class Summary extends Component<IProps, IState> {
   }
 
   render = () =>
-    this.props.skullValues.length < 1
+    this.props.occurrences.length < 1
       ? <Message.Empty />
       : <Fragment>
           <table className='Summary'>
             <tbody>
             <tr>
               <th id='icon'></th>
-              <th>Type</th>
-              <th>Count</th>
+              <th>Name</th>
+              <th>Amount</th>
               <th>Time</th>
               <th id='icon'></th>
             </tr>
-            {alternateDays(this.props.skullValues).map(this.renderRow)}
+            {alternateDays(this.props.occurrences).map(this.renderRow)}
             </tbody>
           </table>
           <Confirmation
-              types={this.props.skullValues.map(v => v.type)}
+              types={this.props.occurrences.map(o => o.skull.name)}
               value={this.state.selected}
               onAccept={this.accept}
               onCancel={this.cancel}

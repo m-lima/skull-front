@@ -1,14 +1,14 @@
 import * as Config from '../model/Config'
-import ISkullValue, { IRegisteredValue } from '../model/ISkullValue'
+import { ValuedSkull, Occurrence } from '../model/Skull'
 import { ApiException } from '../model/Exception'
 
 export default class Push {
-  static skullValue(value: ISkullValue): Promise<boolean> {
+  static skull(skull: ValuedSkull): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
 
-    return fetch(Config.Endpoint.skull + '?type=' + value.type + '&amount=' + value.amount, {
+    return fetch(Config.Endpoint.occurrence + '?skull=' + skull.skull.id + '&amount=' + skull.amount, {
       method: 'POST',
       redirect: 'follow',
       credentials: 'include',
@@ -22,12 +22,12 @@ export default class Push {
       })
   }
 
-  static deletion(value: IRegisteredValue): Promise<boolean> {
+  static deletion(occurrence: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
 
-    return fetch(Config.Endpoint.skull + '?type=' + value.type + '&amount=' + value.amount + '&millis=' + value.millis, {
+    return fetch(Config.Endpoint.occurrence + '?id=' + occurrence.id, {
       method: 'DELETE',
       redirect: 'follow',
       credentials: 'include',

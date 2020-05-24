@@ -1,47 +1,23 @@
 import * as Config from '../model/Config'
-import { IQuickValue, IRegisteredValue } from '../model/ISkullValue'
+import { Skull, RawValuedSkull as RawQuick, RawOccurrence} from '../model/Skull'
 import { ApiException } from '../model/Exception'
 
-const mapToQuickValue = (rawValue: any): IQuickValue => {
-  return {
-    type: rawValue.type,
-    amount: rawValue.amount ? rawValue.amount : 1,
-    icon: rawValue.icon,
-  }
+const mapToSkull = (raw: any): Skull => {
+  return new Skull(raw)
 }
 
-const mapToRegisteredValue = (rawValue: any): IRegisteredValue => {
-  return {
-    type: rawValue.type,
-    amount: rawValue.amount ? rawValue.amount : 0,
-    millis: rawValue.millis ? rawValue.millis : 1,
-  }
+const mapToQuick = (raw: any): RawQuick => {
+  return new RawQuick(raw)
+}
+
+const mapToOccurrence = (raw: any): RawOccurrence => {
+  return new RawOccurrence(raw)
 }
 
 export default class Fetch {
-  static quickValues(): Promise<IQuickValue[]> {
+  static skulls(): Promise<Skull[]> {
     let data = Config.Mock.values
-      ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.quickValues))
-      : fetch(Config.Endpoint.quickValues, {
-        method: 'GET',
-        redirect: 'follow',
-        credentials: 'include',
-      })
-        .then(r => {
-          if (r.ok) {
-            return r
-          } else {
-            throw new ApiException(r.status)
-          }
-        })
-        .then(r => r.json())
-
-    return data.then(v => v.map(mapToQuickValue))
-  }
-
-  static registeredValues(): Promise<IRegisteredValue[]> {
-    let data = Config.Mock.values
-      ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.registeredValues)))
+      ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
         method: 'GET',
         redirect: 'follow',
@@ -56,7 +32,46 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToRegisteredValue))
+    return data.then(v => v.map(mapToSkull).filter((v: Skull) => v))
   }
 
+  static quicks(): Promise<RawQuick[]> {
+    let data = Config.Mock.values
+      ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.quicks)))
+      : fetch(Config.Endpoint.quick, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToQuick).filter((v: RawQuick) => v))
+  }
+
+  static occurrences(): Promise<RawOccurrence[]> {
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
+      : fetch(Config.Endpoint.occurrence, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(v => v.map(mapToOccurrence).filter((v: RawOccurrence) => v))
+  }
 }

@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import * as serviceWorker from './serviceWorker'
 
-import Skull from './view/Skull'
+import Main from './view/Main'
 
-ReactDOM.render(<Skull />, document.getElementById('root'))
+ReactDOM.render(<Main />, document.getElementById('root'))
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
