@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react'
+import React, { Component, Fragment } from 'react'
 import './css/Summary.css'
 
 import * as Message from './Message'
@@ -43,7 +43,7 @@ const formatDate = (millis: number) => {
       + ':' + Util.addLeadingZero(date.getMinutes())
 }
 
-export default class Summary extends PureComponent<IProps, IState> {
+export default class Summary extends Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)

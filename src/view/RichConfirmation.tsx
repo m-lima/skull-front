@@ -16,7 +16,7 @@ export default class RichConfirmation extends Confirmation<ValuedSkull, IRichPro
       <select
         value={this.getValue().skull.name}
         onChange={e => {
-          this.getValue().skull.name = e.target.value
+          this.getValue().skull = this.props.skulls.find(s => s.name === e.target.value)!
           this.props.onChange(this.getValue())
         }}
       >

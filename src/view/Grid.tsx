@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react'
+import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
@@ -44,7 +44,7 @@ const idForQuick = (skullAmounts: Map<SkullId, number>, quick: Quick) => {
   }
 }
 
-export default class Grid extends PureComponent<IProps, IState> {
+export default class Grid extends Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)
