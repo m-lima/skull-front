@@ -32,9 +32,9 @@ class SkullAmount {
 const idForQuick = (skullAmounts: Map<SkullId, number>, quick: Quick) => {
    if (quick.skull.limit && skullAmounts.has(quick.skull.id)) {
     const skullAmount = skullAmounts.get(quick.skull.id)! + quick.amount
-    if (skullAmount >= quick.skull.limit) {
+    if (skullAmount > quick.skull.limit) {
       return 'Grid-button-over-limit'
-    } else if (skullAmount >= quick.skull.limit * 0.75) {
+    } else if (skullAmount > quick.skull.limit * 0.8) {
       return 'Grid-button-near-limit'
     } else {
       return undefined
@@ -94,9 +94,9 @@ export default class Grid extends Component<IProps, IState> {
     </div>
 
   render() {
-    const twentyFourHoursAgo = new Date().valueOf() - 24 * 60 * 60 * 1000;
+    const twentyHoursAgo = new Date().valueOf() - 24 * 60 * 60 * 1000;
     const skullAmounts = this.props.occurrences
-        .filter(o => o.millis > twentyFourHoursAgo)
+        .filter(o => o.millis > twentyHoursAgo)
         .map(o => new SkullAmount(o.skull.id, o.amount))
         .reduce((acc, curr) => {
           let amount = acc.get(curr.skull)
