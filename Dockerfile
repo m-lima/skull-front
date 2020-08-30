@@ -1,7 +1,8 @@
-FROM node
+FROM node as web
 
 WORKDIR /web
 
+# Dependencies
 COPY package.json package-lock.json /web/
 RUN npm install
 
@@ -18,3 +19,7 @@ RUN cp /web/cfg/Config.prod.ts /web/src/model/Config.ts && \
 
 # Build
 RUN npm run build
+
+# Pack
+FROM alpine
+COPY --from=web /web/build /web/build
