@@ -6,7 +6,7 @@ import * as Message from './Message'
 import * as Util from '../Util'
 import { Skull, Occurrence } from '../model/Skull'
 
-const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: Skull[]) => {
+const addLegend = (plot: d3.Selection<SVGGElement, unknown, null, undefined>, skull: Skull[]) => {
   const legendMargin = 40
   const legendGap = 15
   const legendRadius = 4
@@ -17,7 +17,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
       .enter()
       .append('circle')
       .attr('cx', legendMargin)
-      .attr('cy', (s, i) => legendMargin + legendGap * i)
+      .attr('cy', (_, i) => legendMargin + legendGap * i)
       .attr('r', legendRadius)
       .style('fill', s => s.color)
 
@@ -28,7 +28,7 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
       .append('text')
       .text(s => s.name)
       .attr('x', legendMargin + legendGap - legendRadius)
-      .attr('y', (s, i) => legendMargin + legendGap * i)
+      .attr('y', (_, i) => legendMargin + legendGap * i)
       .attr('text-anchor', 'left')
       .attr('dominant-baseline', 'middle')
       .style('fill', s => s.color)
@@ -36,8 +36,8 @@ const addLegend = (plot: d3.Selection<SVGGElement, {}, null, undefined>, skull: 
 }
 
 const zoom = (timeDomain: d3.ScaleTime<number, number>,
-              timeAxis: d3.Selection<SVGGElement, {}, null, undefined>,
-              bars: d3.Selection<SVGRectElement, Occurrence, SVGGElement, {}>,
+              timeAxis: d3.Selection<SVGGElement, unknown, null, undefined>,
+              bars: d3.Selection<SVGRectElement, Occurrence, SVGGElement, unknown>,
               skulls: Skull[],
               initial: number | Date,
               final: number | Date,
@@ -213,8 +213,8 @@ export default class Chart extends PureComponent<IProps> {
     const brush = d3
         .brushX()
         .extent([[0, 0], [width, plotHeight]])
-        .on('end', () => {
-          const extent = d3.event.selection
+        .on('end', (event) => {
+          const extent = event.selection
           if (!extent) {
             return
           }
