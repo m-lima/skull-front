@@ -33,11 +33,14 @@ interface IState extends IQueryState {
 
 export default class Skull extends Component<{}, IState> {
 
+  private timer?: NodeJS.Timeout
+
   constructor(props: {}) {
     super(props)
     this.handleException = this.handleException.bind(this)
     this.push = this.push.bind(this)
     this.delete = this.delete.bind(this)
+    this.load = this.load.bind(this)
   }
 
   handleException(ex: any) {
@@ -82,7 +85,14 @@ export default class Skull extends Component<{}, IState> {
         .catch(this.handleException)
   }
 
-  componentDidMount = () => this.load()
+  componentDidMount = () => {
+    this.timer = setInterval(this.load, 5 * 60 * 1000)
+    this.load()
+  }
+
+  componentWillUnmount = () => {
+    clearInterval(this.timer!)
+  }
 
   render() {
     if (!this.state) {
