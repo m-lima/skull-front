@@ -17,8 +17,11 @@ interface IProps {
 }
 
 interface IState {
-  selected?: Occurrence
+  selected?: Occurrence,
+  max: number,
 }
+
+const ROW_INCREMENT = 100;
 
 const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
   let millis = 0
@@ -47,7 +50,7 @@ export default class Summary extends Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)
-    this.state = { selected: undefined }
+    this.state = { selected: undefined, max: ROW_INCREMENT }
     this.renderRow = this.renderRow.bind(this)
     this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
@@ -62,6 +65,7 @@ export default class Summary extends Component<IProps, IState> {
   cancel() {
     this.setState({ selected: undefined })
   }
+
 
   renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
@@ -79,6 +83,10 @@ export default class Summary extends Component<IProps, IState> {
     )
   }
 
+  fullyLoaded() {
+    return this.state.max >= this.props.occurrences.length
+  }
+
   render = () =>
     this.props.occurrences.length < 1
       ? <Message.Empty />
@@ -92,9 +100,10 @@ export default class Summary extends Component<IProps, IState> {
               <th>Time</th>
               <th id='icon'></th>
             </tr>
-            {alternateDays(this.props.occurrences).map(this.renderRow)}
+            {alternateDays(this.props.occurrences).slice(0, this.state.max).map(this.renderRow)}
             </tbody>
           </table>
+          {this.fullyLoaded() || <Icon id='next' icon='fas fa-angle-double-down' onClick={() => this.setState({ max: this.state.max + ROW_INCREMENT })} />}
           <Confirmation
               types={this.props.occurrences.map(o => o.skull.name)}
               value={this.state.selected}

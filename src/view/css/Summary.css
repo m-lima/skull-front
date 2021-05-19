@@ -48,3 +48,8 @@
   background-color: var(--shade-3);
 }
 
+#next {
+  font-size: 2em;
+  padding-top: 12px;
+  cursor: pointer;
+}
