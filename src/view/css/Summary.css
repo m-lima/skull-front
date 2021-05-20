@@ -49,7 +49,15 @@
 }
 
 #next {
+  width: 100%;
   font-size: 2em;
-  padding-top: 12px;
+
+  padding-top: 5px;
+  padding-bottom: 5px;
+
   cursor: pointer;
+}
+
+#next:hover {
+  background-color: var(--shade-3);
 }
