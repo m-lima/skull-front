@@ -24,20 +24,19 @@ interface IState {
 const ROW_INCREMENT = 100;
 
 const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
-  let millis = 0
+  let date: Date | undefined = undefined
   let dark = false
   return occurrences.map(o => {
     const newValue = Util.normalizeDate(o)
-    if (newValue.millis !== millis) {
-      millis = newValue.millis
+    if (newValue.date !== date) {
+      date = newValue.date
       dark = !dark
     }
-    return { id: o.id, skull: o.skull, amount: o.amount, millis: o.millis, dark: dark}
+    return { id: o.id, skull: o.skull, amount: o.amount, date: o.date, dark: dark}
   })
 }
 
-const formatDate = (millis: number) => {
-  const date = new Date(millis)
+const formatDate = (date: Date) => {
   return Util.addLeadingZero(date.getDate())
       + '/' + Util.mapMonthToName(date.getMonth())
       + '/' + date.getFullYear()
@@ -75,7 +74,7 @@ export default class Summary extends Component<IProps, IState> {
         </td>
         <td>{occurrence.skull.name}</td>
         <td>{occurrence.amount}</td>
-        <td>{formatDate(occurrence.millis)}</td>
+        <td>{formatDate(occurrence.date)}</td>
         <td id='delete' onClick={() => this.setState({ selected: occurrence })}>
           <Icon icon='fas fa-trash-alt' />
         </td>

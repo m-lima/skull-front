@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
-import { Occurrence, Skull, ValuedSkull, ValuedSkull as Quick } from '../model/Skull'
+import { Occurrence, Skull, ProtoOccurrence, ValuedSkull as Quick, RawOccurrence} from '../model/Skull'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
 
@@ -12,11 +12,11 @@ interface IProps {
   skulls: Skull[]
   quicks: Quick[]
   occurrences: Occurrence[]
-  push: (skull: ValuedSkull) => void
+  push: (skull: ProtoOccurrence) => void
 }
 
 interface IState {
-  selected?: ValuedSkull
+  selected?: ProtoOccurrence
 }
 
 class SkullAmount {
@@ -57,10 +57,10 @@ export default class Grid extends Component<IProps, IState> {
   }
 
   showConfirmation(quick: Quick) {
-    this.setState({ selected: { skull: quick.skull, amount: quick.amount } })
+    this.setState({ selected: { skull: quick.skull, amount: quick.amount, date: new Date() } })
   }
 
-  change(value: ValuedSkull) {
+  change(value: ProtoOccurrence) {
     this.setState({ selected: value })
   }
 
@@ -96,9 +96,9 @@ export default class Grid extends Component<IProps, IState> {
     </div>
 
   render() {
-    const threeQuartersOfADayAgo = new Date().valueOf() - (24 * THREE_QUARTERS) * 60 * 60 * 1000;
+    const threeQuartersOfADayAgo = new Date().getTime() - THREE_QUARTERS * 24 * 60 * 60 * 1000;
     const skullAmounts = this.props.occurrences
-        .filter(o => o.millis > threeQuartersOfADayAgo)
+        .filter(o => o.date.getTime() > threeQuartersOfADayAgo)
         .map(o => new SkullAmount(o.skull.id, o.amount))
         .reduce((acc, curr) => {
           let amount = acc.get(curr.skull)

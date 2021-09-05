@@ -15,7 +15,7 @@ import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
 import {ApiException} from '../model/Exception'
-import { Skull as SkullModel, ValuedSkull, ValuedSkull as Quick, Occurrence } from '../model/Skull'
+import { Skull as SkullModel, ProtoOccurrence, ValuedSkull as Quick, Occurrence } from '../model/Skull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -71,9 +71,16 @@ export default class Skull extends Component<{}, IState> {
         .catch(this.handleException)
   }
 
-  push(skull: ValuedSkull) {
+  push(skull: ProtoOccurrence) {
     this.setState({ status: Status.LOADING })
     Push.skull(skull)
+        .then(() => this.load())
+        .catch(this.handleException)
+  }
+
+  update(skull: Occurrence) {
+    this.setState({ status: Status.LOADING })
+    Push.update(skull)
         .then(() => this.load())
         .catch(this.handleException)
   }

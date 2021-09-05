@@ -56,14 +56,14 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
       .transition()
       .duration(750)
       .attr('x', o => {
-        const dayEnd = new Date(o.millis)
+        const dayEnd = new Date(o.date)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        return timeDomain(o.millis) + skulls.indexOf(o.skull) * (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
+        return timeDomain(o.date) + skulls.indexOf(o.skull) * (timeDomain(dayEnd.getTime()) - timeDomain(o.date)) / skulls.length
       })
       .attr('width', o => {
-        const dayEnd = new Date(o.millis)
+        const dayEnd = new Date(o.date)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        return (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
+        return (timeDomain(dayEnd.getTime()) - timeDomain(o.date)) / skulls.length
       })
 }
 
@@ -138,10 +138,10 @@ export default class Chart extends PureComponent<IProps> {
     // Calculated constants
     const occurrences = this.props.occurrences
         .map(Util.normalizeDate)
-        .sort((a, b) => a.millis === b.millis ? a.skull.id - b.skull.id : a.millis - b.millis)
+        .sort((a, b) => a.date === b.date ? a.skull.id - b.skull.id : a.date.getTime() - b.date.getTime())
         .reduce((acc, curr) => {
           const tail = acc[acc.length - 1]
-          if (tail && curr.millis === tail.millis && curr.skull.id === tail.skull.id) {
+          if (tail && curr.date === tail.date && curr.skull.id === tail.skull.id) {
             tail.amount += curr.amount
           } else {
             acc.push(curr)
@@ -152,12 +152,12 @@ export default class Chart extends PureComponent<IProps> {
         .map(skull => skull.amount)
         .reduce(MinMax.update, new MinMax())
     const minMaxMillis = occurrences
-        .map(skull => skull.millis)
+        .map(skull => skull.date.getTime())
         .reduce(MinMax.update, new MinMax())
     const initialZoom = occurrences
-        .map(skull => skull.millis)
+        .map(skull => skull.date)
         .reverse()
-        .reduce((prev, curr) => prev - curr > 2 * dayInMillis ? prev : curr)
+        .reduce((prev, curr) => prev.getTime() - curr.getTime() > 2 * dayInMillis ? prev : curr)
 
     // Sizes
     const { width, height, plotWidth, plotHeight, orientation } = this.getSizesAndOrientation(margin)
@@ -198,7 +198,7 @@ export default class Chart extends PureComponent<IProps> {
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', o => timeDomain(o.millis) + this.props.skulls.indexOf(o.skull) * skullWidth)
+        .attr('x', o => timeDomain(o.date) + this.props.skulls.indexOf(o.skull) * skullWidth)
         .attr('width', skullWidth)
         .attr('y', scaledZero)
         .attr('height', 0)
