@@ -5,14 +5,16 @@ import 'react-datepicker/dist/react-datepicker.css'
 import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
-import { Skull, ValuedSkull } from '../model/Skull'
+import { Occurrence as FullOccurrence, ProtoOccurrence, Skull } from '../model/Skull'
 
-interface IRichProps extends IProps<ValuedSkull> {
+type Occurrence = ProtoOccurrence|FullOccurrence
+
+interface IRichProps extends IProps<Occurrence> {
   skulls: Skull[]
-  onChange: (skull: ValuedSkull) => void
+  onChange: (skull: Occurrence) => void
 }
 
-export default class RichConfirmation extends Confirmation<ValuedSkull, IRichProps> {
+export default class RichConfirmation extends Confirmation<Occurrence, IRichProps> {
 
   buildComboBox() {
     return (
@@ -28,7 +30,6 @@ export default class RichConfirmation extends Confirmation<ValuedSkull, IRichPro
     )
   }
 
-  // TODO: iOS doesn't like the fractional number input
   renderInputs() {
     return (
       <div className='Confirmation-inputs'>
@@ -54,22 +55,13 @@ export default class RichConfirmation extends Confirmation<ValuedSkull, IRichPro
         <div className='Confirmation-input'>
           <b>Time</b>
           <DatePicker
-             selected={new Date()}
+             selected={this.getValue().date}
              showTimeSelect
              dateFormat='dd/MM/yyyy HH:mm'
              timeIntervals={5}
              popperPlacement='top'
-             // popperModifiers={{
-             //   preventOverflow: {
-             //     enabled: true,
-             //     escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
-             //     boundariesElement: 'window'
-             //   }
-             // }}
              onChange={d => {
-               console.log(d)
-               console.log(Number(d))
-               // this.getValue().millis = Number(d)
+               this.getValue().date = new Date(Number(d))
                this.props.onChange(this.getValue())
              }}
            />
