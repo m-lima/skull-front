@@ -2,11 +2,21 @@
   display: flex;
 }
 
+@media screen and (max-width: 760px) {
+  .Confirmation-inputs {
+    flex-direction: column;
+  }
+}
+
 .Confirmation-input {
   display: block;
+  flex-grow: 1;
   text-align: left;
-  margin: 20px;
-  width: 100%;
+  margin: 20px 20px 0 20px;
+}
+
+.Confirmation-input:last-child {
+  margin-bottom: 20px;
 }
 
 .Confirmation-input input, select {
@@ -28,4 +38,3 @@
   border-color: #cccccc;
   border-radius: 4px;
 }
-

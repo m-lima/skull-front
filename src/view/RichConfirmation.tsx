@@ -1,4 +1,7 @@
 import React from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+
 import Confirmation, { IProps } from './Confirmation'
 import './css/RichConfirmation.css'
 
@@ -47,6 +50,29 @@ export default class RichConfirmation extends Confirmation<ValuedSkull, IRichPro
               this.props.onChange(this.getValue())
             }}
           />
+        </div>
+        <div className='Confirmation-input'>
+          <b>Time</b>
+          <DatePicker
+             selected={new Date()}
+             showTimeSelect
+             dateFormat='dd/MM/yyyy HH:mm'
+             timeIntervals={5}
+             popperPlacement='top'
+             // popperModifiers={{
+             //   preventOverflow: {
+             //     enabled: true,
+             //     escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
+             //     boundariesElement: 'window'
+             //   }
+             // }}
+             onChange={d => {
+               console.log(d)
+               console.log(Number(d))
+               // this.getValue().millis = Number(d)
+               this.props.onChange(this.getValue())
+             }}
+           />
         </div>
       </div>
     )
