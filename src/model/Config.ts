@@ -3,10 +3,6 @@ import Environment from './Environment'
 export class Mock {
   static readonly user = true
   static readonly values = true
-  // TODO: Is this dynamic? Can we rewind 5min?
-  static readonly lastModified = JSON.stringify({
-    millis: new Date().getTime()
-  })
 
   static readonly Data = {
     skulls: JSON.stringify([
@@ -81,6 +77,9 @@ export class Mock {
         millis: new Date().valueOf() + 3,
       },
     ]),
+    lastModified: JSON.stringify({
+      millis: new Date().getTime()
+    })
   }
 }
 

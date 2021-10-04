@@ -85,7 +85,7 @@ export default class Fetch {
 
   static async lastModified(): Promise<Timestamp> {
     let data = Config.Mock.values
-      ? Promise.resolve(JSON.parse(Config.Mock.lastModified))
+      ? Promise.resolve(JSON.parse(Config.Mock.Data.lastModified))
       : fetch(Config.Endpoint.lastModified, {
         method: 'GET',
         redirect: 'follow',
