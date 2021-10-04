@@ -3,16 +3,21 @@ import { ProtoOccurrence, Occurrence } from '../model/Skull'
 import { ApiException } from '../model/Exception'
 
 export default class Push {
-  static async skull(skull: ProtoOccurrence): Promise<boolean> {
+  static async skull(occurrence: ProtoOccurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
 
-    return fetch(`${Config.Endpoint.occurrence}?skull=${skull.skull.id}&amount=${skull.amount}&millis=${skull.date.getTime()}`, {
-      method: 'PUT',
+    return fetch(Config.Endpoint.occurrence, {
+      method: 'POST',
       redirect: 'follow',
       credentials: 'include',
       headers: Config.headers,
+      body: JSON.stringify({
+        skull: occurrence.skull.id,
+        amount: occurrence.amount,
+        millis: occurrence.date.getTime(),
+      }),
     })
       .then(r => {
         if (r.ok) {
@@ -23,16 +28,21 @@ export default class Push {
       })
   }
 
-  static async update(skull: Occurrence): Promise<boolean> {
+  static async update(occurrence: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
 
-    return fetch(`${Config.Endpoint.occurrence}?id=${skull.id}&skull=${skull.skull.id}&amount=${skull.amount}&millis=${skull.date.getTime()}`, {
-      method: 'POST',
+    return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
+      method: 'PUT',
       redirect: 'follow',
       credentials: 'include',
       headers: Config.headers,
+      body: JSON.stringify({
+        skull: occurrence.skull.id,
+        amount: occurrence.amount,
+        millis: occurrence.date.getTime(),
+      }),
     })
       .then(r => {
         if (r.ok) {
@@ -48,7 +58,7 @@ export default class Push {
       return Promise.resolve(true)
     }
 
-    return fetch(Config.Endpoint.occurrence + '?id=' + occurrence.id, {
+    return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
       method: 'DELETE',
       redirect: 'follow',
       credentials: 'include',
