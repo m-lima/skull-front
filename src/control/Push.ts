@@ -3,7 +3,7 @@ import { ProtoOccurrence, Occurrence } from '../model/Skull'
 import { ApiException } from '../model/Exception'
 
 export default class Push {
-  static skull(skull: ProtoOccurrence): Promise<boolean> {
+  static async skull(skull: ProtoOccurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
@@ -23,7 +23,7 @@ export default class Push {
       })
   }
 
-  static update(skull: Occurrence): Promise<boolean> {
+  static async update(skull: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
@@ -43,7 +43,7 @@ export default class Push {
       })
   }
 
-  static deletion(occurrence: Occurrence): Promise<boolean> {
+  static async deletion(occurrence: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }

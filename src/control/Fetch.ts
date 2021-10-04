@@ -20,7 +20,7 @@ const mapToTimestamp = (raw: any): Timestamp => {
 }
 
 export default class Fetch {
-  static skulls(): Promise<Skull[]> {
+  static async skulls(): Promise<Skull[]> {
     let data = Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
@@ -41,7 +41,7 @@ export default class Fetch {
     return data.then(v => v.map(mapToSkull).filter((v: Skull) => v))
   }
 
-  static quicks(): Promise<RawQuick[]> {
+  static async quicks(): Promise<RawQuick[]> {
     let data = Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.quicks)))
       : fetch(Config.Endpoint.quick, {
@@ -62,7 +62,7 @@ export default class Fetch {
     return data.then(v => v.map(mapToQuick).filter((v: RawQuick) => v))
   }
 
-  static occurrences(): Promise<RawOccurrence[]> {
+  static async occurrences(): Promise<RawOccurrence[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
       : fetch(Config.Endpoint.occurrence, {
