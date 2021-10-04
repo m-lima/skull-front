@@ -138,10 +138,10 @@ export default class Chart extends PureComponent<IProps> {
     // Calculated constants
     const occurrences = this.props.occurrences
         .map(Util.normalizeDate)
-        .sort((a, b) => a.date === b.date ? a.skull.id - b.skull.id : a.date.getTime() - b.date.getTime())
+        .sort((a, b) => a.date.getTime() === b.date.getTime() ? a.skull.id - b.skull.id : a.date.getTime() - b.date.getTime())
         .reduce((acc, curr) => {
           const tail = acc[acc.length - 1]
-          if (tail && curr.date === tail.date && curr.skull.id === tail.skull.id) {
+          if (tail && curr.date.getTime() === tail.date.getTime() && curr.skull.id === tail.skull.id) {
             tail.amount += curr.amount
           } else {
             acc.push(curr)
@@ -155,9 +155,9 @@ export default class Chart extends PureComponent<IProps> {
         .map(skull => skull.date.getTime())
         .reduce(MinMax.update, new MinMax())
     const initialZoom = occurrences
-        .map(skull => skull.date)
+        .map(skull => skull.date.getTime())
         .reverse()
-        .reduce((prev, curr) => prev.getTime() - curr.getTime() > 2 * dayInMillis ? prev : curr)
+        .reduce((prev, curr) => prev - curr > 2 * dayInMillis ? prev : curr)
 
     // Sizes
     const { width, height, plotWidth, plotHeight, orientation } = this.getSizesAndOrientation(margin)
