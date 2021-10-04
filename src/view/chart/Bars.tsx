@@ -23,7 +23,7 @@ export default class Bars<T extends Occurrence> extends Component<IProps<T>> {
       {this.props.data.map((datum, index) =>
           <rect
               key={index}
-              x={this.props.domain(datum.date.getTime()) + this.props.skulls.indexOf(datum.skull) * typeWidth}
+              x={this.props.domain(datum.date) + this.props.skulls.indexOf(datum.skull) * typeWidth}
               width={typeWidth}
               y={this.props.range(datum.amount)}
               height={scaledZero - this.props.range(datum.amount)}

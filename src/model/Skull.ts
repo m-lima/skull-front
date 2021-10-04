@@ -1,5 +1,7 @@
 import { ModelException } from './Exception'
 
+// TODO: Reorganize this mess
+
 const isCssColor = (color: string) => {
   const style = new Option().style;
   style.color = color;
@@ -103,9 +105,9 @@ export class ValuedSkull {
 export class ProtoOccurrence extends ValuedSkull {
   date: Date
 
-  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[], date?: Date) {
+  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[], date: Date) {
     super(rawValuedSkull, skulls)
-    this.date = date ? date : new Date()
+    this.date = date
   }
 }
 
@@ -113,8 +115,7 @@ export class Occurrence extends ProtoOccurrence {
   id: number
 
   constructor(rawOccurrence: RawOccurrence, skulls: Skull[]) {
-    super(rawOccurrence, skulls)
+    super(rawOccurrence, skulls, rawOccurrence.date)
     this.id = rawOccurrence.id
-    this.date = rawOccurrence.date
   }
 }

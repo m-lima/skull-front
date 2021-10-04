@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 import './css/Confirmation.css'
 
-import { Occurrence, Skull, ProtoOccurrence, ValuedSkull as Quick, RawOccurrence} from '../model/Skull'
+import { Occurrence, Skull, ProtoOccurrence, ValuedSkull as Quick} from '../model/Skull'
 import Icon from './Icon'
 import RichConfirmation from './RichConfirmation'
 
