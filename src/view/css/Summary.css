@@ -24,6 +24,11 @@
   text-align: center;
 }
 
+.Summary #update {
+  color: gray;
+  cursor: pointer;
+}
+
 .Summary #delete {
   color: tomato;
   cursor: pointer;

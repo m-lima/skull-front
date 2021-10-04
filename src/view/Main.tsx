@@ -39,6 +39,7 @@ export default class Skull extends Component<{}, IState> {
     super(props)
     this.handleException = this.handleException.bind(this)
     this.push = this.push.bind(this)
+    this.update = this.update.bind(this)
     this.delete = this.delete.bind(this)
     this.load = this.load.bind(this)
     this.checkModified = this.checkModified.bind(this)
@@ -83,7 +84,7 @@ export default class Skull extends Component<{}, IState> {
   update(skull: Occurrence) {
     this.setState({ status: Status.LOADING })
     Push.update(skull)
-        .then(() => this.load())
+        .then(this.load)
         .catch(this.handleException)
   }
 
@@ -146,7 +147,9 @@ export default class Skull extends Component<{}, IState> {
                     exact={true}
                     path={Config.Path.summary}
                     render={() => <Summary
+                        skulls={this.state.skulls}
                         occurrences={this.state.occurrences}
+                        update={this.update}
                         delete={this.delete}
                     />}
                 />

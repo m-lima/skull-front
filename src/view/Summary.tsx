@@ -4,32 +4,36 @@ import './css/Summary.css'
 import * as Message from './Message'
 import * as Util from '../Util'
 import Confirmation from './Confirmation'
+import RichConfirmation from './RichConfirmation'
 import Icon from './Icon'
-import { Occurrence } from '../model/Skull'
+import { Occurrence, Skull } from '../model/Skull'
 
 class ISummaryOccurrence extends Occurrence {
   dark = false
 }
 
 interface IProps {
+  skulls: Skull[]
   occurrences: Occurrence[]
+  update: (occurrence: Occurrence) => void
   delete: (occurrence: Occurrence) => void
 }
 
 interface IState {
-  selected?: Occurrence,
+  updatable?: Occurrence,
+  deletable?: Occurrence,
   max: number,
 }
 
 const ROW_INCREMENT = 100;
 
 const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
-  let date: Date | undefined = undefined
+  let date: number = 0
   let dark = false
   return occurrences.map(o => {
-    const newValue = Util.normalizeDate(o)
-    if (newValue.date !== date) {
-      date = newValue.date
+    const day = Util.normalizeDate(o).date.getTime()
+    if (day !== date) {
+      date = day
       dark = !dark
     }
     return { id: o.id, skull: o.skull, amount: o.amount, date: o.date, dark: dark}
@@ -39,7 +43,6 @@ const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
 const formatDate = (date: Date) => {
   return Util.addLeadingZero(date.getDate())
       + '/' + Util.mapMonthToName(date.getMonth())
-      + '/' + date.getFullYear()
       + ' '
       + Util.addLeadingZero(date.getHours())
       + ':' + Util.addLeadingZero(date.getMinutes())
@@ -49,20 +52,27 @@ export default class Summary extends Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)
-    this.state = { selected: undefined, max: ROW_INCREMENT }
+    this.state = { updatable: undefined, deletable: undefined, max: ROW_INCREMENT }
     this.renderRow = this.renderRow.bind(this)
-    this.accept = this.accept.bind(this)
+    this.update = this.update.bind(this)
+    this.delete = this.delete.bind(this)
     this.cancel = this.cancel.bind(this)
   }
 
-  accept() {
-    const selected = this.state.selected!
-    this.setState({ selected: undefined })
+  update() {
+    const selected = this.state.updatable!
+    this.cancel()
+    this.props.update(selected)
+  }
+
+  delete() {
+    const selected = this.state.deletable!
+    this.cancel()
     this.props.delete(selected)
   }
 
   cancel() {
-    this.setState({ selected: undefined })
+    this.setState({ updatable: undefined, deletable: undefined })
   }
 
 
@@ -75,7 +85,10 @@ export default class Summary extends Component<IProps, IState> {
         <td>{occurrence.skull.name}</td>
         <td>{occurrence.amount}</td>
         <td>{formatDate(occurrence.date)}</td>
-        <td id='delete' onClick={() => this.setState({ selected: occurrence })}>
+        <td id='update' onClick={() => this.setState({ updatable: occurrence })}>
+          <Icon icon='fas fa-edit' />
+        </td>
+        <td id='delete' onClick={() => this.setState({ deletable: occurrence })}>
           <Icon icon='fas fa-trash-alt' />
         </td>
       </tr>
@@ -95,18 +108,26 @@ export default class Summary extends Component<IProps, IState> {
             <tr>
               <th id='icon'></th>
               <th>Name</th>
-              <th>Amount</th>
+              <th></th>
               <th>Time</th>
+              <th id='icon'></th>
               <th id='icon'></th>
             </tr>
             {alternateDays(this.props.occurrences).slice(0, this.state.max).map(this.renderRow)}
             </tbody>
           </table>
           {this.fullyLoaded() || <Icon id='next' icon='fas fa-angle-double-down' onClick={() => this.setState({ max: this.state.max + ROW_INCREMENT })} />}
+          <RichConfirmation
+              skulls={this.props.skulls}
+              value={this.state.updatable}
+              onChange={value => this.setState({ updatable: value as Occurrence })}
+              onAccept={this.update}
+              onCancel={this.cancel}
+          />
           <Confirmation
               types={this.props.occurrences.map(o => o.skull.name)}
-              value={this.state.selected}
-              onAccept={this.accept}
+              value={this.state.deletable}
+              onAccept={this.delete}
               onCancel={this.cancel}
           />
         </Fragment>
