@@ -12,6 +12,7 @@ export default class Push {
       method: 'PUT',
       redirect: 'follow',
       credentials: 'include',
+      headers: Config.headers,
     })
       .then(r => {
         if (r.ok) {
@@ -31,6 +32,7 @@ export default class Push {
       method: 'POST',
       redirect: 'follow',
       credentials: 'include',
+      headers: Config.headers,
     })
       .then(r => {
         if (r.ok) {
@@ -50,6 +52,7 @@ export default class Push {
       method: 'DELETE',
       redirect: 'follow',
       credentials: 'include',
+      headers: Config.headers,
     })
       .then(r => {
         if (r.ok) {

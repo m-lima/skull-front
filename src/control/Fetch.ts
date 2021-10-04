@@ -1,5 +1,6 @@
 import * as Config from '../model/Config'
 import { Skull, RawValuedSkull as RawQuick, RawOccurrence} from '../model/Skull'
+import Timestamp from '../model/Timestamp'
 import { ApiException } from '../model/Exception'
 
 const mapToSkull = (raw: any): Skull => {
@@ -14,6 +15,10 @@ const mapToOccurrence = (raw: any): RawOccurrence => {
   return new RawOccurrence(raw)
 }
 
+const mapToTimestamp = (raw: any): Timestamp => {
+  return new Timestamp(raw)
+}
+
 export default class Fetch {
   static skulls(): Promise<Skull[]> {
     let data = Config.Mock.values
@@ -22,6 +27,7 @@ export default class Fetch {
         method: 'GET',
         redirect: 'follow',
         credentials: 'include',
+        headers: Config.headers,
       })
         .then(r => {
           if (r.ok) {
@@ -42,6 +48,7 @@ export default class Fetch {
         method: 'GET',
         redirect: 'follow',
         credentials: 'include',
+        headers: Config.headers,
       })
         .then(r => {
           if (r.ok) {
@@ -62,6 +69,7 @@ export default class Fetch {
         method: 'GET',
         redirect: 'follow',
         credentials: 'include',
+        headers: Config.headers,
       })
         .then(r => {
           if (r.ok) {
@@ -73,5 +81,26 @@ export default class Fetch {
         .then(r => r.json())
 
     return data.then(v => v.map(mapToOccurrence).filter((v: RawOccurrence) => v))
+  }
+
+  static async lastModified(): Promise<Timestamp> {
+    let data = Config.Mock.values
+      ? Promise.resolve(JSON.parse(Config.Mock.lastModified))
+      : fetch(Config.Endpoint.lastModified, {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: 'include',
+        headers: Config.headers,
+      })
+        .then(r => {
+          if (r.ok) {
+            return r
+          } else {
+            throw new ApiException(r.status)
+          }
+        })
+        .then(r => r.json())
+
+    return data.then(mapToTimestamp)
   }
 }

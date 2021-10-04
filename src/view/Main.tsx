@@ -41,6 +41,7 @@ export default class Skull extends Component<{}, IState> {
     this.push = this.push.bind(this)
     this.delete = this.delete.bind(this)
     this.load = this.load.bind(this)
+    this.checkModified = this.checkModified.bind(this)
   }
 
   handleException(ex: any) {
@@ -66,6 +67,7 @@ export default class Skull extends Component<{}, IState> {
           occurrences: r[2]
               .map(o => new Occurrence(o, r[0]))
               .reverse(),
+          lastModified: new Date(),
           status: Status.OK,
         }))
         .catch(this.handleException)
@@ -92,8 +94,14 @@ export default class Skull extends Component<{}, IState> {
         .catch(this.handleException)
   }
 
+  checkModified() {
+    Fetch.lastModified()
+        .then(timestamp => timestamp.date > this.state.lastModified && this.load())
+        .catch(this.handleException)
+  }
+
   componentDidMount = () => {
-    this.timer = setInterval(this.load, 5 * 60 * 1000)
+    this.timer = setInterval(this.checkModified, 60 * 1000)
     this.load()
   }
 
