@@ -59,6 +59,7 @@ export default class Skull extends Component<{}, IState> {
     }
   }
 
+  // TODO: Load in pages
   load() {
     this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.LOADING })
     Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
@@ -74,6 +75,7 @@ export default class Skull extends Component<{}, IState> {
         .catch(this.handleException)
   }
 
+  // TODO: Avoid refetching all
   push(skull: ProtoOccurrence) {
     this.setState({ status: Status.LOADING })
     Push.skull(skull)

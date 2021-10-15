@@ -30,6 +30,7 @@ export default class RichConfirmation extends Confirmation<Occurrence, IRichProp
   }
 
   renderInputs() {
+    // TODO: Allow amount to be *momentarily* empty
     return (
       <div className='Confirmation-inputs'>
         <div className='Confirmation-input'>

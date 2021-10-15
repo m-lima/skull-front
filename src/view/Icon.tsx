@@ -1,5 +1,4 @@
-import React from 'react'
-
+// TODO: Embed icons
 interface IProps {
   icon: string
   [propName: string]: any

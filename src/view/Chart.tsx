@@ -1,3 +1,4 @@
+// TODO: Detect screen rotation and replot
 import React, { PureComponent } from 'react'
 import * as d3 from 'd3'
 import './css/Chart.css'

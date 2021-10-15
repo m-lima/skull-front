@@ -75,7 +75,7 @@ export default class Summary extends Component<IProps, IState> {
     this.setState({ updatable: undefined, deletable: undefined })
   }
 
-
+  // TODO: Remove the small icons. Make RichNotification include a delete button
   renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
       <tr id={occurrence.dark ? 'dark' : 'bright'} key={index}>

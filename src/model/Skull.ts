@@ -70,6 +70,7 @@ export class RawValuedSkull {
 
 export class RawOccurrence extends RawValuedSkull {
   id: number
+  // TODO: This date takes a lot of space
   date: Date
 
   constructor(raw: any) {
