@@ -37,3 +37,15 @@ export class ModelException<T> {
     return `Invalid ${this.field} (${this.value}) for ${this.model}: ${this.message}`
   }
 }
+
+export class UnexpectedResponseException {
+  message: string
+
+  constructor(message: string) {
+    this.message = message
+  }
+
+  toString() {
+    return this.message
+  }
+}

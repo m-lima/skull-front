@@ -76,10 +76,14 @@ export default class Skull extends Component<{}, IState> {
   }
 
   // TODO: Avoid refetching all
-  push(skull: ProtoOccurrence) {
+  push(occurrence: ProtoOccurrence) {
     this.setState({ status: Status.LOADING })
-    Push.skull(skull)
-        .then(() => this.load())
+    Push.skull(occurrence)
+        .then(id => {
+          const newOccurrence = new Occurrence({ id, skull: occurrence.skull.id, amount: occurrence.amount, millis: occurrence.millis   }, this.state.skulls)
+          this.state.occurrences.push(newOccurrence)
+          this.setState({ occurrences: this.state.occurrences, status: Status.OK })
+        })
         .catch(this.handleException)
   }
 

@@ -1,11 +1,11 @@
 import * as Config from '../model/Config'
 import { ProtoOccurrence, Occurrence } from '../model/Skull'
-import { ApiException } from '../model/Exception'
+import { ApiException, UnexpectedResponseException } from '../model/Exception'
 
 export default class Push {
-  static async skull(occurrence: ProtoOccurrence): Promise<boolean> {
+  static async skull(occurrence: ProtoOccurrence): Promise<number> {
     if (Config.Mock.values) {
-      return Promise.resolve(true)
+      return Promise.resolve(Math.floor(Math.random() * 100))
     }
 
     return fetch(Config.Endpoint.occurrence, {
@@ -21,7 +21,16 @@ export default class Push {
     })
       .then(r => {
         if (r.ok) {
-          return true
+          const idHeader = r.headers.get('location')
+          if (!idHeader) {
+            throw new UnexpectedResponseException('Location header not present')
+          } else {
+            const id = Number(idHeader!)
+            if (!id) {
+              throw new UnexpectedResponseException('Location header value is not a number')
+            }
+            return id
+          }
         } else {
           throw new ApiException(r.status)
         }
