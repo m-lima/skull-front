@@ -4,8 +4,6 @@ interface IProps {
   [propName: string]: any
 }
 
-export const Icon = (props: IProps) => {
-  return <i className={props.icon} {...props} />
-}
+const Icon = (props: IProps) => <i className={props.icon} {...props} />
 
 export default Icon
