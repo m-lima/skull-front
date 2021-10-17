@@ -69,14 +69,14 @@
   display: flex;
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 800px) {
   .Edit-inputs {
     flex-direction: column;
   }
 }
 
 .Edit-input {
-  display: block;
+  display: grid;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
@@ -85,7 +85,7 @@
   border-color: transparent;
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 800px) {
   .Edit-input {
     border-width: 20px 20px 0 20px;
   }
@@ -96,7 +96,6 @@
 }
 
 .Edit-input input, select {
-  display: block;
   appearance: none;
 
   background: white;
@@ -115,31 +114,36 @@
   border-radius: 4px;
 }
 
-#delete input, #delete select {
-  background: lightgray;
-}
-
-.Edit-delete {
-  display: block;
+.Edit-input .Edit-delete {
+  text-align: center;
+  cursor: pointer;
 
   background: var(--shade-2);
 
   width: 100%;
-  font-size: 1.5em;
   font-weight: bold;
 
   box-sizing: border-box;
-  padding: 16px 20px;
+  padding: 12px 20px;
+  align-self: end;
 
-  cursor: pointer;
-}
-
-.Edit-delete#delete {
-  color: var(--font-color-accent);
-  text-shadow: 0 0 20px var(--font-color);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--shade-3);
+  border-radius: 4px;
 }
 
 .Edit-delete:after {
   content: "Delete";
   padding-left: 5px;
+}
+
+#delete input, #delete select {
+  background: #bbbbbb;
+}
+
+#delete .Edit-delete {
+  color: var(--font-color-accent);
+  text-shadow: 0 0 20px var(--font-color);
+  border-color: var(--shade-4);
 }

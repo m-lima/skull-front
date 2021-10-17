@@ -58,10 +58,14 @@ export default class Summary extends Component<IProps, IState> {
     this.cancel = this.cancel.bind(this)
   }
 
-  update() {
+  update(shouldDelete: boolean) {
     const selected = this.state.selected!
     this.cancel()
-    this.props.update(selected)
+    if (shouldDelete) {
+      this.props.delete(selected)
+    } else {
+      this.props.update(selected)
+    }
   }
 
   delete() {

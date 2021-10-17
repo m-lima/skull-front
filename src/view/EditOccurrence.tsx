@@ -8,11 +8,13 @@ import { Occurrence as FullOccurrence, ProtoOccurrence, Skull } from '../model/S
 import Icon from './Icon'
 
 type Occurrence = ProtoOccurrence|FullOccurrence
+type DeletableCallback = (shouldDelete: boolean) => void
+type Accept = (() => void) | DeletableCallback
 
 interface IRichProps {
   value?: Occurrence
   skulls: Skull[]
-  onAccept: (del: boolean) => void
+  onAccept: Accept
   onCancel: () => void
   onChange: (skull: Occurrence) => void
 }
@@ -28,9 +30,9 @@ export default class EditOccurrence extends Component<IRichProps, IRichState> {
     this.state = { delete: false }
   }
 
-  private getValue(): Occurrence {
-    return this.props.value as Occurrence
-  }
+  private isDeletable = () => this.props.onAccept.length > 0
+
+  private getValue = () => this.props.value as Occurrence
 
   renderInputs() {
     // TODO: Allow amount to be *momentarily* empty
@@ -79,6 +81,13 @@ export default class EditOccurrence extends Component<IRichProps, IRichState> {
             }}
            />
         </div>
+        {this.isDeletable() &&
+          <div className='Edit-input'>
+            <div className='Edit-delete' onClick={() => this.setState({ delete: !this.state.delete })}>
+              <Icon icon='fas fa-trash' />
+            </div>
+          </div>
+        }
       </div>
     )
   }
@@ -89,9 +98,6 @@ export default class EditOccurrence extends Component<IRichProps, IRichState> {
         {this.getValue() && <div className='Edit'>
           <div className='Edit-container'>
             {this.renderInputs()}
-            <div className='Edit-delete' id={this.state.delete ? 'delete' : ''} onClick={() => this.setState({ delete: !this.state.delete })}>
-              <Icon icon='fas fa-trash' />
-            </div>
             <div className='Edit-buttons'>
               <div id='Accept' title='Accept' onClick={() => this.props.onAccept(this.state.delete)}>
                 <Icon icon='fas fa-check' />
