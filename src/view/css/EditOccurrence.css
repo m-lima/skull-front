@@ -114,6 +114,11 @@
   border-radius: 4px;
 }
 
+.Edit-input input#invalid {
+  color: red;
+  background: pink;
+}
+
 .Edit-input .Edit-delete {
   text-align: center;
   cursor: pointer;

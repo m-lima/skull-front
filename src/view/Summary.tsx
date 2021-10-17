@@ -58,14 +58,9 @@ export default class Summary extends Component<IProps, IState> {
     this.cancel = this.cancel.bind(this)
   }
 
-  update(shouldDelete: boolean) {
-    const selected = this.state.selected!
+  update(occurrence: Occurrence) {
     this.cancel()
-    if (shouldDelete) {
-      this.props.delete(selected)
-    } else {
-      this.props.update(selected)
-    }
+    this.props.update(occurrence)
   }
 
   delete() {
@@ -78,7 +73,6 @@ export default class Summary extends Component<IProps, IState> {
     this.setState({ selected: undefined })
   }
 
-  // TODO: Remove the small icons. Make RichNotification include a delete button
   renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
       <tr id={occurrence.dark ? 'dark' : 'bright'} key={index} onClick={() => this.setState({ selected: occurrence })}>
@@ -112,13 +106,13 @@ export default class Summary extends Component<IProps, IState> {
             </tbody>
           </table>
           {this.fullyLoaded() || <Icon id='next' icon='fas fa-angle-double-down' onClick={() => this.setState({ max: this.state.max + ROW_INCREMENT })} />}
-          <EditOccurrence
+          {this.state.selected && <EditOccurrence
               skulls={this.props.skulls}
-              value={this.state.selected}
-              onChange={value => this.setState({ selected: value as Occurrence })}
+              value={this.state.selected!}
               onAccept={this.update}
+              onDelete={this.delete}
               onCancel={this.cancel}
-          />
+          />}
         </Fragment>
 }
 

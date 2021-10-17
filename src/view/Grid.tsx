@@ -50,7 +50,6 @@ export default class Grid extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props)
     this.state = { selected: undefined }
-    this.change = this.change.bind(this)
     this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
   }
@@ -59,14 +58,9 @@ export default class Grid extends Component<IProps, IState> {
     this.setState({ selected: { skull: quick.skull, amount: quick.amount, millis: new Date().getTime() } })
   }
 
-  change(value: ProtoOccurrence) {
-    this.setState({ selected: value })
-  }
-
-  accept() {
-    const selected = this.state.selected!
+  accept(occurrence: ProtoOccurrence) {
     this.setState({ selected: undefined })
-    this.props.push(selected)
+    this.props.push(occurrence)
   }
 
   cancel() {
@@ -115,13 +109,12 @@ export default class Grid extends Component<IProps, IState> {
           <div className='Grid'>
             {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(skullAmounts, q, i))}
           </div>
-          <EditOccurrence
+          {this.state.selected && <EditOccurrence
               skulls={this.props.skulls}
-              value={this.state.selected}
-              onChange={this.change}
+              value={this.state.selected!}
               onAccept={this.accept}
               onCancel={this.cancel}
-          />
+          />}
         </Fragment>
     )
   }
