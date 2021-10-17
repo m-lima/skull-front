@@ -1,10 +1,9 @@
 import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
-import './css/Confirmation.css'
 
 import { Occurrence, Skull, ProtoOccurrence, ValuedSkull as Quick} from '../model/Skull'
 import Icon from './Icon'
-import RichConfirmation from './RichConfirmation'
+import EditOccurrence from './EditOccurrence'
 
 type SkullId = number
 
@@ -116,7 +115,7 @@ export default class Grid extends Component<IProps, IState> {
           <div className='Grid'>
             {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(skullAmounts, q, i))}
           </div>
-          <RichConfirmation
+          <EditOccurrence
               skulls={this.props.skulls}
               value={this.state.selected}
               onChange={this.change}

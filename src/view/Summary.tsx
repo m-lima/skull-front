@@ -3,7 +3,7 @@ import './css/Summary.css'
 
 import * as Message from './Message'
 import * as Util from '../Util'
-import RichConfirmation from './RichConfirmation'
+import EditOccurrence from './EditOccurrence'
 import Icon from './Icon'
 import { Occurrence, Skull } from '../model/Skull'
 
@@ -108,7 +108,7 @@ export default class Summary extends Component<IProps, IState> {
             </tbody>
           </table>
           {this.fullyLoaded() || <Icon id='next' icon='fas fa-angle-double-down' onClick={() => this.setState({ max: this.state.max + ROW_INCREMENT })} />}
-          <RichConfirmation
+          <EditOccurrence
               skulls={this.props.skulls}
               value={this.state.selected}
               onChange={value => this.setState({ selected: value as Occurrence })}
