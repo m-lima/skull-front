@@ -1,7 +1,7 @@
 import { Occurrence } from './model/Skull'
 
 export const normalizeDate = (occurrence: Occurrence): Occurrence => {
-  const date = new Date(occurrence.date)
+  const date = new Date(occurrence.millis)
   if (date.getHours() < 5) {
     date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
   }
@@ -10,7 +10,7 @@ export const normalizeDate = (occurrence: Occurrence): Occurrence => {
   date.setMinutes(0)
   date.setSeconds(0)
   date.setMilliseconds(0)
-  return { id: occurrence.id, skull: occurrence.skull, amount: occurrence.amount, date: date }
+  return { id: occurrence.id, skull: occurrence.skull, amount: occurrence.amount, millis: date.getTime() }
 }
 
 export const mapMonthToName = (month: number) => {

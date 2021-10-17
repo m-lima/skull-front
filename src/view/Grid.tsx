@@ -57,7 +57,7 @@ export default class Grid extends Component<IProps, IState> {
   }
 
   showConfirmation(quick: Quick) {
-    this.setState({ selected: { skull: quick.skull, amount: quick.amount, date: new Date() } })
+    this.setState({ selected: { skull: quick.skull, amount: quick.amount, millis: new Date().getTime() } })
   }
 
   change(value: ProtoOccurrence) {
@@ -98,7 +98,7 @@ export default class Grid extends Component<IProps, IState> {
   render() {
     const threeQuartersOfADayAgo = new Date().getTime() - THREE_QUARTERS * 24 * 60 * 60 * 1000;
     const skullAmounts = this.props.occurrences
-        .filter(o => o.date.getTime() > threeQuartersOfADayAgo)
+        .filter(o => o.millis > threeQuartersOfADayAgo)
         .map(o => new SkullAmount(o.skull.id, o.amount))
         .reduce((acc, curr) => {
           let amount = acc.get(curr.skull)

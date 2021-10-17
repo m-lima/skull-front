@@ -31,12 +31,12 @@ const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
   let date: number = 0
   let dark = false
   return occurrences.map(o => {
-    const day = Util.normalizeDate(o).date.getTime()
+    const day = Util.normalizeDate(o).millis
     if (day !== date) {
       date = day
       dark = !dark
     }
-    return { id: o.id, skull: o.skull, amount: o.amount, date: o.date, dark: dark}
+    return { id: o.id, skull: o.skull, amount: o.amount, millis: o.millis, dark: dark}
   })
 }
 
@@ -84,7 +84,7 @@ export default class Summary extends Component<IProps, IState> {
         </td>
         <td>{occurrence.skull.name}</td>
         <td>{occurrence.amount}</td>
-        <td>{formatDate(occurrence.date)}</td>
+        <td>{formatDate(new Date(occurrence.millis))}</td>
         <td id='update' onClick={() => this.setState({ updatable: occurrence })}>
           <Icon icon='fas fa-edit' />
         </td>

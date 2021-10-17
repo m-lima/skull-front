@@ -55,13 +55,13 @@ export default class RichConfirmation extends Confirmation<Occurrence, IRichProp
         <div className='Confirmation-input'>
           <b>Time</b>
           <DatePicker
-             selected={this.getValue().date}
+             selected={new Date(this.getValue().millis)}
              showTimeSelect
              dateFormat='dd/MM/yyyy HH:mm'
              timeIntervals={5}
              popperPlacement='top'
              onChange={d => {
-               this.getValue().date = new Date(Number(d))
+               this.getValue().millis = Number(d)
                this.props.onChange(this.getValue())
              }}
            />

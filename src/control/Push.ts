@@ -16,7 +16,7 @@ export default class Push {
       body: JSON.stringify({
         skull: occurrence.skull.id,
         amount: occurrence.amount,
-        millis: occurrence.date.getTime(),
+        millis: occurrence.millis,
       }),
     })
       .then(r => {
@@ -41,7 +41,7 @@ export default class Push {
       body: JSON.stringify({
         skull: occurrence.skull.id,
         amount: occurrence.amount,
-        millis: occurrence.date.getTime(),
+        millis: occurrence.millis,
       }),
     })
       .then(r => {

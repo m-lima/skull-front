@@ -71,7 +71,7 @@ export class RawValuedSkull {
 export class RawOccurrence extends RawValuedSkull {
   id: number
   // TODO: This date takes a lot of space
-  date: Date
+  millis: number
 
   constructor(raw: any) {
     super(raw);
@@ -85,7 +85,7 @@ export class RawOccurrence extends RawValuedSkull {
     }
 
     this.id = raw.id
-    this.date = new Date(raw.millis)
+    this.millis = raw.millis
   }
 }
 
@@ -104,11 +104,11 @@ export class ValuedSkull {
 }
 
 export class ProtoOccurrence extends ValuedSkull {
-  date: Date
+  millis: number
 
-  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[], date: Date) {
+  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[], millis: number) {
     super(rawValuedSkull, skulls)
-    this.date = date
+    this.millis = millis
   }
 }
 
@@ -116,7 +116,7 @@ export class Occurrence extends ProtoOccurrence {
   id: number
 
   constructor(rawOccurrence: RawOccurrence, skulls: Skull[]) {
-    super(rawOccurrence, skulls, rawOccurrence.date)
+    super(rawOccurrence, skulls, rawOccurrence.millis)
     this.id = rawOccurrence.id
   }
 }
