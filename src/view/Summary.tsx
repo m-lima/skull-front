@@ -3,7 +3,6 @@ import './css/Summary.css'
 
 import * as Message from './Message'
 import * as Util from '../Util'
-import Confirmation from './Confirmation'
 import RichConfirmation from './RichConfirmation'
 import Icon from './Icon'
 import { Occurrence, Skull } from '../model/Skull'
@@ -20,8 +19,7 @@ interface IProps {
 }
 
 interface IState {
-  updatable?: Occurrence,
-  deletable?: Occurrence,
+  selected?: Occurrence,
   max: number,
 }
 
@@ -43,6 +41,7 @@ const alternateDays = (occurrences: Occurrence[]): ISummaryOccurrence[] => {
 const formatDate = (date: Date) => {
   return Util.addLeadingZero(date.getDate())
       + '/' + Util.mapMonthToName(date.getMonth())
+      + '/' + date.getFullYear()
       + ' '
       + Util.addLeadingZero(date.getHours())
       + ':' + Util.addLeadingZero(date.getMinutes())
@@ -52,7 +51,7 @@ export default class Summary extends Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props)
-    this.state = { updatable: undefined, deletable: undefined, max: ROW_INCREMENT }
+    this.state = { selected: undefined, max: ROW_INCREMENT }
     this.renderRow = this.renderRow.bind(this)
     this.update = this.update.bind(this)
     this.delete = this.delete.bind(this)
@@ -60,37 +59,31 @@ export default class Summary extends Component<IProps, IState> {
   }
 
   update() {
-    const selected = this.state.updatable!
+    const selected = this.state.selected!
     this.cancel()
     this.props.update(selected)
   }
 
   delete() {
-    const selected = this.state.deletable!
+    const selected = this.state.selected!
     this.cancel()
     this.props.delete(selected)
   }
 
   cancel() {
-    this.setState({ updatable: undefined, deletable: undefined })
+    this.setState({ selected: undefined })
   }
 
   // TODO: Remove the small icons. Make RichNotification include a delete button
   renderRow(occurrence: ISummaryOccurrence, index: number) {
     return (
-      <tr id={occurrence.dark ? 'dark' : 'bright'} key={index}>
+      <tr id={occurrence.dark ? 'dark' : 'bright'} key={index} onClick={() => this.setState({ selected: occurrence })}>
         <td id='icon' style={{ color: occurrence.skull.color }}>
           <Icon icon={ occurrence.skull.icon } />
         </td>
         <td>{occurrence.skull.name}</td>
         <td>{occurrence.amount}</td>
         <td>{formatDate(new Date(occurrence.millis))}</td>
-        <td id='update' onClick={() => this.setState({ updatable: occurrence })}>
-          <Icon icon='fas fa-edit' />
-        </td>
-        <td id='delete' onClick={() => this.setState({ deletable: occurrence })}>
-          <Icon icon='fas fa-trash-alt' />
-        </td>
       </tr>
     )
   }
@@ -108,10 +101,8 @@ export default class Summary extends Component<IProps, IState> {
             <tr>
               <th id='icon'></th>
               <th>Name</th>
-              <th></th>
+              <th>Amount</th>
               <th>Time</th>
-              <th id='icon'></th>
-              <th id='icon'></th>
             </tr>
             {alternateDays(this.props.occurrences).slice(0, this.state.max).map(this.renderRow)}
             </tbody>
@@ -119,15 +110,9 @@ export default class Summary extends Component<IProps, IState> {
           {this.fullyLoaded() || <Icon id='next' icon='fas fa-angle-double-down' onClick={() => this.setState({ max: this.state.max + ROW_INCREMENT })} />}
           <RichConfirmation
               skulls={this.props.skulls}
-              value={this.state.updatable}
-              onChange={value => this.setState({ updatable: value as Occurrence })}
+              value={this.state.selected}
+              onChange={value => this.setState({ selected: value as Occurrence })}
               onAccept={this.update}
-              onCancel={this.cancel}
-          />
-          <Confirmation
-              types={this.props.occurrences.map(o => o.skull.name)}
-              value={this.state.deletable}
-              onAccept={this.delete}
               onCancel={this.cancel}
           />
         </Fragment>

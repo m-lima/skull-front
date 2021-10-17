@@ -47,3 +47,33 @@
   border-color: #cccccc;
   border-radius: 4px;
 }
+
+.Confirmation-input input#delete, select#delete {
+  background: lightgray;
+}
+
+.Confirmation-delete {
+  display: block;
+  appearance: none;
+
+  background: var(--shade-2);
+
+  width: 100%;
+  font-size: 1.5em;
+  font-weight: bold;
+
+  box-sizing: border-box;
+  padding: 16px 20px;
+
+  cursor: pointer;
+}
+
+.Confirmation-delete#delete {
+  color: var(--font-color-accent);
+  text-shadow: 0 0 20px var(--font-color);
+}
+
+.Confirmation-delete:after {
+  content: "Delete";
+  padding-left: 5px;
+}

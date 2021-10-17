@@ -24,13 +24,7 @@
   text-align: center;
 }
 
-.Summary #update {
-  color: gray;
-  cursor: pointer;
-}
-
-.Summary #delete {
-  color: tomato;
+.Summary tr {
   cursor: pointer;
 }
 

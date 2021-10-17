@@ -9,7 +9,7 @@ export interface IProps<T> {
   onCancel: () => void
 }
 
-export default class Confirmation<T, P extends IProps<T> = IProps<T>> extends Component<P> {
+export default class Confirmation<T, P extends IProps<T> = IProps<T>, S = {}> extends Component<P, S> {
 
   protected getValue(): T {
     return this.props.value as T
