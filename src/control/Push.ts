@@ -40,7 +40,7 @@ export default class Push {
       .then(r => {
         if (r.ok) {
           return r.text();
-        } else if (r.status === 409) {
+        } else if (r.status === 412) {
           throw new OutOfSyncException();
         } else {
           throw new ApiException(r.status);
@@ -83,7 +83,7 @@ export default class Push {
     }).then(r => {
       if (r.ok) {
         return getLastModified(r);
-      } else if (r.status === 409) {
+      } else if (r.status === 412) {
         throw new OutOfSyncException();
       } else {
         throw new ApiException(r.status);
@@ -110,7 +110,7 @@ export default class Push {
     }).then(r => {
       if (r.ok) {
         return getLastModified(r);
-      } else if (r.status === 409) {
+      } else if (r.status === 412) {
         throw new OutOfSyncException();
       } else {
         throw new ApiException(r.status);
