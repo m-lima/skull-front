@@ -1,57 +1,57 @@
-import React, { useRef, useState } from 'react'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
+import React, { useRef, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-import './css/EditOccurrence.css'
+import './css/EditOccurrence.css';
 
-import { ProtoOccurrence, Skull, SkullId } from '../model/Skull'
-import Icon from './Icon'
+import { ProtoOccurrence, Skull, SkullId } from '../model/Skull';
+import Icon from './Icon';
 
 interface IProps<T extends ProtoOccurrence> {
-  value: T
-  skulls: Skull[]
-  onAccept: (value: T) => void
-  onDelete?: () => void
-  onCancel: () => void
+  value: T;
+  skulls: Skull[];
+  onAccept: (value: T) => void;
+  onDelete?: () => void;
+  onCancel: () => void;
 }
 
 interface StagedValue {
-  skull: SkullId
-  amount: string
-  millis: number
+  skull: SkullId;
+  amount: string;
+  millis: number;
 }
 
-function stage<T extends ProtoOccurrence>(occurrence: T, skulls: Skull[]): StagedValue {
+function stage<T extends ProtoOccurrence>(occurrence: T): StagedValue {
   return {
     skull: occurrence!.skull,
     amount: String(occurrence!.amount),
     millis: occurrence!.millis,
-  }
+  };
 }
 
 // TODO: Update other components to this funtional style
 function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
-  const [shouldDelete, setShouldDelete] = useState(false)
-  const [stagedValue, setStagedValue] = useState(stage(props.value, props.skulls))
-  const amountRef = useRef<HTMLInputElement>(null)
+  const [shouldDelete, setShouldDelete] = useState(false);
+  const [stagedValue, setStagedValue] = useState(stage(props.value));
+  const amountRef = useRef<HTMLInputElement>(null);
 
-  const isDeletable = () => props.onDelete !== undefined
+  const isDeletable = () => props.onDelete !== undefined;
   const commit = () => {
     if (shouldDelete) {
-      props.onDelete!()
+      props.onDelete!();
     } else {
-      const amount = Number(stagedValue.amount)
+      const amount = Number(stagedValue.amount);
       if (!amount) {
-        amountRef.current!.focus()
-        return
+        amountRef.current!.focus();
+        return;
       }
 
-      props.value.skull = stagedValue.skull
-      props.value.amount = amount
-      props.value.millis = stagedValue.millis
-      props.onAccept(props.value)
+      props.value.skull = stagedValue.skull;
+      props.value.amount = amount;
+      props.value.millis = stagedValue.millis;
+      props.onAccept(props.value);
     }
-  }
+  };
 
   const renderInputs = () => {
     return (
@@ -62,10 +62,17 @@ function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
             value={stagedValue.skull.get(props.skulls).name}
             disabled={shouldDelete}
             onChange={e => {
-              setStagedValue({ ...stagedValue, skull: new SkullId(e.target.value, props.skulls) })
+              setStagedValue({
+                ...stagedValue,
+                skull: new SkullId(e.target.value, props.skulls),
+              });
             }}
           >
-            {props.skulls.map((s, i) => <option key={i} value={s.name}>{s.name}</option>)}
+            {props.skulls.map((s, i) => (
+              <option key={i} value={s.name}>
+                {s.name}
+              </option>
+            ))}
           </select>
         </div>
         <div className='Edit-input'>
@@ -80,7 +87,10 @@ function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
             step={0.1}
             value={stagedValue.amount}
             onChange={e => {
-              setStagedValue({ ...stagedValue, amount: e.target.value.replace(',', '.') })
+              setStagedValue({
+                ...stagedValue,
+                amount: e.target.value.replace(',', '.'),
+              });
             }}
           />
         </div>
@@ -94,20 +104,23 @@ function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
             timeIntervals={5}
             popperPlacement='top'
             onChange={d => {
-              setStagedValue({ ...stagedValue, millis: Number(d) })
+              setStagedValue({ ...stagedValue, millis: Number(d) });
             }}
-           />
+          />
         </div>
-        {isDeletable() &&
+        {isDeletable() && (
           <div className='Edit-input'>
-            <div className='Edit-delete' onClick={() => setShouldDelete(!shouldDelete)}>
+            <div
+              className='Edit-delete'
+              onClick={() => setShouldDelete(!shouldDelete)}
+            >
               <Icon icon='fas fa-trash' />
             </div>
           </div>
-        }
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className='Edit'>
@@ -123,7 +136,7 @@ function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default EditOccurrence
+export default EditOccurrence;

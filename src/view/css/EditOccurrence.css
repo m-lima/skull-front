@@ -95,7 +95,8 @@
   border-width: 20px;
 }
 
-.Edit-input input, .Edit-input select {
+.Edit-input input,
+.Edit-input select {
   appearance: none;
 
   background: white;
@@ -139,11 +140,12 @@
 }
 
 .Edit-delete:after {
-  content: "Delete";
+  content: 'Delete';
   padding-left: 5px;
 }
 
-#delete input, #delete select {
+#delete input,
+#delete select {
   color: var(--shade-1);
   background: #bbbbbb;
   -webkit-text-fill-color: var(--shade-1);

@@ -1,13 +1,28 @@
-import * as Config from '../model/Config'
-import { Skull, ProtoOccurrence, Occurrence, IOccurrence } from '../model/Skull'
-import { ApiException, UnexpectedResponseException } from '../model/Exception'
+import * as Config from '../model/Config';
+import {
+  Skull,
+  ProtoOccurrence,
+  Occurrence,
+  IOccurrence,
+} from '../model/Skull';
+import { ApiException, UnexpectedResponseException } from '../model/Exception';
 
 export default class Push {
-  static async create(occurrence: ProtoOccurrence, skull: Skull): Promise<IOccurrence> {
-    const payload = { skull: skull.id, amount: occurrence.amount, millis: occurrence.millis }
+  static async create(
+    occurrence: ProtoOccurrence,
+    skull: Skull
+  ): Promise<IOccurrence> {
+    const payload = {
+      skull: skull.id,
+      amount: occurrence.amount,
+      millis: occurrence.millis,
+    };
 
     if (Config.Mock.values) {
-      return Promise.resolve({ id: Math.floor(Math.random() * 100), ...payload})
+      return Promise.resolve({
+        id: Math.floor(Math.random() * 100),
+        ...payload,
+      });
     }
 
     return fetch(Config.Endpoint.occurrence, {
@@ -19,26 +34,26 @@ export default class Push {
     })
       .then(r => {
         if (r.ok) {
-          return r.text()
+          return r.text();
         } else {
-          throw new ApiException(r.status)
+          throw new ApiException(r.status);
         }
       })
       .then(id => {
-        const idValue = Number(id)
+        const idValue = Number(id);
         if (!idValue) {
-          throw new UnexpectedResponseException('Id returned is not a number')
+          throw new UnexpectedResponseException('Id returned is not a number');
         }
         return {
           id: idValue,
           ...payload,
-        }
-      })
+        };
+      });
   }
 
   static async update(occurrence: Occurrence, skull: Skull): Promise<void> {
     if (Config.Mock.values) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
     return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
@@ -51,17 +66,16 @@ export default class Push {
         amount: occurrence.amount,
         millis: occurrence.millis,
       }),
-    })
-      .then(r => {
-        if (!r.ok) {
-          throw new ApiException(r.status)
-        }
-      })
+    }).then(r => {
+      if (!r.ok) {
+        throw new ApiException(r.status);
+      }
+    });
   }
 
   static async deletion(occurrence: Occurrence): Promise<boolean> {
     if (Config.Mock.values) {
-      return Promise.resolve(true)
+      return Promise.resolve(true);
     }
 
     return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
@@ -69,13 +83,12 @@ export default class Push {
       redirect: 'follow',
       credentials: 'include',
       headers: Config.headers,
-    })
-      .then(r => {
-        if (r.ok) {
-          return true
-        } else {
-          throw new ApiException(r.status)
-        }
-      })
+    }).then(r => {
+      if (r.ok) {
+        return true;
+      } else {
+        throw new ApiException(r.status);
+      }
+    });
   }
 }

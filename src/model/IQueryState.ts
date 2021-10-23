@@ -1,6 +1,6 @@
-import Status from './Status'
+import Status from './Status';
 
 export default interface IQueryState {
-  status: Status
-  lastChecked: Date
+  status: Status;
+  lastChecked: Date;
 }

@@ -28,7 +28,8 @@
   cursor: pointer;
 }
 
-.Summary tr#dark, .Summary tr#bright {
+.Summary tr#dark,
+.Summary tr#bright {
   border-bottom-width: 1px;
   border-bottom-style: solid;
 }
@@ -43,7 +44,8 @@
   border-bottom-color: var(--shade-1);
 }
 
-.Summary tr#dark:hover, .Summary tr#bright:hover {
+.Summary tr#dark:hover,
+.Summary tr#bright:hover {
   background-color: var(--shade-3);
 }
 

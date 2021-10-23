@@ -1,8 +1,8 @@
-import Environment from './Environment'
+import Environment from './Environment';
 
 export class Mock {
-  static readonly user = true
-  static readonly values = true
+  static readonly user = true;
+  static readonly values = true;
 
   static readonly Data = {
     skulls: JSON.stringify([
@@ -40,7 +40,7 @@ export class Mock {
       },
       {
         skull: 2,
-        amount: 5
+        amount: 5,
       },
       {
         skull: 2,
@@ -78,26 +78,26 @@ export class Mock {
       },
     ]),
     lastModified: JSON.stringify({
-      millis: new Date().getTime()
-    })
-  }
+      millis: new Date().getTime(),
+    }),
+  };
 }
 
 export class Endpoint {
-  static readonly login = ''
-  static readonly logout = ''
-  static readonly skull = ''
-  static readonly quick = ''
-  static readonly occurrence = ''
-  static readonly lastModified = ''
+  static readonly login = '';
+  static readonly logout = '';
+  static readonly skull = '';
+  static readonly quick = '';
+  static readonly occurrence = '';
+  static readonly lastModified = '';
 }
 
 export class Path {
-  static readonly grid = '/'
-  static readonly summary = '/summary'
-  static readonly chart = '/chart'
+  static readonly grid = '/';
+  static readonly summary = '/summary';
+  static readonly chart = '/chart';
 }
 
-export const headers = undefined
+export const headers = undefined;
 
-export const environment = Environment.DEVELOPMENT
+export const environment = Environment.DEVELOPMENT;

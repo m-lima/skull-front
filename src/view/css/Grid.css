@@ -79,10 +79,10 @@
   background: black;
 }
 
-.Grid-button:hover{
+.Grid-button:hover {
   filter: brightness(125%);
 }
 
-.Grid-button:active{
+.Grid-button:active {
   filter: brightness(125%);
 }

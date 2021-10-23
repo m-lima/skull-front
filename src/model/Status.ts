@@ -6,4 +6,4 @@ export enum Status {
   ERROR,
 }
 
-export default Status
+export default Status;

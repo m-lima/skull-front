@@ -3,4 +3,4 @@ export enum Environment {
   DEVELOPMENT,
 }
 
-export default Environment
+export default Environment;

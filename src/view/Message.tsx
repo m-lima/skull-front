@@ -1,16 +1,17 @@
-import React from 'react'
-import './css/Message.css'
+import React from 'react';
+import './css/Message.css';
 
-import Access from '../control/Access'
-import Icon from './Icon'
+import Access from '../control/Access';
+import Icon from './Icon';
 
-export const Loading = () =>
+export const Loading = () => (
   <div className='Message'>
     <Icon icon='fas fa-spinner' id='Message-loading-spinner' />
     Loading..
   </div>
+);
 
-export const Error = () =>
+export const Error = () => (
   <div className='Message'>
     <Icon icon='fas fa-sad-tear' />
     Something went wrong..
@@ -18,8 +19,9 @@ export const Error = () =>
       Refresh
     </div>
   </div>
+);
 
-export const Unauthorized = () =>
+export const Unauthorized = () => (
   <div className='Message'>
     <Icon icon='fas fa-fingerprint' />
     Unauthorized
@@ -27,9 +29,11 @@ export const Unauthorized = () =>
       Logout
     </div>
   </div>
+);
 
-export const Empty = () =>
+export const Empty = () => (
   <div className='Message'>
     <Icon icon='fas fa-smile-wink' />
     No skulls found
   </div>
+);

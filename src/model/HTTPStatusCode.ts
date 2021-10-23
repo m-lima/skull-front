@@ -5,4 +5,4 @@ export enum HTTPStatusCode {
   SERVER_ERROR = 500,
 }
 
-export default HTTPStatusCode
+export default HTTPStatusCode;
