@@ -1,6 +1,6 @@
 import * as Config from '../model/Config';
 import { ISkull, IQuick, IOccurrence } from '../model/Skull';
-import { ApiException, UnexpectedResponseException } from '../model/Exception';
+import { ApiException } from '../model/Exception';
 import { getLastModified } from './LastModified';
 
 export default class Fetch {
