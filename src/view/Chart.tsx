@@ -176,7 +176,11 @@ export default class Chart extends PureComponent<IProps> {
       )
       .reduce((acc, curr) => {
         const tail = acc[acc.length - 1];
-        if (tail && curr.millis === tail.millis && curr.skull === tail.skull) {
+        if (
+          tail &&
+          curr.millis === tail.millis &&
+          curr.skull.index === tail.skull.index
+        ) {
           tail.amount += curr.amount;
         } else {
           acc.push(curr);
@@ -244,7 +248,6 @@ export default class Chart extends PureComponent<IProps> {
       .attr('width', skullWidth)
       .attr('y', scaledZero)
       .attr('height', 0)
-      // .attr('fill', o => o.skull.get(this.props.skulls).color)
       .attr('fill', o => o.skull.get(this.props.skulls).color);
 
     bars
