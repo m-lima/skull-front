@@ -14,7 +14,7 @@ import IQueryState from '../model/IQueryState'
 import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
-import {ApiException} from '../model/Exception'
+import { ApiException, IllegalStateException } from '../model/Exception'
 import { Skull, Quick, Occurrence, ProtoOccurrence } from '../model/Skull'
 
 const Banner = (props: { text: string }) => {
@@ -63,45 +63,91 @@ export default class Main extends Component<{}, IState> {
   // TODO: Load in pages
   load() {
     this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.LOADING })
-    Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
+    this.loadInner()
+      .then(() => this.setState({ status: Status.OK }))
+      .catch(this.handleException)
+  }
+
+  async loadInner() {
+    return Promise.all([Fetch.skulls(), Fetch.quicks(), Fetch.occurrences()])
         .then(r => this.setState({
           skulls: r[0],
           quicks: r[1].map(q => new Quick(q, r[0])),
-          occurrences: r[2]
-              .map(o => new Occurrence(o, r[0]))
-              .reverse(),
-          lastModified: new Date(),
-          status: Status.OK,
+          occurrences: r[2].map(o => new Occurrence(o, r[0])).reverse(),
+          lastChecked: new Date(),
         }))
-        .catch(this.handleException)
   }
 
-  // TODO: Avoid refetching all
   push(occurrence: ProtoOccurrence, skull: Skull) {
     this.setState({ status: Status.LOADING })
-    Push.new(occurrence, skull)
-        .then(this.load)
+    this.checkModifiedInner()
+        .then(() => Push.create(occurrence, skull))
+        .then(newIOccurrence => {
+          const newOccurrence = new Occurrence(newIOccurrence, this.state.skulls)
+          this.setState(prev => ({
+            occurrences: [ newOccurrence, ...prev.occurrences ],
+            status: Status.OK,
+            lastChecked: new Date(),
+          }))
+        })
         .catch(this.handleException)
   }
 
   update(occurrence: Occurrence, skull: Skull) {
     this.setState({ status: Status.LOADING })
-    Push.update(occurrence, skull)
-        .then(this.load)
+    this.checkModifiedInner()
+        .then(() => Push.update(occurrence, skull))
+        .then(() => {
+          const index = this.state.occurrences.findIndex(o => o.id === occurrence.id)
+          if (index < 0) {
+            throw new IllegalStateException()
+          }
+          this.setState(prev => {
+            prev.occurrences[index] = occurrence
+            return ({
+              occurrences: prev.occurrences,
+              status: Status.OK,
+              lastChecked: new Date(),
+            })
+          })
+        })
         .catch(this.handleException)
   }
 
   delete(occurrence: Occurrence) {
     this.setState({ status: Status.LOADING })
-    Push.deletion(occurrence)
-        .then(() => this.load())
+    this.checkModifiedInner()
+        .then(() => Push.deletion(occurrence))
+        .then(() => {
+          const index = this.state.occurrences.findIndex(o => o.id === occurrence.id)
+          if (index < 0) {
+            throw new IllegalStateException()
+          }
+          this.setState(prev => {
+            prev.occurrences.splice(index, 1)
+            return ({
+              occurrences: prev.occurrences,
+              status: Status.OK,
+              lastChecked: new Date(),
+            })
+          })
+        })
         .catch(this.handleException)
   }
 
   checkModified() {
-    Fetch.lastModified()
-        .then(timestamp => timestamp.date > this.state.lastModified && this.load())
-        .catch(this.handleException)
+    this.checkModifiedInner().catch(this.handleException)
+  }
+
+  async checkModifiedInner() {
+    return Fetch.lastModified().then(timestamp => {
+      if (timestamp.date > this.state.lastChecked) {
+        return this.loadInner()
+      } else {
+        this.setState({ lastChecked: new Date() })
+        return Promise.resolve()
+      }
+    })
   }
 
   componentDidMount = () => {

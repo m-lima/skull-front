@@ -49,3 +49,9 @@ export class UnexpectedResponseException {
     return this.message
   }
 }
+
+export class IllegalStateException {
+  toString() {
+    return 'The state is out of sync'
+  }
+}

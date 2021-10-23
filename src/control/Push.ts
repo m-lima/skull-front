@@ -2,9 +2,8 @@ import * as Config from '../model/Config'
 import { Skull, ProtoOccurrence, Occurrence, IOccurrence } from '../model/Skull'
 import { ApiException, UnexpectedResponseException } from '../model/Exception'
 
-// TODO: Push operations should check `lastModified` before executing
 export default class Push {
-  static async new(occurrence: ProtoOccurrence, skull: Skull): Promise<IOccurrence> {
+  static async create(occurrence: ProtoOccurrence, skull: Skull): Promise<IOccurrence> {
     const payload = { skull: skull.id, amount: occurrence.amount, millis: occurrence.millis }
 
     if (Config.Mock.values) {
@@ -37,9 +36,9 @@ export default class Push {
       })
   }
 
-  static async update(occurrence: Occurrence, skull: Skull): Promise<boolean> {
+  static async update(occurrence: Occurrence, skull: Skull): Promise<void> {
     if (Config.Mock.values) {
-      return Promise.resolve(true)
+      return Promise.resolve()
     }
 
     return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
@@ -54,9 +53,7 @@ export default class Push {
       }),
     })
       .then(r => {
-        if (r.ok) {
-          return true
-        } else {
+        if (!r.ok) {
           throw new ApiException(r.status)
         }
       })
