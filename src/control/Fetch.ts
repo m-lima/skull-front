@@ -1,26 +1,14 @@
 import * as Config from '../model/Config'
-import { Skull, RawValuedSkull as RawQuick, RawOccurrence} from '../model/Skull'
+import { ISkull, IQuick, IOccurrence } from '../model/Skull'
 import Timestamp from '../model/Timestamp'
 import { ApiException } from '../model/Exception'
-
-const mapToSkull = (raw: any): Skull => {
-  return new Skull(raw)
-}
-
-const mapToQuick = (raw: any): RawQuick => {
-  return new RawQuick(raw)
-}
-
-const mapToOccurrence = (raw: any): RawOccurrence => {
-  return new RawOccurrence(raw)
-}
 
 const mapToTimestamp = (raw: any): Timestamp => {
   return new Timestamp(raw)
 }
 
 export default class Fetch {
-  static async skulls(): Promise<Skull[]> {
+  static async skulls(): Promise<ISkull[]> {
     let data = Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() => JSON.parse(Config.Mock.Data.skulls))
       : fetch(Config.Endpoint.skull, {
@@ -38,10 +26,10 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToSkull).filter((v: Skull) => v))
+    return data
   }
 
-  static async quicks(): Promise<RawQuick[]> {
+  static async quicks(): Promise<IQuick[]> {
     let data = Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() =>(JSON.parse(Config.Mock.Data.quicks)))
       : fetch(Config.Endpoint.quick, {
@@ -59,10 +47,10 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToQuick).filter((v: RawQuick) => v))
+    return data
   }
 
-  static async occurrences(): Promise<RawOccurrence[]> {
+  static async occurrences(): Promise<IOccurrence[]> {
     let data = Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
       : fetch(Config.Endpoint.occurrence, {
@@ -80,7 +68,7 @@ export default class Fetch {
         })
         .then(r => r.json())
 
-    return data.then(v => v.map(mapToOccurrence).filter((v: RawOccurrence) => v))
+    return data
   }
 
   static async lastModified(): Promise<Timestamp> {

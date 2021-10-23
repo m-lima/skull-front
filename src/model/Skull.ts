@@ -1,13 +1,53 @@
 import { ModelException } from './Exception'
 
-// TODO: Reorganize this mess
-
 const isCssColor = (color: string) => {
   const style = new Option().style;
   style.color = color;
 
   return style.color !== ''
 }
+
+export interface ISkull {
+  id: number
+  name: string
+  color: string
+  icon: string
+  unitPrice: number
+  limit?: number
+}
+
+export interface IQuick {
+  id: number
+  skull: number
+  amount: number
+}
+
+export interface IProtoOccurrence {
+  skull: number
+  amount: number
+  millis: number
+}
+
+export interface IOccurrence extends IProtoOccurrence {
+  id: number
+}
+
+export class SkullId {
+  index: number
+
+  constructor(skull: number | string, skulls: Skull[]) {
+    const index = typeof skull == 'number' ? skulls.findIndex(s => s.id === skull) : skulls.findIndex(s => s.name === skull)
+    if (index < 0) {
+      throw new ModelException('SkullId', 'skull', skull, 'skull id was not found')
+    }
+    this.index = index
+  }
+
+  get(skulls: Skull[]) {
+    return skulls[this.index]
+  }
+}
+
 
 export class Skull {
   id: number
@@ -17,25 +57,25 @@ export class Skull {
   unitPrice: number
   limit?: number
 
-  constructor(raw: any) {
-    if (raw.id as number === undefined || raw.id < 0) {
-      throw new ModelException('skull', 'id', raw.id, 'must be a number greater than zero')
+  constructor(raw: ISkull) {
+    if (raw.id < 0) {
+      throw new ModelException('Skull', 'id', raw.id, 'must be a number greater than zero')
     }
 
-    if (raw.name as string === undefined || raw.name.length < 0) {
-      throw new ModelException('skull', 'name', raw.name, 'must be a non-empty string')
+    if (raw.name.length < 0) {
+      throw new ModelException('Skull', 'name', raw.name, 'must be a non-empty string')
     }
 
-    if (raw.color as string === undefined || !isCssColor(raw.color)) {
-      throw new ModelException('color', 'color', raw.color, 'must be a valid CSS color')
+    if (!isCssColor(raw.color)) {
+      throw new ModelException('Skull', 'color', raw.color, 'must be a valid CSS color')
     }
 
-    if (raw.icon as string === undefined || raw.icon.length < 0) {
-      throw new ModelException('skull', 'icon', raw.icon, 'must be a non-empty string')
+    if (raw.icon.length < 0) {
+      throw new ModelException('Skull', 'icon', raw.icon, 'must be a non-empty string')
     }
 
-    if (raw.unitPrice as number === undefined || raw.unitPrice < 0) {
-      throw new ModelException('skull', 'unitPrice', raw.unitPrice, 'must be a non-negative number')
+    if (raw.unitPrice < 0) {
+      throw new ModelException('Skull', 'unitPrice', raw.unitPrice, 'must be a non-negative number')
     }
 
     this.id = raw.id
@@ -44,78 +84,69 @@ export class Skull {
     this.icon = raw.icon
     this.unitPrice = raw.unitPrice
 
-    if (raw.limit as number !== undefined && raw.limit >= 0) {
+    if (raw.limit && raw.limit >= 0) {
       this.limit = raw.limit
     }
   }
 }
 
-export class RawValuedSkull {
-  skull: number
+export class Quick {
+  id: number
+  skull: SkullId
   amount: number
 
-  constructor(raw: any) {
-    if (raw.skull as number === undefined || raw.skull < 0) {
-      throw new ModelException('RawValuedSkull', 'skull', raw.skull, 'must be a number greater than zero')
+  constructor(raw: IQuick, skulls: Skull[]) {
+    if (raw.id < 0) {
+      throw new ModelException('Quick', 'id', raw.id, 'must be a number greater than zero')
     }
 
-    if (raw.amount as number === undefined || raw.amount < 0) {
-      throw new ModelException('RawValuedSkull', 'amount', raw.amount, 'must be a number greater than zero')
+    if (raw.skull < 0) {
+      throw new ModelException('Quick', 'skull', raw.skull, 'must be a number greater than zero')
     }
 
-    this.skull = raw.skull
+    if (raw.amount < 0) {
+      throw new ModelException('Quick', 'amount', raw.amount, 'must be a number greater than zero')
+    }
+
+    this.id = raw.id
+    this.skull = new SkullId(raw.skull, skulls)
     this.amount = raw.amount
   }
 }
 
-export class RawOccurrence extends RawValuedSkull {
-  id: number
-  millis: number
-
-  constructor(raw: any) {
-    super(raw);
-
-    if (raw.id as number === undefined || raw.id < 0) {
-      throw new ModelException('RawOccurrence', 'id', raw.id, 'must be a number greater than zero')
-    }
-
-    if (raw.millis as string === undefined || raw.millis.length < 0) {
-      throw new ModelException('RawOccurrence', 'millis', raw.millis, 'must be a number greater than zero')
-    }
-
-    this.id = raw.id
-    this.millis = raw.millis
-  }
-}
-
-export class ValuedSkull {
-  skull: Skull
+export class ProtoOccurrence {
+  skull: SkullId
   amount: number
-
-  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[]) {
-    const skull  = skulls.find(s => s.id === rawValuedSkull.skull)
-    if (skull === undefined) {
-      throw new ModelException('ValuedSkull', 'skull', rawValuedSkull.skull, 'skull entry not found')
-    }
-    this.skull = skull
-    this.amount = rawValuedSkull.amount
-  }
-}
-
-export class ProtoOccurrence extends ValuedSkull {
   millis: number
 
-  constructor(rawValuedSkull: RawValuedSkull, skulls: Skull[], millis: number) {
-    super(rawValuedSkull, skulls)
-    this.millis = millis
+  constructor(raw: IProtoOccurrence, skulls: Skull[]) {
+    if (raw.skull < 0) {
+      throw new ModelException('Occurrence', 'skull', raw.skull, 'must be a number greater than zero')
+    }
+
+    if (raw.amount < 0) {
+      throw new ModelException('Occurrence', 'amount', raw.amount, 'must be a number greater than zero')
+    }
+
+    if (raw.millis < 0) {
+      throw new ModelException('Occurrence', 'millis', raw.millis, 'must be a number greater than zero')
+    }
+
+    this.skull = new SkullId(raw.skull, skulls)
+    this.amount = raw.amount
+    this.millis = raw.millis
   }
 }
 
 export class Occurrence extends ProtoOccurrence {
   id: number
 
-  constructor(rawOccurrence: RawOccurrence, skulls: Skull[]) {
-    super(rawOccurrence, skulls, rawOccurrence.millis)
-    this.id = rawOccurrence.id
+  constructor(raw: IOccurrence, skulls: Skull[]) {
+    super(raw, skulls)
+    if (raw.id < 0) {
+      throw new ModelException('Occurrence', 'id', raw.id, 'must be a number greater than zero')
+    }
+
+    this.id = raw.id
   }
 }

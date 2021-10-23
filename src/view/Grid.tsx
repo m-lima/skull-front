@@ -1,17 +1,15 @@
 import React, { Component, Fragment } from 'react'
 import './css/Grid.css'
 
-import { Occurrence, Skull, ProtoOccurrence, ValuedSkull as Quick} from '../model/Skull'
+import { Skull, Quick, Occurrence, ProtoOccurrence, SkullId } from '../model/Skull'
 import Icon from './Icon'
 import EditOccurrence from './EditOccurrence'
-
-type SkullId = number
 
 interface IProps {
   skulls: Skull[]
   quicks: Quick[]
   occurrences: Occurrence[]
-  push: (skull: ProtoOccurrence) => void
+  push: (occurrence: ProtoOccurrence, skull: Skull) => void
 }
 
 interface IState {
@@ -30,12 +28,12 @@ class SkullAmount {
 
 const THREE_QUARTERS = 0.75
 
-const idForQuick = (skullAmounts: Map<SkullId, number>, quick: Quick) => {
-   if (quick.skull.limit && skullAmounts.has(quick.skull.id)) {
-    const skullAmount = skullAmounts.get(quick.skull.id)! + quick.amount
-    if (skullAmount > quick.skull.limit * THREE_QUARTERS) {
+const idForQuick = (skullAmounts: Map<SkullId, number>, quick: Quick, skull: Skull) => {
+  if (skull.limit && skullAmounts.has(quick.skull)) {
+    const skullAmount = skullAmounts.get(quick.skull)! + quick.amount
+    if (skullAmount > skull.limit * THREE_QUARTERS) {
       return 'Grid-button-over-limit'
-    } else if (skullAmount > quick.skull.limit * 0.8 * THREE_QUARTERS) {
+    } else if (skullAmount > skull.limit * 0.8 * THREE_QUARTERS) {
       return 'Grid-button-near-limit'
     } else {
       return undefined
@@ -60,29 +58,29 @@ export default class Grid extends Component<IProps, IState> {
 
   accept(occurrence: ProtoOccurrence) {
     this.setState({ selected: undefined })
-    this.props.push(occurrence)
+    this.props.push(occurrence, occurrence.skull.get(this.props.skulls))
   }
 
   cancel() {
     this.setState({ selected: undefined })
   }
 
-  buildSkullButton = (skullAmounts: Map<SkullId, number>, quick: Quick, index?: number) =>
+  buildSkullButton = (skullAmounts: Map<SkullId, number>, quick: Quick, skull: Skull, index?: number) =>
     <div
         key={index}
         className='Grid-button'
         title={
-          'Skull: ' + quick.skull.name
+          'Skull: ' + skull.name
           + '\nAmount: ' + quick.amount
-          + (quick.skull.limit ? '\nLimit: ' + quick.skull.limit : '')
+          + (skull.limit ? '\nLimit: ' + skull.limit : '')
         }
-        style={{background: quick.skull.color}}
+        style={{background: skull.color}}
         onClick={() => this.showConfirmation(quick)}
     >
-      <Icon icon={quick.skull.icon}/>
+      <Icon icon={skull.icon}/>
       <div
           className='Grid-button-amount'
-          id={idForQuick(skullAmounts, quick)}
+          id={idForQuick(skullAmounts, quick, skull)}
       >
         {quick.amount}
       </div>
@@ -92,7 +90,7 @@ export default class Grid extends Component<IProps, IState> {
     const threeQuartersOfADayAgo = new Date().getTime() - THREE_QUARTERS * 24 * 60 * 60 * 1000;
     const skullAmounts = this.props.occurrences
         .filter(o => o.millis > threeQuartersOfADayAgo)
-        .map(o => new SkullAmount(o.skull.id, o.amount))
+        .map(o => new SkullAmount(o.skull, o.amount))
         .reduce((acc, curr) => {
           let amount = acc.get(curr.skull)
           if (amount) {
@@ -107,7 +105,7 @@ export default class Grid extends Component<IProps, IState> {
     return (
         <Fragment>
           <div className='Grid'>
-            {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(skullAmounts, q, i))}
+            {this.props.skulls && this.props.quicks && this.props.quicks.map((q, i) => this.buildSkullButton(skullAmounts, q, q.skull.get(this.props.skulls), i))}
           </div>
           {this.state.selected && <EditOccurrence
               skulls={this.props.skulls}

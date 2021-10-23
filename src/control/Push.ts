@@ -1,11 +1,14 @@
 import * as Config from '../model/Config'
-import { ProtoOccurrence, Occurrence } from '../model/Skull'
+import { Skull, ProtoOccurrence, Occurrence, IOccurrence } from '../model/Skull'
 import { ApiException, UnexpectedResponseException } from '../model/Exception'
 
+// TODO: Push operations should check `lastModified` before executing
 export default class Push {
-  static async skull(occurrence: ProtoOccurrence): Promise<number> {
+  static async new(occurrence: ProtoOccurrence, skull: Skull): Promise<IOccurrence> {
+    const payload = { skull: skull.id, amount: occurrence.amount, millis: occurrence.millis }
+
     if (Config.Mock.values) {
-      return Promise.resolve(Math.floor(Math.random() * 100))
+      return Promise.resolve({ id: Math.floor(Math.random() * 100), ...payload})
     }
 
     return fetch(Config.Endpoint.occurrence, {
@@ -13,31 +16,28 @@ export default class Push {
       redirect: 'follow',
       credentials: 'include',
       headers: Config.headers,
-      body: JSON.stringify({
-        skull: occurrence.skull.id,
-        amount: occurrence.amount,
-        millis: occurrence.millis,
-      }),
+      body: JSON.stringify(payload),
     })
       .then(r => {
         if (r.ok) {
-          const idHeader = r.headers.get('location')
-          if (!idHeader) {
-            throw new UnexpectedResponseException('Location header not present')
-          } else {
-            const id = Number(idHeader!)
-            if (!id) {
-              throw new UnexpectedResponseException('Location header value is not a number')
-            }
-            return id
-          }
+          return r.text()
         } else {
           throw new ApiException(r.status)
         }
       })
+      .then(id => {
+        const idValue = Number(id)
+        if (!idValue) {
+          throw new UnexpectedResponseException('Id returned is not a number')
+        }
+        return {
+          id: idValue,
+          ...payload,
+        }
+      })
   }
 
-  static async update(occurrence: Occurrence): Promise<boolean> {
+  static async update(occurrence: Occurrence, skull: Skull): Promise<boolean> {
     if (Config.Mock.values) {
       return Promise.resolve(true)
     }
@@ -48,7 +48,7 @@ export default class Push {
       credentials: 'include',
       headers: Config.headers,
       body: JSON.stringify({
-        skull: occurrence.skull.id,
+        skull: skull.id,
         amount: occurrence.amount,
         millis: occurrence.millis,
       }),

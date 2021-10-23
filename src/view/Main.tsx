@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
-import {BrowserRouter as Router, Route, Switch,} from 'react-router-dom'
-import './css/Skull.css'
+import React, { Component } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import './css/Main.css'
 
 import * as Config from '../model/Config'
 import * as Message from './Message'
@@ -15,7 +15,7 @@ import Push from '../control/Push'
 import Status from '../model/Status'
 import Summary from './Summary'
 import {ApiException} from '../model/Exception'
-import { Skull as SkullModel, ProtoOccurrence, ValuedSkull as Quick, Occurrence } from '../model/Skull'
+import { Skull, Quick, Occurrence, ProtoOccurrence } from '../model/Skull'
 
 const Banner = (props: { text: string }) => {
   return (
@@ -26,12 +26,12 @@ const Banner = (props: { text: string }) => {
 }
 
 interface IState extends IQueryState {
-  skulls: SkullModel[]
+  skulls: Skull[]
   quicks: Quick[]
   occurrences: Occurrence[]
 }
 
-export default class Skull extends Component<{}, IState> {
+export default class Main extends Component<{}, IState> {
 
   private timer?: NodeJS.Timeout
 
@@ -54,9 +54,10 @@ export default class Skull extends Component<{}, IState> {
       console.error('HTTP error status: ' + ex.httpStatus)
       this.setState({ skulls: [], quicks: [], occurrences: [], status: ex.status })
     } else {
-      console.error(ex)
+      console.error(ex.toString())
       this.setState({ skulls: [], quicks: [], occurrences: [], status: Status.ERROR })
     }
+    console.error(ex)
   }
 
   // TODO: Load in pages
@@ -76,20 +77,16 @@ export default class Skull extends Component<{}, IState> {
   }
 
   // TODO: Avoid refetching all
-  push(occurrence: ProtoOccurrence) {
+  push(occurrence: ProtoOccurrence, skull: Skull) {
     this.setState({ status: Status.LOADING })
-    Push.skull(occurrence)
-        .then(id => {
-          const newOccurrence = new Occurrence({ id, skull: occurrence.skull.id, amount: occurrence.amount, millis: occurrence.millis   }, this.state.skulls)
-          this.state.occurrences.push(newOccurrence)
-          this.setState({ occurrences: this.state.occurrences, status: Status.OK })
-        })
+    Push.new(occurrence, skull)
+        .then(this.load)
         .catch(this.handleException)
   }
 
-  update(skull: Occurrence) {
+  update(occurrence: Occurrence, skull: Skull) {
     this.setState({ status: Status.LOADING })
-    Push.update(skull)
+    Push.update(occurrence, skull)
         .then(this.load)
         .catch(this.handleException)
   }

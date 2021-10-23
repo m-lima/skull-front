@@ -14,7 +14,7 @@ class ISummaryOccurrence extends Occurrence {
 interface IProps {
   skulls: Skull[]
   occurrences: Occurrence[]
-  update: (occurrence: Occurrence) => void
+  update: (occurrence: Occurrence, skull: Skull) => void
   delete: (occurrence: Occurrence) => void
 }
 
@@ -60,7 +60,7 @@ export default class Summary extends Component<IProps, IState> {
 
   update(occurrence: Occurrence) {
     this.cancel()
-    this.props.update(occurrence)
+    this.props.update(occurrence, occurrence.skull.get(this.props.skulls))
   }
 
   delete() {
@@ -74,12 +74,13 @@ export default class Summary extends Component<IProps, IState> {
   }
 
   renderRow(occurrence: ISummaryOccurrence, index: number) {
+    const skull = occurrence.skull.get(this.props.skulls)
     return (
       <tr id={occurrence.dark ? 'dark' : 'bright'} key={index} onClick={() => this.setState({ selected: occurrence })}>
-        <td id='icon' style={{ color: occurrence.skull.color }}>
-          <Icon icon={ occurrence.skull.icon } />
+        <td id='icon' style={{ color: skull.color }}>
+          <Icon icon={ skull.icon } />
         </td>
-        <td>{occurrence.skull.name}</td>
+        <td>{skull.name}</td>
         <td>{occurrence.amount}</td>
         <td>{formatDate(new Date(occurrence.millis))}</td>
       </tr>

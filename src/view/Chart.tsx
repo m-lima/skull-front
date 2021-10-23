@@ -59,7 +59,7 @@ const zoom = (timeDomain: d3.ScaleTime<number, number>,
       .attr('x', o => {
         const dayEnd = new Date(o.millis)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        return timeDomain(o.millis) + skulls.indexOf(o.skull) * (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
+        return timeDomain(o.millis) + o.skull.index * (timeDomain(dayEnd.getTime()) - timeDomain(o.millis)) / skulls.length
       })
       .attr('width', o => {
         const dayEnd = new Date(o.millis)
@@ -139,10 +139,10 @@ export default class Chart extends PureComponent<IProps> {
     // Calculated constants
     const occurrences = this.props.occurrences
         .map(Util.normalizeDate)
-        .sort((a, b) => a.millis === b.millis ? a.skull.id - b.skull.id : a.millis - b.millis)
+        .sort((a, b) => a.millis === b.millis ? a.skull.index - b.skull.index : a.millis - b.millis)
         .reduce((acc, curr) => {
           const tail = acc[acc.length - 1]
-          if (tail && curr.millis === tail.millis && curr.skull.id === tail.skull.id) {
+          if (tail && curr.millis === tail.millis && curr.skull === tail.skull) {
             tail.amount += curr.amount
           } else {
             acc.push(curr)
@@ -199,11 +199,12 @@ export default class Chart extends PureComponent<IProps> {
         .enter()
         .append('rect')
         .classed('Chart-Bar', true)
-        .attr('x', o => timeDomain(o.millis) + this.props.skulls.indexOf(o.skull) * skullWidth)
+        .attr('x', o => timeDomain(o.millis) + o.skull.index * skullWidth)
         .attr('width', skullWidth)
         .attr('y', scaledZero)
         .attr('height', 0)
-        .attr('fill', o => o.skull.color)
+        // .attr('fill', o => o.skull.get(this.props.skulls).color)
+        .attr('fill', o => o.skull.get(this.props.skulls).color)
 
     bars
         .transition()

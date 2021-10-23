@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 import './css/EditOccurrence.css'
 
-import { ProtoOccurrence, Skull } from '../model/Skull'
+import { ProtoOccurrence, Skull, SkullId } from '../model/Skull'
 import Icon from './Icon'
 
 interface IProps<T extends ProtoOccurrence> {
@@ -16,12 +16,12 @@ interface IProps<T extends ProtoOccurrence> {
 }
 
 interface StagedValue {
-  skull: Skull
+  skull: SkullId
   amount: string
   millis: number
 }
 
-function stage<T extends ProtoOccurrence>(occurrence: T): StagedValue {
+function stage<T extends ProtoOccurrence>(occurrence: T, skulls: Skull[]): StagedValue {
   return {
     skull: occurrence!.skull,
     amount: String(occurrence!.amount),
@@ -32,7 +32,7 @@ function stage<T extends ProtoOccurrence>(occurrence: T): StagedValue {
 // TODO: Update other components to this funtional style
 function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
   const [shouldDelete, setShouldDelete] = useState(false)
-  const [stagedValue, setStagedValue] = useState(stage(props.value))
+  const [stagedValue, setStagedValue] = useState(stage(props.value, props.skulls))
   const amountRef = useRef<HTMLInputElement>(null)
 
   const isDeletable = () => props.onDelete !== undefined
@@ -59,10 +59,10 @@ function EditOccurrence<T extends ProtoOccurrence>(props: IProps<T>) {
         <div className='Edit-input'>
           <b>Type</b>
           <select
-            value={stagedValue.skull.name}
+            value={stagedValue.skull.get(props.skulls).name}
             disabled={shouldDelete}
             onChange={e => {
-              setStagedValue({ ...stagedValue, skull: props.skulls.find(s => s.name === e.target.value)! })
+              setStagedValue({ ...stagedValue, skull: new SkullId(e.target.value, props.skulls) })
             }}
           >
             {props.skulls.map((s, i) => <option key={i} value={s.name}>{s.name}</option>)}
