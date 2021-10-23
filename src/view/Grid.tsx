@@ -23,11 +23,11 @@ interface IState {
 }
 
 class SkullAmount {
-  skull: SkullId;
+  skull: number;
   amount: number;
 
   constructor(skull: SkullId, amount: number) {
-    this.skull = skull;
+    this.skull = skull.index;
     this.amount = amount;
   }
 }
@@ -35,12 +35,12 @@ class SkullAmount {
 const THREE_QUARTERS = 0.75;
 
 const idForQuick = (
-  skullAmounts: Map<SkullId, number>,
+  skullAmounts: Map<number, number>,
   quick: Quick,
   skull: Skull
 ) => {
-  if (skull.limit && skullAmounts.has(quick.skull)) {
-    const skullAmount = skullAmounts.get(quick.skull)! + quick.amount;
+  if (skull.limit && skullAmounts.has(quick.skull.index)) {
+    const skullAmount = skullAmounts.get(quick.skull.index)! + quick.amount;
     if (skullAmount > skull.limit * THREE_QUARTERS) {
       return 'Grid-button-over-limit';
     } else if (skullAmount > skull.limit * 0.8 * THREE_QUARTERS) {
@@ -81,7 +81,7 @@ export default class Grid extends Component<IProps, IState> {
   }
 
   buildSkullButton = (
-    skullAmounts: Map<SkullId, number>,
+    skullAmounts: Map<number, number>,
     quick: Quick,
     skull: Skull,
     index?: number
@@ -124,7 +124,7 @@ export default class Grid extends Component<IProps, IState> {
         }
         acc.set(curr.skull, amount);
         return acc;
-      }, new Map<SkullId, number>());
+      }, new Map<number, number>());
 
     return (
       <Fragment>
