@@ -1,15 +1,11 @@
 import * as Config from '../model/Config';
 import { ISkull, IQuick, IOccurrence } from '../model/Skull';
-import Timestamp from '../model/Timestamp';
-import { ApiException } from '../model/Exception';
-
-const mapToTimestamp = (raw: any): Timestamp => {
-  return new Timestamp(raw);
-};
+import { ApiException, UnexpectedResponseException } from '../model/Exception';
+import { getLastModified } from './LastModified';
 
 export default class Fetch {
   static async skulls(): Promise<ISkull[]> {
-    let data = Config.Mock.values
+    return Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() =>
           JSON.parse(Config.Mock.Data.skulls)
         )
@@ -27,12 +23,10 @@ export default class Fetch {
             }
           })
           .then(r => r.json());
-
-    return data;
   }
 
   static async quicks(): Promise<IQuick[]> {
-    let data = Config.Mock.values
+    return Config.Mock.values
       ? new Promise(r => setTimeout(r, 1000)).then(() =>
           JSON.parse(Config.Mock.Data.quicks)
         )
@@ -50,12 +44,10 @@ export default class Fetch {
             }
           })
           .then(r => r.json());
-
-    return data;
   }
 
   static async occurrences(): Promise<IOccurrence[]> {
-    let data = Config.Mock.values
+    return Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.occurrences))
       : fetch(Config.Endpoint.occurrence, {
           method: 'GET',
@@ -71,28 +63,22 @@ export default class Fetch {
             }
           })
           .then(r => r.json());
-
-    return data;
   }
 
-  static async lastModified(): Promise<Timestamp> {
-    let data = Config.Mock.values
+  static async lastModified(): Promise<Date> {
+    return Config.Mock.values
       ? Promise.resolve(JSON.parse(Config.Mock.Data.lastModified))
-      : fetch(Config.Endpoint.lastModified, {
-          method: 'GET',
+      : fetch(Config.Endpoint.occurrence, {
+          method: 'HEAD',
           redirect: 'follow',
           credentials: 'include',
           headers: Config.headers,
-        })
-          .then(r => {
-            if (r.ok) {
-              return r;
-            } else {
-              throw new ApiException(r.status);
-            }
-          })
-          .then(r => r.json());
-
-    return data.then(mapToTimestamp);
+        }).then(r => {
+          if (r.ok) {
+            return getLastModified(r);
+          } else {
+            throw new ApiException(r.status);
+          }
+        });
   }
 }

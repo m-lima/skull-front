@@ -5,7 +5,12 @@ import {
   Occurrence,
   IOccurrence,
 } from '../model/Skull';
-import { ApiException, UnexpectedResponseException } from '../model/Exception';
+import {
+  ApiException,
+  UnexpectedResponseException,
+  OutOfSyncException,
+} from '../model/Exception';
+import { getLastModified } from './LastModified';
 
 export default class Push {
   static async create(
@@ -35,6 +40,8 @@ export default class Push {
       .then(r => {
         if (r.ok) {
           return r.text();
+        } else if (r.status === 409) {
+          throw new OutOfSyncException();
         } else {
           throw new ApiException(r.status);
         }
@@ -51,41 +58,60 @@ export default class Push {
       });
   }
 
-  static async update(occurrence: Occurrence, skull: Skull): Promise<void> {
+  static async update(
+    occurrence: Occurrence,
+    skull: Skull,
+    unmodifiedSince: Date
+  ): Promise<Date> {
     if (Config.Mock.values) {
-      return Promise.resolve();
+      return Promise.resolve(new Date());
     }
 
     return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
       method: 'PUT',
       redirect: 'follow',
       credentials: 'include',
-      headers: Config.headers,
+      headers: [
+        ['if-unmodified-since', String(unmodifiedSince.getTime())],
+        ...Config.headers,
+      ],
       body: JSON.stringify({
         skull: skull.id,
         amount: occurrence.amount,
         millis: occurrence.millis,
       }),
     }).then(r => {
-      if (!r.ok) {
+      if (r.ok) {
+        return getLastModified(r);
+      } else if (r.status === 409) {
+        throw new OutOfSyncException();
+      } else {
         throw new ApiException(r.status);
       }
     });
   }
 
-  static async deletion(occurrence: Occurrence): Promise<boolean> {
+  static async deletion(
+    occurrence: Occurrence,
+    unmodifiedSince: Date
+  ): Promise<Date> {
     if (Config.Mock.values) {
-      return Promise.resolve(true);
+      return Promise.resolve(new Date());
     }
 
     return fetch(`${Config.Endpoint.occurrence}/${occurrence.id}`, {
       method: 'DELETE',
       redirect: 'follow',
       credentials: 'include',
-      headers: Config.headers,
+      headers: [
+        ['if-unmodified-since', String(unmodifiedSince.getTime())],
+        ...Config.headers,
+      ],
     }).then(r => {
       if (r.ok) {
-        return true;
+        return getLastModified(r);
+      } else if (r.status === 409) {
+        throw new OutOfSyncException();
       } else {
         throw new ApiException(r.status);
       }

@@ -89,7 +89,6 @@ export class Endpoint {
   static readonly skull = '';
   static readonly quick = '';
   static readonly occurrence = '';
-  static readonly lastModified = '';
 }
 
 export class Path {
@@ -98,6 +97,6 @@ export class Path {
   static readonly chart = '/chart';
 }
 
-export const headers = undefined;
+export const headers = [];
 
 export const environment = Environment.DEVELOPMENT;

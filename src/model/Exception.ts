@@ -50,7 +50,7 @@ export class UnexpectedResponseException {
   }
 }
 
-export class IllegalStateException {
+export class OutOfSyncException {
   toString() {
     return 'The state is out of sync';
   }

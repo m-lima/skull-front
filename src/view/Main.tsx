@@ -14,7 +14,7 @@ import IQueryState from '../model/IQueryState';
 import Push from '../control/Push';
 import Status from '../model/Status';
 import Summary from './Summary';
-import { ApiException, IllegalStateException } from '../model/Exception';
+import { ApiException, OutOfSyncException } from '../model/Exception';
 import { Skull, Quick, Occurrence, ProtoOccurrence } from '../model/Skull';
 
 const Banner = (props: { text: string }) => {
@@ -95,14 +95,12 @@ export default class Main extends Component<{}, IState> {
 
   push(occurrence: ProtoOccurrence, skull: Skull) {
     this.setState({ status: Status.LOADING });
-    this.checkModifiedInner()
-      .then(() => Push.create(occurrence, skull))
+    Push.create(occurrence, skull)
       .then(newIOccurrence => {
         const newOccurrence = new Occurrence(newIOccurrence, this.state.skulls);
         this.setState(prev => ({
           occurrences: [newOccurrence, ...prev.occurrences],
           status: Status.OK,
-          lastChecked: new Date(),
         }));
       })
       .catch(this.handleException);
@@ -110,21 +108,29 @@ export default class Main extends Component<{}, IState> {
 
   update(occurrence: Occurrence, skull: Skull) {
     this.setState({ status: Status.LOADING });
-    this.checkModifiedInner()
-      .then(() => Push.update(occurrence, skull))
-      .then(() => {
+    Push.update(occurrence, skull, this.state.lastChecked)
+      .catch(async ex => {
+        if (ex instanceof OutOfSyncException) {
+          return this.loadInner().then(() =>
+            Push.update(occurrence, skull, this.state.lastChecked)
+          );
+        } else {
+          throw ex;
+        }
+      })
+      .then(lastChecked => {
         const index = this.state.occurrences.findIndex(
           o => o.id === occurrence.id
         );
         if (index < 0) {
-          throw new IllegalStateException();
+          throw new OutOfSyncException();
         }
         this.setState(prev => {
           prev.occurrences[index] = occurrence;
           return {
             occurrences: prev.occurrences,
             status: Status.OK,
-            lastChecked: new Date(),
+            lastChecked,
           };
         });
       })
@@ -133,21 +139,29 @@ export default class Main extends Component<{}, IState> {
 
   delete(occurrence: Occurrence) {
     this.setState({ status: Status.LOADING });
-    this.checkModifiedInner()
-      .then(() => Push.deletion(occurrence))
-      .then(() => {
+    Push.deletion(occurrence, this.state.lastChecked)
+      .catch(async ex => {
+        if (ex instanceof OutOfSyncException) {
+          return this.loadInner().then(() =>
+            Push.deletion(occurrence, this.state.lastChecked)
+          );
+        } else {
+          throw ex;
+        }
+      })
+      .then(lastChecked => {
         const index = this.state.occurrences.findIndex(
           o => o.id === occurrence.id
         );
         if (index < 0) {
-          throw new IllegalStateException();
+          throw new OutOfSyncException();
         }
         this.setState(prev => {
           prev.occurrences.splice(index, 1);
           return {
             occurrences: prev.occurrences,
             status: Status.OK,
-            lastChecked: new Date(),
+            lastChecked,
           };
         });
       })
@@ -155,18 +169,9 @@ export default class Main extends Component<{}, IState> {
   }
 
   checkModified() {
-    this.checkModifiedInner().catch(this.handleException);
-  }
-
-  async checkModifiedInner() {
-    return Fetch.lastModified().then(timestamp => {
-      if (timestamp.date > this.state.lastChecked) {
-        return this.loadInner();
-      } else {
-        this.setState({ lastChecked: new Date() });
-        return Promise.resolve();
-      }
-    });
+    Fetch.lastModified()
+      .then(t => t > this.state.lastChecked && this.load())
+      .catch(this.handleException);
   }
 
   componentDidMount = () => {
