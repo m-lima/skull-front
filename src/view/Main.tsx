@@ -27,6 +27,11 @@ interface IState extends IQueryState {
   occurrences: Occurrence[];
 }
 
+const reverseByTime = (one: Occurrence, two: Occurrence) =>
+  two.millis === one.millis
+    ? two.skull.index - one.skull.index
+    : two.millis - one.millis;
+
 export default class Main extends Component<{}, IState> {
   private timer?: NodeJS.Timeout;
 
@@ -87,7 +92,7 @@ export default class Main extends Component<{}, IState> {
       this.setState({
         skulls: r[0],
         quicks: r[1].map(q => new Quick(q, r[0])),
-        occurrences: r[2].map(o => new Occurrence(o, r[0])).reverse(),
+        occurrences: r[2].map(o => new Occurrence(o, r[0])).sort(reverseByTime),
         lastChecked: new Date(),
       })
     );
@@ -99,7 +104,7 @@ export default class Main extends Component<{}, IState> {
       .then(newIOccurrence => {
         const newOccurrence = new Occurrence(newIOccurrence, this.state.skulls);
         this.setState(prev => ({
-          occurrences: [newOccurrence, ...prev.occurrences],
+          occurrences: [newOccurrence, ...prev.occurrences].sort(reverseByTime),
           status: Status.OK,
         }));
       })
@@ -128,7 +133,7 @@ export default class Main extends Component<{}, IState> {
         this.setState(prev => {
           prev.occurrences[index] = occurrence;
           return {
-            occurrences: prev.occurrences,
+            occurrences: prev.occurrences.sort(reverseByTime),
             status: Status.OK,
             lastChecked,
           };
