@@ -41,9 +41,9 @@ const idForQuick = (
 ) => {
   if (skull.limit && skullAmounts.has(quick.skull.index)) {
     const skullAmount = skullAmounts.get(quick.skull.index)! + quick.amount;
-    if (skullAmount > skull.limit * THREE_QUARTERS) {
+    if (skullAmount >= skull.limit) {
       return 'Grid-button-over-limit';
-    } else if (skullAmount > skull.limit * 0.8 * THREE_QUARTERS) {
+    } else if (skullAmount >= skull.limit * THREE_QUARTERS) {
       return 'Grid-button-near-limit';
     } else {
       return undefined;
