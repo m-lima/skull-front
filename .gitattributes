@@ -1,0 +1,1 @@
+cfg/Config.prod.ts filter=git-crypt diff=git-crypt
