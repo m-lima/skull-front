@@ -1,4 +1,4 @@
-docker build -t volume-updater .
+docker build -t volume-updater . && \
 docker run \
   --volume skull:/data \
   --rm \
