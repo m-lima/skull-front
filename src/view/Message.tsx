@@ -15,7 +15,7 @@ export const Error = () => (
   <div className='Message'>
     <Icon icon='fas fa-sad-tear' />
     Something went wrong..
-    <div className='Message-action' onClick={() => window.location.reload()}>
+    <div className='Message-action' onClick={Access.login}>
       Refresh
     </div>
   </div>

@@ -1,4 +1,4 @@
-FROM node as web
+FROM node:16.20.2-buster as web
 
 WORKDIR /web
 
